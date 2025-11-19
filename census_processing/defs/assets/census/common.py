@@ -116,7 +116,9 @@ def census_non_agebs_factory(
         ):
             zf.extractall(tmpdir)
             df_census = read_census(
-                Path(tmpdir) / extracted_path, sep=sep, encoding=encoding,
+                Path(tmpdir) / extracted_path,
+                sep=sep,
+                encoding=encoding,
             )
 
         selected_outputs = context.op_execution_context.selected_output_names

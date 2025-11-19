@@ -10,12 +10,12 @@ from census_processing.defs.resources import PathResource
 
 
 @dg.asset(
-    name="2000",
-    key_prefix="geometry",
+    name="ageb",
+    key_prefix=["geometry", "2000"],
     io_manager_key="geodataframe_manager",
-    group_name="geometry",
+    group_name="geometry_2000",
 )
-def geometry_2000(path_resource: PathResource) -> gpd.GeoDataFrame:
+def geometry_2000_ageb(path_resource: PathResource) -> gpd.GeoDataFrame:
     raw_path = Path(path_resource.data_path) / "raws"
 
     with (
@@ -35,4 +35,17 @@ def geometry_2000(path_resource: PathResource) -> gpd.GeoDataFrame:
         .drop(columns=["CLVAGB", "OID_1", "LAYAGB"])
         .set_index("CVEGEO")
         .to_crs("EPSG:6372")
+    )
+
+
+@dg.asset(
+    name="loc",
+    ins={"geometry_2000_ageb": dg.AssetIn(["geometry", "2000", "ageb"])},
+    key_prefix=["geometry", "2000"],
+    io_manager_key="geodataframe_manager",
+    group_name="geometry_2000",
+)
+def geometry_2000_loc(geometry_2000_ageb: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    return geometry_2000_ageb.assign(CVEGEO=lambda df: df["CVEGEO"].str[:9]).dissolve(
+        by="CVEGEO",
     )

@@ -3,6 +3,8 @@ from typing import Any
 
 import geopandas as gpd
 import pandas as pd
+import sqlalchemy
+from pydantic import PrivateAttr
 
 import dagster as dg
 from census_processing.defs.resources import PathResource
@@ -80,3 +82,27 @@ class GeoDataFrameManager(BaseManager):
 
         err = f"Unsupported suffix for GeoDataFrameManager: {self.suffix}"
         raise ValueError(err)
+
+
+class GeoDataFramePostgisManager(dg.ConfigurableIOManager):
+    host: str
+    port: str
+    user: str
+    password: str
+    db: str
+
+    _engine: sqlalchemy.engine.Engine = PrivateAttr()
+
+    def setup_for_execution(self, context: dg.InitResourceContext) -> None:  # noqa: ARG002
+        print("a" * 80)
+        self._engine = sqlalchemy.create_engine(
+            f"postgresql+psycopg2://{self.user}:{self.password}@{self.host}:{self.port}/{self.db}",
+        )
+
+    def handle_output(self, context: dg.OutputContext, obj: gpd.GeoDataFrame) -> None:
+        table = context.definition_metadata["table_name"]
+        with self._engine.connect() as conn:
+            obj.to_postgis(table, conn, if_exists="replace")
+
+    def load_input(self, context: dg.InputContext) -> None:
+        pass

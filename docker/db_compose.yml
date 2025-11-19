@@ -1,0 +1,13 @@
+services:
+  postgis:
+    image: postgis/postgis:18-3.6
+    platform: linux/amd64
+    container_name: postgis
+    restart: unless-stopped
+    environment:
+      - TZ=America/Mexico_City
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=census_db
+    ports:
+      - 5432:5432

@@ -1,7 +1,11 @@
 from pathlib import Path
 
 import dagster as dg
-from census_processing.defs.managers import DataFrameManager, GeoDataFrameManager
+from census_processing.defs.managers import (
+    DataFrameManager,
+    GeoDataFrameManager,
+    GeoDataFramePostgisManager,
+)
 from census_processing.defs.resources import PathResource
 
 
@@ -20,6 +24,13 @@ def defs() -> dg.Definitions:
             "dataframe_manager": DataFrameManager(
                 suffix=".parquet",
                 path_resource=path_resource,
+            ),
+            "geodataframe_postgis_manager": GeoDataFramePostgisManager(
+                host=dg.EnvVar("X_POSTGIS_HOST"),
+                port=dg.EnvVar("X_POSTGIS_PORT"),
+                user=dg.EnvVar("X_POSTGIS_USER"),
+                password=dg.EnvVar("X_POSTGIS_PASSWORD"),
+                db=dg.EnvVar("X_POSTGIS_DB"),
             ),
         },
     )

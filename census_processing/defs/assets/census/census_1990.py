@@ -1,11 +1,13 @@
 import tempfile
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import rarfile
 
 import dagster as dg
 from census_processing.defs.assets.census.common import (
+    cast_to_numeric,
     census_non_agebs_factory,
 )
 from census_processing.defs.managers import PathResource
@@ -31,11 +33,8 @@ def row_to_frame(row: str) -> pd.DataFrame:
     )
 
 
-@dg.asset(
-    name="ageb",
-    key_prefix=["census", "1990"],
-    group_name="census_1990",
-    io_manager_key="dataframe_manager",
+@dg.op(
+    name="census_1990_ageb",
 )
 def census_1990_agebs(path_resource: PathResource) -> pd.DataFrame:
     raw_path = Path(path_resource.data_path) / "raws"
@@ -68,7 +67,9 @@ def census_1990_agebs(path_resource: PathResource) -> pd.DataFrame:
                 )
                 df.append(df_temp)
 
-    return pd.concat(df).sort_index().reset_index(names="CVEGEO")
+    out = pd.concat(df).replace(["*", "N.D.", "N/D"], np.nan).sort_index()
+    out = cast_to_numeric(out)
+    return out.reset_index(names="CVEGEO")
 
 
 census_1990_non_agebs = census_non_agebs_factory(
