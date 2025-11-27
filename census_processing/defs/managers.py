@@ -94,7 +94,6 @@ class GeoDataFramePostgisManager(dg.ConfigurableIOManager):
     _engine: sqlalchemy.engine.Engine = PrivateAttr()
 
     def setup_for_execution(self, context: dg.InitResourceContext) -> None:  # noqa: ARG002
-        print("a" * 80)
         self._engine = sqlalchemy.create_engine(
             f"postgresql+psycopg2://{self.user}:{self.password}@{self.host}:{self.port}/{self.db}",
         )
@@ -104,5 +103,12 @@ class GeoDataFramePostgisManager(dg.ConfigurableIOManager):
         with self._engine.connect() as conn:
             obj.to_postgis(table, conn, if_exists="replace")
 
-    def load_input(self, context: dg.InputContext) -> None:
-        pass
+    def load_input(self, context: dg.InputContext) -> gpd.GeoDataFrame:
+        upstream_output = context.upstream_output
+        if upstream_output is None:
+            err = "No upstream output found for GeoDataFramePostgisManager"
+            raise ValueError(err)
+
+        table = upstream_output.definition_metadata["table_name"]
+        with self._engine.connect() as conn:
+            return gpd.read_postgis(table, conn, geom_col="geometry", crs="EPSG:6372")

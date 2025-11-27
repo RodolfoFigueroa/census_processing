@@ -1,16 +1,19 @@
+import io
 import tempfile
 import zipfile
 from pathlib import Path
 
 import cabarchive
+import geopandas as gpd
 import numpy as np
 import pandas as pd
 import rarfile
 
 import dagster as dg
-from census_processing.defs.assets.census.common import (
+from census_processing.defs.assets.common import (
     cast_to_numeric,
-    census_non_agebs_factory,
+    load_census_df_factory,
+    merged_factory,
 )
 from census_processing.defs.resources import PathResource
 
@@ -209,13 +212,8 @@ def extract_from_archive(arc: cabarchive.CabArchive) -> pd.DataFrame:
     return pd.concat(df_census)
 
 
-@dg.asset(
-    name="ageb",
-    key_prefix=["census", "2000"],
-    group_name="census_2000",
-    io_manager_key="dataframe_manager",
-)
-def census_2000_agebs(path_resource: PathResource) -> pd.DataFrame:
+@dg.op(name="census_2000_ageb")
+def census_2000_ageb(path_resource: PathResource) -> pd.DataFrame:
     raw_path = Path(path_resource.data_path) / "raws"
 
     df_census = []
@@ -249,7 +247,37 @@ def census_2000_agebs(path_resource: PathResource) -> pd.DataFrame:
     return cast_to_numeric(out).reset_index(names="CVEGEO")
 
 
-census_2000_non_agebs = census_non_agebs_factory(
+@dg.op(name="geometry_2000_ageb")
+def geometry_2000_ageb(path_resource: PathResource) -> gpd.GeoDataFrame:
+    raw_path = Path(path_resource.data_path) / "raws"
+
+    with (
+        zipfile.ZipFile(raw_path / "2000" / "702825292843_s.zip") as f,
+        f.open("mgau2000.zip") as subzip,
+    ):
+        subzip_data = io.BytesIO(subzip.read())
+        with (
+            zipfile.ZipFile(subzip_data) as f_nested,
+            tempfile.TemporaryDirectory() as tmpdir,
+        ):
+            f_nested.extractall(tmpdir)
+            df_geom = gpd.read_file(tmpdir)
+
+    return (
+        df_geom.assign(CVEGEO=lambda df: df["CLVAGB"].str.replace("-", ""))
+        .drop(columns=["CLVAGB", "OID_1", "LAYAGB"])
+        .set_index("CVEGEO")
+        .to_crs("EPSG:6372")
+    )
+
+
+ageb_2000 = merged_factory(
+    census_op=census_2000_ageb,
+    geometry_op=geometry_2000_ageb,
+    year=2000,
+)
+
+census_2000_non_agebs = load_census_df_factory(
     compressed_path=Path("2000", "cgpv2000_iter_00_csv.zip"),
     extracted_path=Path(
         "cgpv2000_iter_00",
@@ -257,4 +285,6 @@ census_2000_non_agebs = census_non_agebs_factory(
         "cgpv2000_iter_00.csv",
     ),
     year=2000,
+    encoding="utf-8",
+    sep=",",
 )

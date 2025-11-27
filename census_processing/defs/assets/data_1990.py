@@ -1,14 +1,18 @@
 import tempfile
+import zipfile
 from pathlib import Path
 
+import geopandas as gpd
 import numpy as np
 import pandas as pd
 import rarfile
 
 import dagster as dg
-from census_processing.defs.assets.census.common import (
+from census_processing.defs.assets.common import (
     cast_to_numeric,
-    census_non_agebs_factory,
+    load_census_df_factory,
+    merged_factory,
+    multi_merged_factory,
 )
 from census_processing.defs.managers import PathResource
 
@@ -18,7 +22,11 @@ def row_to_frame(row: str) -> pd.DataFrame:
         pd.Series(
             [
                 x.strip()
-                for x in row.replace("\x05", "\x08").strip().strip("\x08").split("\x08")
+                for x in row.replace("\x05", "\x08")
+                .replace("\u0000", "\x08")
+                .strip()
+                .strip("\x08")
+                .split("\x08")
             ],
             name="col",
         )
@@ -36,7 +44,7 @@ def row_to_frame(row: str) -> pd.DataFrame:
 @dg.op(
     name="census_1990_ageb",
 )
-def census_1990_agebs(path_resource: PathResource) -> pd.DataFrame:
+def census_1990_ageb(path_resource: PathResource) -> pd.DataFrame:
     raw_path = Path(path_resource.data_path) / "raws"
 
     with (
@@ -72,10 +80,44 @@ def census_1990_agebs(path_resource: PathResource) -> pd.DataFrame:
     return out.reset_index(names="CVEGEO")
 
 
-census_1990_non_agebs = census_non_agebs_factory(
+@dg.op(
+    name="geometry_1990_ageb",
+)
+def geometry_1990_ageb(path_resource: PathResource) -> gpd.GeoDataFrame:
+    raw_path = Path(path_resource.data_path) / "raws"
+    with (
+        zipfile.ZipFile(raw_path / "1990" / "AGEBs 90_TecMonty_aj.zip") as zf,
+        tempfile.TemporaryDirectory() as tmpdir,
+    ):
+        zf.extractall(tmpdir)
+        df = gpd.read_file(Path(tmpdir) / "AGEBs 90_TecMonty_aj")
+
+    return (
+        df.assign(
+            CVEGEO=lambda df: df["CVE_ENT"].astype(str).str.zfill(2)
+            + df["CVE_MUN"].astype(str).str.zfill(3)
+            + df["CVE_LOC"].astype(str).str.zfill(4)
+            + df["CVE_AGEB"].astype(str).str.zfill(4),
+        )
+        .drop(columns=["CVE_ENT", "CVE_MUN", "CVE_LOC", "CVE_AGEB", "OBJECTID"])
+        .to_crs("EPSG:6372")
+    )
+
+
+ageb_1990 = merged_factory(
+    census_op=census_1990_ageb,
+    geometry_op=geometry_1990_ageb,
+    year=1990,
+)
+
+
+load_census_1990 = load_census_df_factory(
     compressed_path=Path("1990", "00_nacional_1990_iter_txt.zip"),
     extracted_path=Path("ITER_NALTXT90.txt"),
     year=1990,
     encoding="latin1",
     sep="\t",
 )
+
+
+other_1990 = multi_merged_factory(year=1990, df_op=load_census_1990)
