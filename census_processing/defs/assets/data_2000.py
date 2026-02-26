@@ -3,6 +3,7 @@ import tempfile
 import zipfile
 from pathlib import Path
 
+import json
 import cabarchive
 import geopandas as gpd
 import numpy as np
@@ -216,7 +217,7 @@ def extract_from_archive(arc: cabarchive.CabArchive) -> pd.DataFrame:
 def census_2000_ageb(path_resource: PathResource) -> pd.DataFrame:
     raw_path = Path(path_resource.data_path) / "raws"
 
-    df_census = []
+    df_census: list[pd.DataFrame] = []
     with (
         zipfile.ZipFile(raw_path / "2000" / "censo2000_scince.zip") as f,
         tempfile.TemporaryDirectory() as tmpdir,
@@ -271,9 +272,34 @@ def geometry_2000_ageb(path_resource: PathResource) -> gpd.GeoDataFrame:
     )
 
 
+@dg.op(out=dg.Out(io_manager_key="geodataframe_postgis_manager"))
+def rename_columns_2000(df: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    with (
+        Path(__file__).parent.parent.parent.parent / "column_maps" / "2000.json"
+    ).open(encoding="latin1") as f:
+        column_map: dict = json.load(f)
+
+    column_name_map = {
+        i + 1: list(column_map.values())[i] for i in range(len(column_map))
+    }
+    wanted_cols = (
+        ["CVEGEO"]
+        + [key for key, value in column_name_map.items() if value is not None]
+        + ["geometry"]
+    )
+
+    return (
+        df[wanted_cols]
+        .rename(columns=column_name_map)
+        .pipe(gpd.GeoDataFrame, geometry="geometry", crs=df.crs)
+    )
+
+
+
 ageb_2000 = merged_factory(
     census_op=census_2000_ageb,
     geometry_op=geometry_2000_ageb,
+    rename_op=rename_columns_2000,
     year=2000,
 )
 

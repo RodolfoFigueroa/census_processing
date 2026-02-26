@@ -2,6 +2,7 @@ import tempfile
 import zipfile
 from pathlib import Path
 
+import json
 import geopandas as gpd
 import numpy as np
 import pandas as pd
@@ -55,7 +56,7 @@ def census_1990_ageb(path_resource: PathResource) -> pd.DataFrame:
 
         extracted_path = Path(tmpdir) / "SCINCE"
 
-        df = []
+        df: list[pd.DataFrame] = []
         for dir_path in extracted_path.glob("[0-9A-Z][0-9]"):
             if not dir_path.is_dir():
                 continue
@@ -104,9 +105,33 @@ def geometry_1990_ageb(path_resource: PathResource) -> gpd.GeoDataFrame:
     )
 
 
+@dg.op(out=dg.Out(io_manager_key="geodataframe_postgis_manager"))
+def rename_columns_1990(df: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    with (
+        Path(__file__).parent.parent.parent.parent / "column_maps" / "1990.json"
+    ).open(encoding="latin1") as f:
+        column_map: dict = json.load(f)
+
+    column_name_map = {
+        i + 1: list(column_map.values())[i] for i in range(len(column_map))
+    }
+    wanted_cols = (
+        ["CVEGEO"]
+        + [key for key, value in column_name_map.items() if value is not None]
+        + ["geometry"]
+    )
+
+    return (
+        df[wanted_cols]
+        .rename(columns=column_name_map)
+        .pipe(gpd.GeoDataFrame, geometry="geometry", crs=df.crs)
+    )
+
+
 ageb_1990 = merged_factory(
     census_op=census_1990_ageb,
     geometry_op=geometry_1990_ageb,
+    rename_op=rename_columns_1990,
     year=1990,
 )
 

@@ -26,11 +26,11 @@ def defs() -> dg.Definitions:
                 path_resource=path_resource,
             ),
             "geodataframe_postgis_manager": GeoDataFramePostgisManager(
-                host=dg.EnvVar("X_POSTGIS_HOST"),
-                port=dg.EnvVar("X_POSTGIS_PORT"),
-                user=dg.EnvVar("X_POSTGIS_USER"),
-                password=dg.EnvVar("X_POSTGIS_PASSWORD"),
-                db=dg.EnvVar("X_POSTGIS_DB"),
+                host="localhost",
+                port="5432",
+                user=dg.EnvVar("POSTGRES_USER"),
+                password=dg.EnvVar("POSTGRES_PASSWORD"),
+                db=dg.EnvVar("POSTGRES_DB"),
             ),
         },
     )

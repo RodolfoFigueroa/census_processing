@@ -1,3 +1,4 @@
+import json
 import os
 import tempfile
 import zipfile
@@ -109,7 +110,7 @@ def extract_census_level_factory(
     return _op
 
 
-@dg.op(out=dg.Out(io_manager_key="geodataframe_postgis_manager"))
+@dg.op
 def merge_census_and_geometry(
     census: pd.DataFrame,
     geometry: gpd.GeoDataFrame,
@@ -121,6 +122,7 @@ def merged_factory(
     *,
     census_op: dg.OpDefinition,
     geometry_op: dg.OpDefinition,
+    rename_op: dg.OpDefinition,
     year: int,
 ) -> dg.AssetsDefinition:
     @dg.graph_asset(
@@ -134,7 +136,8 @@ def merged_factory(
     def _asset() -> gpd.GeoDataFrame:
         census = census_op()
         geometry = geometry_op()
-        return merge_census_and_geometry(census, geometry)
+        merged = merge_census_and_geometry(census, geometry)
+        return rename_op(merged)
 
     return _asset
 
