@@ -1,9 +1,9 @@
 import io
+import json
 import tempfile
 import zipfile
 from pathlib import Path
 
-import json
 import cabarchive
 import geopandas as gpd
 import numpy as np
@@ -293,7 +293,6 @@ def rename_columns_2000(df: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
         .rename(columns=column_name_map)
         .pipe(gpd.GeoDataFrame, geometry="geometry", crs=df.crs)
     )
-
 
 
 ageb_2000 = merged_factory(

@@ -1,4 +1,3 @@
-import json
 import os
 import tempfile
 import zipfile
@@ -25,7 +24,7 @@ def cast_to_numeric(
     df = df.copy()
     for col in df.columns:
         if col not in ignore:
-            df[col] = pd.to_numeric(df[col], errors="raise")
+            df[col] = pd.to_numeric(df[col], errors="coerce")
     return df
 
 
@@ -115,15 +114,22 @@ def merge_census_and_geometry(
     census: pd.DataFrame,
     geometry: gpd.GeoDataFrame,
 ) -> gpd.GeoDataFrame:
-    return gpd.GeoDataFrame(geometry.merge(census, on="CVEGEO", how="inner"))
+    return gpd.GeoDataFrame(
+        geometry.merge(census, on="CVEGEO", how="inner"),
+    ).sort_values("CVEGEO")
+
+
+@dg.op(out=dg.Out(io_manager_key="geodataframe_postgis_manager"))
+def dummy_rename_op(df: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    return df
 
 
 def merged_factory(
     *,
     census_op: dg.OpDefinition,
     geometry_op: dg.OpDefinition,
-    rename_op: dg.OpDefinition,
     year: int,
+    rename_op: dg.OpDefinition | None = None,
 ) -> dg.AssetsDefinition:
     @dg.graph_asset(
         name="ageb",
@@ -137,6 +143,8 @@ def merged_factory(
         census = census_op()
         geometry = geometry_op()
         merged = merge_census_and_geometry(census, geometry)
+        if rename_op is None:
+            return dummy_rename_op(merged)
         return rename_op(merged)
 
     return _asset
@@ -211,3 +219,69 @@ def multi_merged_factory(*, year: int, df_op: dg.OpDefinition) -> dg.AssetsDefin
         )
 
     return _asset
+
+
+def census_2010_2020_factory(
+    *,
+    year: int,
+    zip_template: str,
+    inner_dir_template: str,
+    csv_template: str,
+) -> dg.OpDefinition:
+    @dg.op(name=f"census_{year}_ageb")
+    def _op(path_resource: PathResource) -> pd.DataFrame:
+        raw_path = Path(path_resource.data_path) / "raws"
+
+        df_census: list[pd.DataFrame] = []
+
+        for i in range(1, 33):
+            compressed_path = raw_path / str(year) / "census" / zip_template.format(i=i)
+
+            with (
+                tempfile.TemporaryDirectory() as tmpdir,
+                zipfile.ZipFile(compressed_path) as zf,
+            ):
+                zf.extractall(tmpdir)
+
+                df_census.append(
+                    pd.read_csv(
+                        Path(tmpdir)
+                        / inner_dir_template.format(i=i)
+                        / "conjunto_de_datos"
+                        / csv_template.format(i=i),
+                        encoding="latin1",
+                    ).rename(
+                        columns={"ï»¿ENTIDAD": "ENTIDAD", 'ï»¿"entidad"': "entidad"},
+                        errors="ignore",
+                    ),
+                )
+
+        out = pd.concat(df_census, ignore_index=True)
+        out.columns = [c.upper() for c in out.columns]
+
+        out = (
+            out.query("MZA == 0")
+            .dropna(subset=["ENTIDAD"])
+            .assign(
+                ENTIDAD=lambda df: df["ENTIDAD"].astype(int),
+                CVEGEO=lambda df: df["ENTIDAD"].astype(str).str.zfill(2)
+                + df["MUN"].astype(str).str.zfill(3)
+                + df["LOC"].astype(str).str.zfill(4)
+                + df["AGEB"].astype(str).str.zfill(4),
+            )
+            .drop(
+                columns=[
+                    "ENTIDAD",
+                    "MUN",
+                    "LOC",
+                    "AGEB",
+                    "NOM_ENT",
+                    "NOM_MUN",
+                    "NOM_LOC",
+                    "MZA",
+                ],
+            )
+        )
+        return cast_to_numeric(out, ignore=["CVEGEO"])
+
+    return _op

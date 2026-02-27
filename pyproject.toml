@@ -13,7 +13,7 @@ dependencies = [
     "fiona>=1.10.1",
     "geoalchemy2>=0.18.1",
     "geopandas>=1.1.1",
-    "ipykernel>=7.1.0",
+    "ipykernel<7",
     "matplotlib>=3.10.7",
     "pandas>=2.3.3",
     "pandas-stubs>=3.0.0.260204",
