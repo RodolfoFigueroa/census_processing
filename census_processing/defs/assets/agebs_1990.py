@@ -2,6 +2,7 @@ import json
 import tempfile
 import zipfile
 from pathlib import Path
+from typing import Literal
 
 import geopandas as gpd
 import numpy as np
@@ -10,12 +11,97 @@ import rarfile
 
 import dagster as dg
 from census_processing.defs.assets.common import (
-    cast_to_numeric,
-    load_census_df_factory,
+    add_dummy_geometry,
+    cast_all_columns_to_numeric,
+    census_1990_2000_factory,
+    get_loc_geometry_from_agebs,
+    merge_census_and_geometry,
     merged_factory,
-    multi_merged_factory,
 )
 from census_processing.defs.managers import PathResource
+
+
+def extract_census_level_factory(
+    level: Literal["ent", "mun", "loc"],
+) -> dg.OpDefinition:
+    @dg.op(name=f"extract_census_{level}_level")
+    def _op(census: pd.DataFrame) -> pd.DataFrame:
+        if level == "loc":
+            cutoff = 9
+            out = census.query("(loc != 0) & (mun != 0) & (entidad != 0)")
+        elif level == "mun":
+            cutoff = 5
+            out = census.query("(loc == 0) & (mun != 0) & (entidad != 0)")
+        elif level == "ent":
+            cutoff = 2
+            out = census.query("(loc == 0) & (mun == 0) & (entidad != 0)")
+
+        out = (
+            out.rename(columns={f"nom_{level}": "nombre"})
+            .drop(
+                columns=list(
+                    {"entidad", "mun", "loc", "nom_ent", "nom_mun", "nom_loc"}
+                    - {f"nom_{level}"},  # Keep the name of the wanted level
+                ),
+            )
+            .assign(CVEGEO=lambda df: df.index.str.slice(0, cutoff))
+            .reset_index(drop=True)
+        )
+        out = cast_all_columns_to_numeric(out, ignore=["nombre", "CVEGEO"])
+        return pd.DataFrame(
+            out[["CVEGEO"] + [col for col in out.columns if col != "CVEGEO"]],
+        )
+
+    return _op
+
+
+extract_loc = extract_census_level_factory(level="loc")
+extract_mun = extract_census_level_factory(level="mun")
+extract_ent = extract_census_level_factory(level="ent")
+
+
+def multi_merged_factory(*, year: int, df_op: dg.OpDefinition) -> dg.AssetsDefinition:
+    @dg.graph_multi_asset(
+        ins={
+            "agebs": dg.AssetIn(key=["census", str(year), "ageb"]),
+        },
+        outs={
+            "loc": dg.AssetOut(
+                key=["census", str(year), "loc"],
+                group_name=f"census_{year}",
+                is_required=True,
+                metadata={"table_name": f"census_{year}_loc"},
+            ),
+            "mun": dg.AssetOut(
+                key=["census", str(year), "mun"],
+                group_name=f"census_{year}",
+                is_required=True,
+                metadata={"table_name": f"census_{year}_mun"},
+            ),
+            "ent": dg.AssetOut(
+                key=["census", str(year), "ent"],
+                group_name=f"census_{year}",
+                is_required=True,
+                metadata={"table_name": f"census_{year}_ent"},
+            ),
+        },
+        can_subset=False,
+        group_name=f"census_{year}",
+    )
+    def _asset(
+        agebs: gpd.GeoDataFrame,
+    ) -> tuple[gpd.GeoDataFrame, gpd.GeoDataFrame, gpd.GeoDataFrame]:
+        census_df = df_op()
+        loc_geometries = get_loc_geometry_from_agebs(agebs)
+        loc_census = extract_loc(census_df)
+
+        return (
+            merge_census_and_geometry(loc_census, loc_geometries),
+            add_dummy_geometry(extract_mun(census_df)),
+            add_dummy_geometry(extract_ent(census_df)),
+        )
+
+    return _asset
 
 
 def row_to_frame(row: str) -> pd.DataFrame:
@@ -77,7 +163,7 @@ def census_1990_ageb(path_resource: PathResource) -> pd.DataFrame:
                 df.append(df_temp)
 
     out = pd.concat(df).replace(["*", "N.D.", "N/D"], np.nan).sort_index()
-    out = cast_to_numeric(out)
+    out = cast_all_columns_to_numeric(out)
     return out.reset_index(names="CVEGEO")
 
 
@@ -133,10 +219,11 @@ ageb_1990 = merged_factory(
     geometry_op=geometry_1990_ageb,
     rename_op=rename_columns_1990,
     year=1990,
+    level="ageb",
 )
 
 
-load_census_1990 = load_census_df_factory(
+load_census_1990 = census_1990_2000_factory(
     compressed_path=Path("1990", "00_nacional_1990_iter_txt.zip"),
     extracted_path=Path("ITER_NALTXT90.txt"),
     year=1990,

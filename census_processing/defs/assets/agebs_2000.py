@@ -12,8 +12,8 @@ import rarfile
 
 import dagster as dg
 from census_processing.defs.assets.common import (
-    cast_to_numeric,
-    load_census_df_factory,
+    cast_all_columns_to_numeric,
+    census_1990_2000_factory,
     merged_factory,
 )
 from census_processing.defs.resources import PathResource
@@ -245,7 +245,7 @@ def census_2000_ageb(path_resource: PathResource) -> pd.DataFrame:
         .query("ageb_id != '0000'")
         .drop(columns=["ageb_id"])
     )
-    return cast_to_numeric(out).reset_index(names="CVEGEO")
+    return cast_all_columns_to_numeric(out).reset_index(names="CVEGEO")
 
 
 @dg.op(name="geometry_2000_ageb")
@@ -300,9 +300,10 @@ ageb_2000 = merged_factory(
     geometry_op=geometry_2000_ageb,
     rename_op=rename_columns_2000,
     year=2000,
+    level="ageb",
 )
 
-census_2000_non_agebs = load_census_df_factory(
+census_2000_non_agebs = census_1990_2000_factory(
     compressed_path=Path("2000", "cgpv2000_iter_00_csv.zip"),
     extracted_path=Path(
         "cgpv2000_iter_00",

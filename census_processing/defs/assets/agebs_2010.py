@@ -36,10 +36,9 @@ census_2010_ageb = census_2010_2020_factory(
     zip_template="resageburb_{i:02d}_2010_csv.zip",
     inner_dir_template="resultados_ageb_urbana_{i:02d}_cpv2010",
     csv_template="resultados_ageb_urbana_{i:02d}_cpv2010.csv",
+    level="ageb",
 )
 
 ageb_2010 = merged_factory(
-    census_op=census_2010_ageb,
-    geometry_op=geometry_2010_ageb,
-    year=2010,
+    census_op=census_2010_ageb, geometry_op=geometry_2010_ageb, year=2010, level="ageb"
 )

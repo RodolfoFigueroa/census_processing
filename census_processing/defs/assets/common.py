@@ -14,7 +14,7 @@ import dagster as dg
 from census_processing.defs.resources import PathResource
 
 
-def cast_to_numeric(
+def cast_all_columns_to_numeric(
     df: pd.DataFrame,
     ignore: Sequence[str] | None = None,
 ) -> pd.DataFrame:
@@ -48,7 +48,7 @@ def read_census(
     )
 
 
-def load_census_df_factory(
+def census_1990_2000_factory(
     *,
     compressed_path: os.PathLike,
     extracted_path: os.PathLike,
@@ -75,36 +75,87 @@ def load_census_df_factory(
     return _op
 
 
-def extract_census_level_factory(
-    level: Literal["ent", "mun", "loc"],
+def full_census_2010_2020_factory(
+    *,
+    year: int,
+    zip_template: str,
+    inner_dir_template: str,
+    csv_template: str,
+    level: Literal["ent", "mun", "loc", "ageb", "mza"],
 ) -> dg.OpDefinition:
-    @dg.op(name=f"extract_census_{level}_level")
-    def _op(census: pd.DataFrame) -> pd.DataFrame:
-        if level == "loc":
-            cutoff = 9
-            out = census.query("(loc != 0) & (mun != 0) & (entidad != 0)")
-        elif level == "mun":
-            cutoff = 5
-            out = census.query("(loc == 0) & (mun != 0) & (entidad != 0)")
-        elif level == "ent":
-            cutoff = 2
-            out = census.query("(loc == 0) & (mun == 0) & (entidad != 0)")
+    @dg.op(name=f"census_{year}_{level}")
+    def _op(path_resource: PathResource) -> pd.DataFrame:
+        raw_path = Path(path_resource.data_path) / "raws"
 
-        out = (
-            out.rename(columns={f"nom_{level}": "nombre"})
-            .drop(
-                columns=list(
-                    {"entidad", "mun", "loc", "nom_ent", "nom_mun", "nom_loc"}
-                    - {f"nom_{level}"},  # Keep the name of the wanted level
-                ),
+        df_census: list[pd.DataFrame] = []
+
+        for i in range(1, 33):
+            compressed_path = raw_path / str(year) / "census" / zip_template.format(i=i)
+
+            with (
+                tempfile.TemporaryDirectory() as tmpdir,
+                zipfile.ZipFile(compressed_path) as zf,
+            ):
+                zf.extractall(tmpdir)
+
+                df_census.append(
+                    pd.read_csv(
+                        Path(tmpdir)
+                        / inner_dir_template.format(i=i)
+                        / "conjunto_de_datos"
+                        / csv_template.format(i=i),
+                        encoding="latin1",
+                    )
+                    .rename(
+                        columns={"ï»¿ENTIDAD": "ENTIDAD", 'ï»¿"entidad"': "entidad"},
+                        errors="ignore",
+                    )
+                    .assign(
+                        ENTIDAD=lambda df: df["ENTIDAD"].astype(int),
+                        MUN=lambda df: df["MUN"].astype(int),
+                        LOC=lambda df: df["LOC"].astype(int),
+                    ),
+                )
+
+        out = pd.concat(df_census, ignore_index=True)
+        out.columns = [c.upper() for c in out.columns]
+        
+        out = out.assign(
+            CVEGEO=lambda df: df["ENTIDAD"].astype(str).str.zfill(2)
+            + df["MUN"].astype(str).str.zfill(3)
+            + df["LOC"].astype(str).str.zfill(4)
+            + df["AGEB"].astype(str).str.zfill(4)
+            + df["MZA"].astype(str).str.zfill(3),
+        )
+
+        if level == "ageb":
+            out = out.query("MZA == 0").assign(CVEGEO=lambda df: df["CVEGEO"].str[:-3])
+        elif level == "loc":
+            out = out.query("MZA == 0 and AGEB == 0").assign(
+                CVEGEO=lambda df: df["CVEGEO"].str[:-7]
             )
-            .assign(CVEGEO=lambda df: df.index.str.slice(0, cutoff))
-            .reset_index(drop=True)
-        )
-        out = cast_to_numeric(out, ignore=["nombre", "CVEGEO"])
-        return pd.DataFrame(
-            out[["CVEGEO"] + [col for col in out.columns if col != "CVEGEO"]],
-        )
+        elif level == "mun":
+            out = out.query("MZA == 0 and AGEB == 0 and LOC == 0").assign(
+                CVEGEO=lambda df: df["CVEGEO"].str[:-11]
+            )
+        elif level == "ent":
+            out = out.query("MZA == 0 and AGEB == 0 and LOC == 0 and MUN == 0").assign(
+                CVEGEO=lambda df: df["CVEGEO"].str[:2]
+            )
+
+        return out.drop(
+            columns=[
+                "ENTIDAD",
+                "MUN",
+                "LOC",
+                "AGEB",
+                "MZA",
+                "NOM_ENT",
+                "NOM_MUN",
+                "NOM_LOC",
+            ],
+            errors="ignore",
+        ).pipe(cast_all_columns_to_numeric, ignore=["CVEGEO"])
 
     return _op
 
@@ -130,12 +181,12 @@ def merged_factory(
     geometry_op: dg.OpDefinition,
     year: int,
     rename_op: dg.OpDefinition | None = None,
+    level: Literal["ageb", "mza"],
 ) -> dg.AssetsDefinition:
     @dg.graph_asset(
-        name="ageb",
-        key_prefix=["census", str(year)],
+        key=["census", str(year), level],
         metadata={
-            "table_name": f"census_{year}_ageb",
+            "table_name": f"census_{year}_{level}",
         },
         group_name=f"census_{year}",
     )
@@ -161,11 +212,6 @@ def add_dummy_geometry(df: pd.DataFrame) -> gpd.GeoDataFrame:
     return gpd.GeoDataFrame(df, geometry="geometry", crs="EPSG:6372")
 
 
-extract_loc = extract_census_level_factory(level="loc")
-extract_mun = extract_census_level_factory(level="mun")
-extract_ent = extract_census_level_factory(level="ent")
-
-
 @dg.op
 def get_loc_geometry_from_agebs(ageb_geometries: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     return (
@@ -175,113 +221,3 @@ def get_loc_geometry_from_agebs(ageb_geometries: gpd.GeoDataFrame) -> gpd.GeoDat
         )[["geometry"]]
         .reset_index()
     )
-
-
-def multi_merged_factory(*, year: int, df_op: dg.OpDefinition) -> dg.AssetsDefinition:
-    @dg.graph_multi_asset(
-        ins={
-            "agebs": dg.AssetIn(key=["census", str(year), "ageb"]),
-        },
-        outs={
-            "loc": dg.AssetOut(
-                key=["census", str(year), "loc"],
-                group_name=f"census_{year}",
-                is_required=True,
-                metadata={"table_name": f"census_{year}_loc"},
-            ),
-            "mun": dg.AssetOut(
-                key=["census", str(year), "mun"],
-                group_name=f"census_{year}",
-                is_required=True,
-                metadata={"table_name": f"census_{year}_mun"},
-            ),
-            "ent": dg.AssetOut(
-                key=["census", str(year), "ent"],
-                group_name=f"census_{year}",
-                is_required=True,
-                metadata={"table_name": f"census_{year}_ent"},
-            ),
-        },
-        can_subset=False,
-        group_name=f"census_{year}",
-    )
-    def _asset(
-        agebs: gpd.GeoDataFrame,
-    ) -> tuple[gpd.GeoDataFrame, gpd.GeoDataFrame, gpd.GeoDataFrame]:
-        census_df = df_op()
-        loc_geometries = get_loc_geometry_from_agebs(agebs)
-        loc_census = extract_loc(census_df)
-
-        return (
-            merge_census_and_geometry(loc_census, loc_geometries),
-            add_dummy_geometry(extract_mun(census_df)),
-            add_dummy_geometry(extract_ent(census_df)),
-        )
-
-    return _asset
-
-
-def census_2010_2020_factory(
-    *,
-    year: int,
-    zip_template: str,
-    inner_dir_template: str,
-    csv_template: str,
-) -> dg.OpDefinition:
-    @dg.op(name=f"census_{year}_ageb")
-    def _op(path_resource: PathResource) -> pd.DataFrame:
-        raw_path = Path(path_resource.data_path) / "raws"
-
-        df_census: list[pd.DataFrame] = []
-
-        for i in range(1, 33):
-            compressed_path = raw_path / str(year) / "census" / zip_template.format(i=i)
-
-            with (
-                tempfile.TemporaryDirectory() as tmpdir,
-                zipfile.ZipFile(compressed_path) as zf,
-            ):
-                zf.extractall(tmpdir)
-
-                df_census.append(
-                    pd.read_csv(
-                        Path(tmpdir)
-                        / inner_dir_template.format(i=i)
-                        / "conjunto_de_datos"
-                        / csv_template.format(i=i),
-                        encoding="latin1",
-                    ).rename(
-                        columns={"ï»¿ENTIDAD": "ENTIDAD", 'ï»¿"entidad"': "entidad"},
-                        errors="ignore",
-                    ),
-                )
-
-        out = pd.concat(df_census, ignore_index=True)
-        out.columns = [c.upper() for c in out.columns]
-
-        out = (
-            out.query("MZA == 0")
-            .dropna(subset=["ENTIDAD"])
-            .assign(
-                ENTIDAD=lambda df: df["ENTIDAD"].astype(int),
-                CVEGEO=lambda df: df["ENTIDAD"].astype(str).str.zfill(2)
-                + df["MUN"].astype(str).str.zfill(3)
-                + df["LOC"].astype(str).str.zfill(4)
-                + df["AGEB"].astype(str).str.zfill(4),
-            )
-            .drop(
-                columns=[
-                    "ENTIDAD",
-                    "MUN",
-                    "LOC",
-                    "AGEB",
-                    "NOM_ENT",
-                    "NOM_MUN",
-                    "NOM_LOC",
-                    "MZA",
-                ],
-            )
-        )
-        return cast_to_numeric(out, ignore=["CVEGEO"])
-
-    return _op
