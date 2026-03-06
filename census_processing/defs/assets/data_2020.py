@@ -8,7 +8,7 @@ import pandas as pd
 
 import dagster as dg
 from census_processing.defs.assets.common import (
-    census_2010_2020_factory,
+    full_census_2010_2020_factory,
     merged_factory,
 )
 from census_processing.defs.resources import PathResource
@@ -62,7 +62,7 @@ def geometry_2020_factory(
     return _op
 
 
-census_2020_ageb = census_2010_2020_factory(
+census_2020_ageb = full_census_2010_2020_factory(
     year=2020,
     zip_template="ageb_mza_urbana_{i:02d}_cpv2020_csv.zip",
     inner_dir_template="ageb_mza_urbana_{i:02d}_cpv2020",
@@ -77,7 +77,7 @@ ageb_2020 = merged_factory(
 )
 
 
-census_2020_mza = census_2010_2020_factory(
+census_2020_mza = full_census_2010_2020_factory(
     year=2020,
     zip_template="ageb_mza_urbana_{i:02d}_cpv2020_csv.zip",
     inner_dir_template="ageb_mza_urbana_{i:02d}_cpv2020",

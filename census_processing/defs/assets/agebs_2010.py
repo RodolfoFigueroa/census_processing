@@ -6,7 +6,7 @@ import geopandas as gpd
 
 import dagster as dg
 from census_processing.defs.assets.common import (
-    census_2010_2020_factory,
+    full_census_2010_2020_factory,
     merged_factory,
 )
 from census_processing.defs.resources import PathResource
@@ -31,7 +31,7 @@ def geometry_2010_ageb(path_resource: PathResource) -> gpd.GeoDataFrame:
             ].set_crs("EPSG:6372", allow_override=True)
 
 
-census_2010_ageb = census_2010_2020_factory(
+census_2010_ageb = full_census_2010_2020_factory(
     year=2010,
     zip_template="resageburb_{i:02d}_2010_csv.zip",
     inner_dir_template="resultados_ageb_urbana_{i:02d}_cpv2010",

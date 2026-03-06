@@ -105,25 +105,19 @@ def full_census_2010_2020_factory(
                         / "conjunto_de_datos"
                         / csv_template.format(i=i),
                         encoding="latin1",
-                    )
-                    .rename(
+                    ).rename(
                         columns={"ï»¿ENTIDAD": "ENTIDAD", 'ï»¿"entidad"': "entidad"},
                         errors="ignore",
                     )
-                    .assign(
-                        ENTIDAD=lambda df: df["ENTIDAD"].astype(int),
-                        MUN=lambda df: df["MUN"].astype(int),
-                        LOC=lambda df: df["LOC"].astype(int),
-                    ),
                 )
 
         out = pd.concat(df_census, ignore_index=True)
         out.columns = [c.upper() for c in out.columns]
-        
+
         out = out.assign(
-            CVEGEO=lambda df: df["ENTIDAD"].astype(str).str.zfill(2)
-            + df["MUN"].astype(str).str.zfill(3)
-            + df["LOC"].astype(str).str.zfill(4)
+            CVEGEO=lambda df: df["ENTIDAD"].astype(int).astype(str).str.zfill(2)
+            + df["MUN"].astype(int).astype(str).str.zfill(3)
+            + df["LOC"].astype(int).astype(str).str.zfill(4)
             + df["AGEB"].astype(str).str.zfill(4)
             + df["MZA"].astype(str).str.zfill(3),
         )
