@@ -63,35 +63,35 @@ def geometry_2020_factory(
     return _op
 
 
-census_2020_ageb = full_census_2010_2020_factory(
+census_2020 = full_census_2010_2020_factory(
     year=2020,
     zip_template="ageb_mza_urbana_{i:02d}_cpv2020_csv.zip",
     inner_dir_template="ageb_mza_urbana_{i:02d}_cpv2020",
     csv_template="conjunto_de_datos_ageb_urbana_{i:02d}_cpv2020.csv",
-    level="ageb",
-)
-
-geometry_2020_ageb = geometry_2020_factory(level="ageb")
-
-ageb_2020 = merged_factory(
-    census_op=census_2020_ageb, geometry_op=geometry_2020_ageb, year=2020, level="ageb"
-)
-
-
-census_2020_mza = full_census_2010_2020_factory(
-    year=2020,
-    zip_template="ageb_mza_urbana_{i:02d}_cpv2020_csv.zip",
-    inner_dir_template="ageb_mza_urbana_{i:02d}_cpv2020",
-    csv_template="conjunto_de_datos_ageb_urbana_{i:02d}_cpv2020.csv",
-    level="mza",
 )
 
 geometry_2020_mza = geometry_2020_factory(level="mza")
+geometry_2020_ageb = geometry_2020_factory(level="ageb")
+geometry_2020_mun = geometry_2020_factory(level="mun")
+
+add_derived_columns_2020 = add_derived_columns_factory(year=2020)
 
 mza_2020 = merged_factory(
-    census_op=census_2020_mza,
+    census_op=census_2020,
     geometry_op=geometry_2020_mza,
     year=2020,
     level="mza",
-    derived_cols_op=add_derived_columns_factory(year=2020),
+    derived_cols_op=add_derived_columns_2020,
+)
+
+ageb_2020 = merged_factory(
+    census_op=census_2020, geometry_op=geometry_2020_ageb, year=2020, level="ageb"
+)
+
+mun_2020 = merged_factory(
+    census_op=census_2020,
+    geometry_op=geometry_2020_mun,
+    year=2020,
+    level="mun",
+    derived_cols_op=add_derived_columns_2020,
 )

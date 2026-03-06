@@ -82,9 +82,8 @@ def full_census_2010_2020_factory(
     zip_template: str,
     inner_dir_template: str,
     csv_template: str,
-    level: Literal["ent", "mun", "loc", "ageb", "mza"],
 ) -> dg.OpDefinition:
-    @dg.op(name=f"census_{year}_{level}")
+    @dg.op(name=f"census_{year}")
     def _op(path_resource: PathResource) -> pd.DataFrame:
         raw_path = Path(path_resource.data_path) / "raws"
 
@@ -115,30 +114,45 @@ def full_census_2010_2020_factory(
         out = pd.concat(df_census, ignore_index=True)
         out.columns = [c.upper() for c in out.columns]
 
-        out = out.assign(
-            CVEGEO=lambda df: df["ENTIDAD"].astype(int).astype(str).str.zfill(2)
-            + df["MUN"].astype(int).astype(str).str.zfill(3)
-            + df["LOC"].astype(int).astype(str).str.zfill(4)
-            + df["AGEB"].astype(str).str.zfill(4)
-            + df["MZA"].astype(str).str.zfill(3),
+        return out.assign(
+            ENTIDAD=lambda df: df["ENTIDAD"].astype(int).astype(str).str.zfill(2),
+            MUN=lambda df: df["MUN"].astype(int).astype(str).str.zfill(3),
+            LOC=lambda df: df["LOC"].astype(int).astype(str).str.zfill(4),
+            AGEB=lambda df: df["AGEB"].astype(str).str.zfill(4),
+            MZA=lambda df: df["MZA"].astype(str).str.zfill(3),
+            CVEGEO=lambda df: df["ENTIDAD"]
+            + df["MUN"]
+            + df["LOC"]
+            + df["AGEB"]
+            + df["MZA"],
         )
 
+    return _op
+
+
+def extract_census_level_factory(
+    level: Literal["ent", "mun", "loc", "ageb", "mza"],
+) -> dg.OpDefinition:
+    @dg.op(name=f"extract_census_{level}")
+    def _op(df: pd.DataFrame) -> pd.DataFrame:
         if level == "ageb":
-            out = out.query("MZA == 0").assign(CVEGEO=lambda df: df["CVEGEO"].str[:-3])
+            df = df.query("MZA == '000'").assign(
+                CVEGEO=lambda df: df["CVEGEO"].str[:-3]
+            )
         elif level == "loc":
-            out = out.query("MZA == 0 and AGEB == 0").assign(
+            df = df.query("MZA == '000' and AGEB == '0000'").assign(
                 CVEGEO=lambda df: df["CVEGEO"].str[:-7]
             )
         elif level == "mun":
-            out = out.query("MZA == 0 and AGEB == 0 and LOC == 0").assign(
+            df = df.query("MZA == '000' and AGEB == '0000' and LOC == '0000'").assign(
                 CVEGEO=lambda df: df["CVEGEO"].str[:-11]
             )
         elif level == "ent":
-            out = out.query("MZA == 0 and AGEB == 0 and LOC == 0 and MUN == 0").assign(
-                CVEGEO=lambda df: df["CVEGEO"].str[:2]
-            )
+            df = df.query(
+                "MZA == '000' and AGEB == '0000' and LOC == '0000' and MUN == '000'"
+            ).assign(CVEGEO=lambda df: df["CVEGEO"].str[:2])
 
-        return out.drop(
+        return df.drop(
             columns=[
                 "ENTIDAD",
                 "MUN",
@@ -153,6 +167,12 @@ def full_census_2010_2020_factory(
         ).pipe(cast_all_columns_to_numeric, ignore=["CVEGEO"])
 
     return _op
+
+
+extract_census_level_ent = extract_census_level_factory("ent")
+extract_census_level_mun = extract_census_level_factory("mun")
+extract_census_level_loc = extract_census_level_factory("loc")
+extract_census_level_ageb = extract_census_level_factory("ageb")
 
 
 @dg.op
@@ -177,7 +197,7 @@ def merged_factory(
     year: int,
     rename_op: dg.OpDefinition | None = None,
     derived_cols_op: dg.OpDefinition | None = None,
-    level: Literal["ageb", "mza"],
+    level: Literal["mun", "ageb", "mza"],
 ) -> dg.AssetsDefinition:
     @dg.graph_asset(
         key=["census", str(year), level],
@@ -188,6 +208,12 @@ def merged_factory(
     )
     def _asset() -> gpd.GeoDataFrame:
         census = census_op()
+
+        if level == "ageb":
+            census = extract_census_level_ageb(census)
+        if level == "mun":
+            census = extract_census_level_mun(census)
+
         geometry = geometry_op()
         merged = merge_census_and_geometry(census, geometry)
 

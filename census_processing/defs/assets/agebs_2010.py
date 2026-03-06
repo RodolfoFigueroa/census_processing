@@ -32,16 +32,15 @@ def geometry_2010_ageb(path_resource: PathResource) -> gpd.GeoDataFrame:
             ].set_crs("EPSG:6372", allow_override=True)
 
 
-census_2010_ageb = full_census_2010_2020_factory(
+census_2010 = full_census_2010_2020_factory(
     year=2010,
     zip_template="resageburb_{i:02d}_2010_csv.zip",
     inner_dir_template="resultados_ageb_urbana_{i:02d}_cpv2010",
     csv_template="resultados_ageb_urbana_{i:02d}_cpv2010.csv",
-    level="ageb",
 )
 
 ageb_2010 = merged_factory(
-    census_op=census_2010_ageb,
+    census_op=census_2010,
     geometry_op=geometry_2010_ageb,
     year=2010,
     level="ageb",
