@@ -8,6 +8,7 @@ import pandas as pd
 
 import dagster as dg
 from census_processing.defs.assets.common import (
+    add_derived_columns_factory,
     full_census_2010_2020_factory,
     merged_factory,
 )
@@ -88,5 +89,9 @@ census_2020_mza = full_census_2010_2020_factory(
 geometry_2020_mza = geometry_2020_factory(level="mza")
 
 mza_2020 = merged_factory(
-    census_op=census_2020_mza, geometry_op=geometry_2020_mza, year=2020, level="mza"
+    census_op=census_2020_mza,
+    geometry_op=geometry_2020_mza,
+    year=2020,
+    level="mza",
+    derived_cols_op=add_derived_columns_factory(year=2020),
 )

@@ -6,6 +6,7 @@ import geopandas as gpd
 
 import dagster as dg
 from census_processing.defs.assets.common import (
+    add_derived_columns_factory,
     full_census_2010_2020_factory,
     merged_factory,
 )
@@ -40,5 +41,9 @@ census_2010_ageb = full_census_2010_2020_factory(
 )
 
 ageb_2010 = merged_factory(
-    census_op=census_2010_ageb, geometry_op=geometry_2010_ageb, year=2010, level="ageb"
+    census_op=census_2010_ageb,
+    geometry_op=geometry_2010_ageb,
+    year=2010,
+    level="ageb",
+    derived_cols_op=add_derived_columns_factory(year=2010),
 )

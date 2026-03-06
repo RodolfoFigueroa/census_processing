@@ -1,5 +1,4 @@
 import io
-import json
 import tempfile
 import zipfile
 from pathlib import Path
@@ -12,9 +11,11 @@ import rarfile
 
 import dagster as dg
 from census_processing.defs.assets.common import (
+    add_derived_columns_factory,
     cast_all_columns_to_numeric,
     census_1990_2000_factory,
     merged_factory,
+    rename_columns_factory,
 )
 from census_processing.defs.resources import PathResource
 
@@ -272,33 +273,11 @@ def geometry_2000_ageb(path_resource: PathResource) -> gpd.GeoDataFrame:
     )
 
 
-@dg.op(out=dg.Out(io_manager_key="geodataframe_postgis_manager"))
-def rename_columns_2000(df: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
-    with (
-        Path(__file__).parent.parent.parent.parent / "column_maps" / "2000.json"
-    ).open(encoding="latin1") as f:
-        column_map: dict = json.load(f)
-
-    column_name_map = {
-        i + 1: list(column_map.values())[i] for i in range(len(column_map))
-    }
-    wanted_cols = (
-        ["CVEGEO"]
-        + [key for key, value in column_name_map.items() if value is not None]
-        + ["geometry"]
-    )
-
-    return (
-        df[wanted_cols]
-        .rename(columns=column_name_map)
-        .pipe(gpd.GeoDataFrame, geometry="geometry", crs=df.crs)
-    )
-
-
 ageb_2000 = merged_factory(
     census_op=census_2000_ageb,
     geometry_op=geometry_2000_ageb,
-    rename_op=rename_columns_2000,
+    rename_op=rename_columns_factory(year=2000),
+    derived_cols_op=add_derived_columns_factory(year=2000),
     year=2000,
     level="ageb",
 )

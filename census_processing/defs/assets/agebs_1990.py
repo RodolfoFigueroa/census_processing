@@ -1,4 +1,3 @@
-import json
 import tempfile
 import zipfile
 from pathlib import Path
@@ -11,12 +10,14 @@ import rarfile
 
 import dagster as dg
 from census_processing.defs.assets.common import (
+    add_derived_columns_factory,
     add_dummy_geometry,
     cast_all_columns_to_numeric,
     census_1990_2000_factory,
     get_loc_geometry_from_agebs,
     merge_census_and_geometry,
     merged_factory,
+    rename_columns_factory,
 )
 from census_processing.defs.managers import PathResource
 
@@ -191,33 +192,11 @@ def geometry_1990_ageb(path_resource: PathResource) -> gpd.GeoDataFrame:
     )
 
 
-@dg.op(out=dg.Out(io_manager_key="geodataframe_postgis_manager"))
-def rename_columns_1990(df: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
-    with (
-        Path(__file__).parent.parent.parent.parent / "column_maps" / "1990.json"
-    ).open(encoding="latin1") as f:
-        column_map: dict = json.load(f)
-
-    column_name_map = {
-        i + 1: list(column_map.values())[i] for i in range(len(column_map))
-    }
-    wanted_cols = (
-        ["CVEGEO"]
-        + [key for key, value in column_name_map.items() if value is not None]
-        + ["geometry"]
-    )
-
-    return (
-        df[wanted_cols]
-        .rename(columns=column_name_map)
-        .pipe(gpd.GeoDataFrame, geometry="geometry", crs=df.crs)
-    )
-
-
 ageb_1990 = merged_factory(
     census_op=census_1990_ageb,
     geometry_op=geometry_1990_ageb,
-    rename_op=rename_columns_1990,
+    rename_op=rename_columns_factory(year=1990),
+    derived_cols_op=add_derived_columns_factory(year=1990),
     year=1990,
     level="ageb",
 )

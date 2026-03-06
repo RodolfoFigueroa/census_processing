@@ -1,3 +1,4 @@
+import json
 import os
 import tempfile
 import zipfile
@@ -165,7 +166,7 @@ def merge_census_and_geometry(
 
 
 @dg.op(out=dg.Out(io_manager_key="geodataframe_postgis_manager"))
-def dummy_rename_op(df: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+def dummy_op(df: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     return df
 
 
@@ -175,6 +176,7 @@ def merged_factory(
     geometry_op: dg.OpDefinition,
     year: int,
     rename_op: dg.OpDefinition | None = None,
+    derived_cols_op: dg.OpDefinition | None = None,
     level: Literal["ageb", "mza"],
 ) -> dg.AssetsDefinition:
     @dg.graph_asset(
@@ -188,9 +190,14 @@ def merged_factory(
         census = census_op()
         geometry = geometry_op()
         merged = merge_census_and_geometry(census, geometry)
-        if rename_op is None:
-            return dummy_rename_op(merged)
-        return rename_op(merged)
+
+        if rename_op is not None:
+            merged = rename_op(merged)
+
+        if derived_cols_op is None:
+            return dummy_op(merged)
+
+        return derived_cols_op(merged)
 
     return _asset
 
@@ -215,3 +222,53 @@ def get_loc_geometry_from_agebs(ageb_geometries: gpd.GeoDataFrame) -> gpd.GeoDat
         )[["geometry"]]
         .reset_index()
     )
+
+
+def rename_columns_factory(year: int) -> dg.OpDefinition:
+    @dg.op(
+        name=f"rename_columns_{year}",
+    )
+    def _op(df: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+        with (
+            Path(__file__).parent.parent.parent.parent
+            / "config"
+            / "column_maps"
+            / f"{year}.json"
+        ).open(encoding="latin1") as f:
+            column_map: dict = json.load(f)
+
+        column_name_map = {
+            i + 1: list(column_map.values())[i] for i in range(len(column_map))
+        }
+        wanted_cols = (
+            ["CVEGEO"]
+            + [key for key, value in column_name_map.items() if value is not None]
+            + ["geometry"]
+        )
+
+        return (
+            df[wanted_cols]
+            .rename(columns=column_name_map)
+            .pipe(gpd.GeoDataFrame, geometry="geometry", crs=df.crs)
+        )
+
+    return _op
+
+
+def add_derived_columns_factory(year: int) -> dg.OpDefinition:
+    @dg.op(
+        name=f"add_derived_columns_{year}",
+        out=dg.Out(io_manager_key="geodataframe_postgis_manager"),
+    )
+    def _op(df: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+        with (
+            Path(__file__).parent.parent.parent.parent
+            / "config"
+            / "derived_cols"
+            / f"{year}.json"
+        ).open() as f:
+            column_expr: dict[str, str] = json.load(f)
+
+        return df.assign(**{col: df.eval(expr) for col, expr in column_expr.items()})  # pyright: ignore[reportArgumentType]
+
+    return _op
