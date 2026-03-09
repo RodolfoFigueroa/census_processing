@@ -8,7 +8,6 @@ import pandas as pd
 
 import dagster as dg
 from census_processing.defs.assets.common import (
-    add_derived_columns_factory,
     full_census_2010_2020_factory,
     merged_factory,
 )
@@ -70,28 +69,12 @@ census_2020 = full_census_2010_2020_factory(
     csv_template="conjunto_de_datos_ageb_urbana_{i:02d}_cpv2020.csv",
 )
 
-geometry_2020_mza = geometry_2020_factory(level="mza")
-geometry_2020_ageb = geometry_2020_factory(level="ageb")
-geometry_2020_mun = geometry_2020_factory(level="mun")
-
-add_derived_columns_2020 = add_derived_columns_factory(year=2020)
-
-mza_2020 = merged_factory(
-    census_op=census_2020,
-    geometry_op=geometry_2020_mza,
-    year=2020,
-    level="mza",
-    derived_cols_op=add_derived_columns_2020,
-)
-
 ageb_2020 = merged_factory(
-    census_op=census_2020, geometry_op=geometry_2020_ageb, year=2020, level="ageb"
-)
-
-mun_2020 = merged_factory(
     census_op=census_2020,
-    geometry_op=geometry_2020_mun,
+    geometry_op_map={
+        "mza": geometry_2020_factory(level="mza"),
+        "ageb": geometry_2020_factory(level="ageb"),
+        "mun": geometry_2020_factory(level="mun"),
+    },
     year=2020,
-    level="mun",
-    derived_cols_op=add_derived_columns_2020,
 )

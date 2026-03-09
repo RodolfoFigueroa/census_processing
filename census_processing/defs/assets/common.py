@@ -164,18 +164,55 @@ def extract_census_level_factory(
                 "NOM_LOC",
             ],
             errors="ignore",
-        ).pipe(cast_all_columns_to_numeric, ignore=["CVEGEO"])
+        )
 
     return _op
 
 
-extract_census_level_ent = extract_census_level_factory("ent")
-extract_census_level_mun = extract_census_level_factory("mun")
-extract_census_level_loc = extract_census_level_factory("loc")
-extract_census_level_ageb = extract_census_level_factory("ageb")
-
-
 @dg.op
+def remove_unused_columns(df: pd.DataFrame) -> pd.DataFrame:
+    return df.drop(
+        columns=[
+            "ENTIDAD",
+            "MUN",
+            "LOC",
+            "AGEB",
+            "MZA",
+            "NOM_ENT",
+            "NOM_MUN",
+            "NOM_LOC",
+        ],
+        errors="ignore",
+    )
+
+
+extract_op_map = {
+    "ent": extract_census_level_factory("ent"),
+    "mun": extract_census_level_factory("mun"),
+    "loc": extract_census_level_factory("loc"),
+    "ageb": extract_census_level_factory("ageb"),
+}
+
+
+def add_derived_columns_factory(year: int) -> dg.OpDefinition:
+    @dg.op(
+        name=f"add_derived_columns_{year}",
+    )
+    def _op(df: pd.DataFrame) -> pd.DataFrame:
+        with (
+            Path(__file__).parent.parent.parent.parent
+            / "config"
+            / "derived_cols"
+            / f"{year}.json"
+        ).open() as f:
+            column_expr: dict[str, str] = json.load(f)
+
+        return df.assign(**{col: df.eval(expr) for col, expr in column_expr.items()})  # pyright: ignore[reportArgumentType]
+
+    return _op
+
+
+@dg.op(out=dg.Out(io_manager_key="geodataframe_postgis_manager"))
 def merge_census_and_geometry(
     census: pd.DataFrame,
     geometry: gpd.GeoDataFrame,
@@ -190,40 +227,72 @@ def dummy_op(df: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     return df
 
 
+def rename_columns_factory(year: int) -> dg.OpDefinition:
+    @dg.op(
+        name=f"rename_columns_{year}",
+    )
+    def _op(df: pd.DataFrame) -> pd.DataFrame:
+        name_map_path = (
+            Path(__file__).parent.parent.parent.parent
+            / "config"
+            / "column_maps"
+            / f"{year}.json"
+        )
+
+        if not name_map_path.exists():
+            return df
+
+        with name_map_path.open(encoding="latin1") as f:
+            column_map: dict = json.load(f)
+
+        column_name_map = {
+            i + 1: list(column_map.values())[i] for i in range(len(column_map))
+        }
+        wanted_cols = ["CVEGEO"] + [
+            key for key, value in column_name_map.items() if value is not None
+        ]
+
+        return df[wanted_cols].rename(columns=column_name_map)
+
+    return _op
+
+
 def merged_factory(
     *,
     census_op: dg.OpDefinition,
-    geometry_op: dg.OpDefinition,
+    geometry_op_map: dict[str, dg.OpDefinition],
     year: int,
-    rename_op: dg.OpDefinition | None = None,
-    derived_cols_op: dg.OpDefinition | None = None,
-    level: Literal["mun", "ageb", "mza"],
 ) -> dg.AssetsDefinition:
-    @dg.graph_asset(
-        key=["census", str(year), level],
-        metadata={
-            "table_name": f"census_{year}_{level}",
+    @dg.graph_multi_asset(
+        name=f"census_graph_{year}",
+        outs={
+            level: dg.AssetOut(
+                key=["census", str(year), level],
+                io_manager_key="geodataframe_postgis_manager",
+                metadata={
+                    "table_name": f"census_{year}_{level}",
+                },
+                group_name=f"census_{year}",
+            )
+            for level in geometry_op_map
         },
         group_name=f"census_{year}",
     )
-    def _asset() -> gpd.GeoDataFrame:
-        census = census_op()
+    def _asset() -> dict[str, gpd.GeoDataFrame]:
+        census_orig = census_op()
+        census_orig = rename_columns_factory(year)(census_orig)
+        census_orig = add_derived_columns_factory(year)(census_orig)
 
-        if level == "ageb":
-            census = extract_census_level_ageb(census)
-        if level == "mun":
-            census = extract_census_level_mun(census)
+        out = {}
+        for level, geometry_op in geometry_op_map.items():
+            if level == "mza":
+                census = remove_unused_columns(census_orig)
+            else:
+                census = extract_op_map[level](census_orig)
 
-        geometry = geometry_op()
-        merged = merge_census_and_geometry(census, geometry)
-
-        if rename_op is not None:
-            merged = rename_op(merged)
-
-        if derived_cols_op is None:
-            return dummy_op(merged)
-
-        return derived_cols_op(merged)
+            geometry = geometry_op()
+            out[level] = merge_census_and_geometry(census, geometry)
+        return out
 
     return _asset
 
@@ -248,53 +317,3 @@ def get_loc_geometry_from_agebs(ageb_geometries: gpd.GeoDataFrame) -> gpd.GeoDat
         )[["geometry"]]
         .reset_index()
     )
-
-
-def rename_columns_factory(year: int) -> dg.OpDefinition:
-    @dg.op(
-        name=f"rename_columns_{year}",
-    )
-    def _op(df: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
-        with (
-            Path(__file__).parent.parent.parent.parent
-            / "config"
-            / "column_maps"
-            / f"{year}.json"
-        ).open(encoding="latin1") as f:
-            column_map: dict = json.load(f)
-
-        column_name_map = {
-            i + 1: list(column_map.values())[i] for i in range(len(column_map))
-        }
-        wanted_cols = (
-            ["CVEGEO"]
-            + [key for key, value in column_name_map.items() if value is not None]
-            + ["geometry"]
-        )
-
-        return (
-            df[wanted_cols]
-            .rename(columns=column_name_map)
-            .pipe(gpd.GeoDataFrame, geometry="geometry", crs=df.crs)
-        )
-
-    return _op
-
-
-def add_derived_columns_factory(year: int) -> dg.OpDefinition:
-    @dg.op(
-        name=f"add_derived_columns_{year}",
-        out=dg.Out(io_manager_key="geodataframe_postgis_manager"),
-    )
-    def _op(df: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
-        with (
-            Path(__file__).parent.parent.parent.parent
-            / "config"
-            / "derived_cols"
-            / f"{year}.json"
-        ).open() as f:
-            column_expr: dict[str, str] = json.load(f)
-
-        return df.assign(**{col: df.eval(expr) for col, expr in column_expr.items()})  # pyright: ignore[reportArgumentType]
-
-    return _op

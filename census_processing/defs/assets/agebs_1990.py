@@ -10,14 +10,10 @@ import rarfile
 
 import dagster as dg
 from census_processing.defs.assets.common import (
-    add_derived_columns_factory,
     add_dummy_geometry,
     cast_all_columns_to_numeric,
-    census_1990_2000_factory,
     get_loc_geometry_from_agebs,
     merge_census_and_geometry,
-    merged_factory,
-    rename_columns_factory,
 )
 from census_processing.defs.managers import PathResource
 
@@ -192,23 +188,20 @@ def geometry_1990_ageb(path_resource: PathResource) -> gpd.GeoDataFrame:
     )
 
 
-ageb_1990 = merged_factory(
-    census_op=census_1990_ageb,
-    geometry_op=geometry_1990_ageb,
-    rename_op=rename_columns_factory(year=1990),
-    derived_cols_op=add_derived_columns_factory(year=1990),
-    year=1990,
-    level="ageb",
-)
+# ageb_1990 = merged_factory(
+#     census_op=census_1990_ageb,
+#     geometry_op_map={"ageb": geometry_1990_ageb},
+#     year=1990,
+# )
 
 
-load_census_1990 = census_1990_2000_factory(
-    compressed_path=Path("1990", "00_nacional_1990_iter_txt.zip"),
-    extracted_path=Path("ITER_NALTXT90.txt"),
-    year=1990,
-    encoding="latin1",
-    sep="\t",
-)
+# load_census_1990 = census_1990_2000_factory(
+#     compressed_path=Path("1990", "00_nacional_1990_iter_txt.zip"),
+#     extracted_path=Path("ITER_NALTXT90.txt"),
+#     year=1990,
+#     encoding="latin1",
+#     sep="\t",
+# )
 
 
-other_1990 = multi_merged_factory(year=1990, df_op=load_census_1990)
+# other_1990 = multi_merged_factory(year=1990, df_op=load_census_1990)

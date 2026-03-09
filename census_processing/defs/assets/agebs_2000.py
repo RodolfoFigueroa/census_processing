@@ -11,11 +11,7 @@ import rarfile
 
 import dagster as dg
 from census_processing.defs.assets.common import (
-    add_derived_columns_factory,
     cast_all_columns_to_numeric,
-    census_1990_2000_factory,
-    merged_factory,
-    rename_columns_factory,
 )
 from census_processing.defs.resources import PathResource
 
@@ -273,23 +269,20 @@ def geometry_2000_ageb(path_resource: PathResource) -> gpd.GeoDataFrame:
     )
 
 
-ageb_2000 = merged_factory(
-    census_op=census_2000_ageb,
-    geometry_op=geometry_2000_ageb,
-    rename_op=rename_columns_factory(year=2000),
-    derived_cols_op=add_derived_columns_factory(year=2000),
-    year=2000,
-    level="ageb",
-)
+# ageb_2000 = merged_factory(
+#     census_op=census_2000_ageb,
+#     geometry_op_map={"ageb": geometry_2000_ageb},
+#     year=2000,
+# )
 
-census_2000_non_agebs = census_1990_2000_factory(
-    compressed_path=Path("2000", "cgpv2000_iter_00_csv.zip"),
-    extracted_path=Path(
-        "cgpv2000_iter_00",
-        "conjunto_de_datos",
-        "cgpv2000_iter_00.csv",
-    ),
-    year=2000,
-    encoding="utf-8",
-    sep=",",
-)
+# census_2000_non_agebs = census_1990_2000_factory(
+#     compressed_path=Path("2000", "cgpv2000_iter_00_csv.zip"),
+#     extracted_path=Path(
+#         "cgpv2000_iter_00",
+#         "conjunto_de_datos",
+#         "cgpv2000_iter_00.csv",
+#     ),
+#     year=2000,
+#     encoding="utf-8",
+#     sep=",",
+# )
