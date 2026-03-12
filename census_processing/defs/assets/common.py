@@ -10,10 +10,10 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 import shapely
-import sqlalchemy
 
 import dagster as dg
-from census_processing.defs.resources import PathResource, PostGISResource
+from census_processing.defs.assets.metropoli import load_metropoli_df
+from census_processing.defs.resources import PathResource
 
 
 def cast_all_columns_to_numeric(
@@ -210,7 +210,15 @@ def merge_census_and_geometry(
         geometry.merge(census, on="CVEGEO", how="inner")
         .pipe(
             cast_all_columns_to_numeric,
-            ignore=["CVEGEO", "CVE_ENT", "CVE_MUN", "CVE_LOC", "CVE_AGEB", "geometry"],
+            ignore=[
+                "CVEGEO",
+                "CVE_ENT",
+                "CVE_MUN",
+                "CVE_LOC",
+                "CVE_AGEB",
+                "CVE_MET",
+                "geometry",
+            ],
         )
         .pipe(gpd.GeoDataFrame, geometry="geometry", crs=geometry.crs)
     )
@@ -268,6 +276,13 @@ def add_higher_levels_cvegeo(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+@dg.op
+def add_metropoli_to_muns(
+    df_mun: pd.DataFrame, df_metropoli: gpd.GeoDataFrame
+) -> pd.DataFrame:
+    return df_mun.merge(df_metropoli[["CVEGEO", "CVE_MET"]], how="left", on="CVEGEO")
+
+
 def merged_factory(
     *,
     census_op: dg.OpDefinition,
@@ -291,6 +306,8 @@ def merged_factory(
         group_name=f"census_{year}",
     )
     def _asset() -> dict[str, gpd.GeoDataFrame]:
+        df_metropoli = load_metropoli_df()
+
         census_orig = census_op()
         census_orig = rename_columns_factory(year)(census_orig)
         census_orig = add_derived_columns_factory(year)(census_orig)
@@ -301,10 +318,14 @@ def merged_factory(
                 census = extract_op_map[level](census_orig)
             else:
                 census = census_orig
+
             census = remove_unused_columns(census)
 
             if level != "ent":
                 census = add_higher_levels_cvegeo(census)
+
+            if level == "mun":
+                census = add_metropoli_to_muns(census, df_metropoli)
 
             geometry = geometry_op()
             out[level] = merge_census_and_geometry(census, geometry)
@@ -334,39 +355,3 @@ def get_loc_geometry_from_agebs(ageb_geometries: gpd.GeoDataFrame) -> gpd.GeoDat
         )[["geometry"]]
         .reset_index()
     )
-
-
-@dg.asset(
-    key=["census", "2020", "linked"],
-    deps=[
-        ["census", "2020", "ent"],
-        ["census", "2020", "mun"],
-        ["census", "2020", "loc"],
-        ["census", "2020", "ageb"],
-        ["census", "2020", "mza"],
-    ],
-    group_name="census_2020",
-)
-def link_cvegeos(postgis_resource: PostGISResource) -> dg.MaterializeResult:
-    level_order = ["mza", "ageb", "loc", "mun", "ent"]
-
-    for i in range(5):
-        for j in range(i + 1, 5):
-            fk_table = f"census_2020_{level_order[i]}"
-            pk_table = f"census_2020_{level_order[j]}"
-            col = f"CVE_{level_order[j].upper()}"
-            constraint_name = f"fk_census_2020_{level_order[i]}_{level_order[j]}"
-
-            with postgis_resource.connect() as conn:
-                conn.execute(
-                    sqlalchemy.text(
-                        f"ALTER TABLE {fk_table} DROP CONSTRAINT IF EXISTS {constraint_name}"
-                    )
-                )
-                conn.execute(
-                    sqlalchemy.text(
-                        f'ALTER TABLE {fk_table} ADD CONSTRAINT {constraint_name} FOREIGN KEY ("{col}") REFERENCES {pk_table} ("CVEGEO")'
-                    )
-                )
-                conn.commit()
-    return dg.MaterializeResult(["census", "2020", "linked"])
