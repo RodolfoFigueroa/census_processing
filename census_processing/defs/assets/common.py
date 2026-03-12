@@ -16,9 +16,9 @@ from census_processing.defs.resources import PathResource
 
 
 def cast_all_columns_to_numeric(
-    df: pd.DataFrame,
+    df: pd.DataFrame | gpd.GeoDataFrame,
     ignore: Sequence[str] | None = None,
-) -> pd.DataFrame:
+) -> pd.DataFrame | gpd.GeoDataFrame:
     if ignore is None:
         ignore = []
 
@@ -152,19 +152,7 @@ def extract_census_level_factory(
                 "MZA == '000' and AGEB == '0000' and LOC == '0000' and MUN == '000'"
             ).assign(CVEGEO=lambda df: df["CVEGEO"].str[:2])
 
-        return df.drop(
-            columns=[
-                "ENTIDAD",
-                "MUN",
-                "LOC",
-                "AGEB",
-                "MZA",
-                "NOM_ENT",
-                "NOM_MUN",
-                "NOM_LOC",
-            ],
-            errors="ignore",
-        )
+        return df
 
     return _op
 
@@ -217,9 +205,11 @@ def merge_census_and_geometry(
     census: pd.DataFrame,
     geometry: gpd.GeoDataFrame,
 ) -> gpd.GeoDataFrame:
-    return gpd.GeoDataFrame(
-        geometry.merge(census, on="CVEGEO", how="inner"),
-    ).sort_values("CVEGEO")
+    return (
+        geometry.merge(census, on="CVEGEO", how="inner")
+        .pipe(cast_all_columns_to_numeric, ignore=["CVEGEO", "geometry"])
+        .pipe(gpd.GeoDataFrame, geometry="geometry", crs=geometry.crs)
+    )
 
 
 @dg.op(out=dg.Out(io_manager_key="geodataframe_postgis_manager"))
@@ -285,10 +275,11 @@ def merged_factory(
 
         out = {}
         for level, geometry_op in geometry_op_map.items():
-            if level == "mza":
-                census = remove_unused_columns(census_orig)
-            else:
+            if level != "mza":
                 census = extract_op_map[level](census_orig)
+            else:
+                census = census_orig
+            census = remove_unused_columns(census)
 
             geometry = geometry_op()
             out[level] = merge_census_and_geometry(census, geometry)
