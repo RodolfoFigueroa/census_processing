@@ -6,7 +6,7 @@ from census_processing.defs.managers import (
     GeoDataFrameManager,
     GeoDataFramePostgisManager,
 )
-from census_processing.defs.resources import PathResource
+from census_processing.defs.resources import PathResource, PostGISResource
 
 
 @dg.definitions
@@ -17,6 +17,13 @@ def defs() -> dg.Definitions:
     extra_defs = dg.Definitions(
         resources={
             "path_resource": path_resource,
+            "postgis_resource": PostGISResource(
+                host="localhost",
+                port="5432",
+                db=dg.EnvVar("POSTGRES_DB"),
+                user=dg.EnvVar("POSTGRES_USER"),
+                password=dg.EnvVar("POSTGRES_PASSWORD"),
+            ),
             "geodataframe_manager": GeoDataFrameManager(
                 suffix=".gpkg",
                 path_resource=path_resource,

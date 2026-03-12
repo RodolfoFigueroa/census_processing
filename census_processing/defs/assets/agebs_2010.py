@@ -7,7 +7,6 @@ import geopandas as gpd
 import dagster as dg
 from census_processing.defs.assets.common import (
     full_census_2010_2020_factory,
-    merged_factory,
 )
 from census_processing.defs.resources import PathResource
 
@@ -38,8 +37,8 @@ census_2010 = full_census_2010_2020_factory(
     csv_template="resultados_ageb_urbana_{i:02d}_cpv2010.csv",
 )
 
-ageb_2010 = merged_factory(
-    census_op=census_2010,
-    geometry_op_map={"ageb": geometry_2010_ageb},
-    year=2010,
-)
+# ageb_2010 = merged_factory(
+#     census_op=census_2010,
+#     geometry_op_map={"ageb": geometry_2010_ageb},
+#     year=2010,
+# )

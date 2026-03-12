@@ -10,9 +10,10 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 import shapely
+import sqlalchemy
 
 import dagster as dg
-from census_processing.defs.resources import PathResource
+from census_processing.defs.resources import PathResource, PostGISResource
 
 
 def cast_all_columns_to_numeric(
@@ -207,14 +208,12 @@ def merge_census_and_geometry(
 ) -> gpd.GeoDataFrame:
     return (
         geometry.merge(census, on="CVEGEO", how="inner")
-        .pipe(cast_all_columns_to_numeric, ignore=["CVEGEO", "geometry"])
+        .pipe(
+            cast_all_columns_to_numeric,
+            ignore=["CVEGEO", "CVE_ENT", "CVE_MUN", "CVE_LOC", "CVE_AGEB", "geometry"],
+        )
         .pipe(gpd.GeoDataFrame, geometry="geometry", crs=geometry.crs)
     )
-
-
-@dg.op(out=dg.Out(io_manager_key="geodataframe_postgis_manager"))
-def dummy_op(df: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
-    return df
 
 
 def rename_columns_factory(year: int) -> dg.OpDefinition:
@@ -247,6 +246,28 @@ def rename_columns_factory(year: int) -> dg.OpDefinition:
     return _op
 
 
+@dg.op
+def add_higher_levels_cvegeo(df: pd.DataFrame) -> pd.DataFrame:
+    cvegeo_length = df["CVEGEO"].str.len().iloc[0]
+
+    if cvegeo_length == 2:
+        err = "CVEGEO is already at the highest level (entidad)"
+        raise ValueError(err)
+
+    df = df.assign(CVE_ENT=lambda df: df["CVEGEO"].str[:2])
+
+    if cvegeo_length >= 9:
+        df = df.assign(CVE_MUN=lambda df: df["CVEGEO"].str[:5])
+
+    if cvegeo_length >= 13:
+        df = df.assign(CVE_LOC=lambda df: df["CVEGEO"].str[:9])
+
+    if cvegeo_length == 16:
+        df = df.assign(CVE_AGEB=lambda df: df["CVEGEO"].str[:13])
+
+    return df
+
+
 def merged_factory(
     *,
     census_op: dg.OpDefinition,
@@ -260,6 +281,7 @@ def merged_factory(
                 key=["census", str(year), level],
                 io_manager_key="geodataframe_postgis_manager",
                 metadata={
+                    "primary_key": "CVEGEO",
                     "table_name": f"census_{year}_{level}",
                 },
                 group_name=f"census_{year}",
@@ -281,8 +303,12 @@ def merged_factory(
                 census = census_orig
             census = remove_unused_columns(census)
 
+            if level != "ent":
+                census = add_higher_levels_cvegeo(census)
+
             geometry = geometry_op()
             out[level] = merge_census_and_geometry(census, geometry)
+
         return out
 
     return _asset
@@ -308,3 +334,39 @@ def get_loc_geometry_from_agebs(ageb_geometries: gpd.GeoDataFrame) -> gpd.GeoDat
         )[["geometry"]]
         .reset_index()
     )
+
+
+@dg.asset(
+    key=["census", "2020", "linked"],
+    deps=[
+        ["census", "2020", "ent"],
+        ["census", "2020", "mun"],
+        ["census", "2020", "loc"],
+        ["census", "2020", "ageb"],
+        ["census", "2020", "mza"],
+    ],
+    group_name="census_2020",
+)
+def link_cvegeos(postgis_resource: PostGISResource) -> dg.MaterializeResult:
+    level_order = ["mza", "ageb", "loc", "mun", "ent"]
+
+    for i in range(5):
+        for j in range(i + 1, 5):
+            fk_table = f"census_2020_{level_order[i]}"
+            pk_table = f"census_2020_{level_order[j]}"
+            col = f"CVE_{level_order[j].upper()}"
+            constraint_name = f"fk_census_2020_{level_order[i]}_{level_order[j]}"
+
+            with postgis_resource.connect() as conn:
+                conn.execute(
+                    sqlalchemy.text(
+                        f"ALTER TABLE {fk_table} DROP CONSTRAINT IF EXISTS {constraint_name}"
+                    )
+                )
+                conn.execute(
+                    sqlalchemy.text(
+                        f'ALTER TABLE {fk_table} ADD CONSTRAINT {constraint_name} FOREIGN KEY ("{col}") REFERENCES {pk_table} ("CVEGEO")'
+                    )
+                )
+                conn.commit()
+    return dg.MaterializeResult(["census", "2020", "linked"])

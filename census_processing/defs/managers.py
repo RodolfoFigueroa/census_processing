@@ -100,8 +100,17 @@ class GeoDataFramePostgisManager(dg.ConfigurableIOManager):
 
     def handle_output(self, context: dg.OutputContext, obj: gpd.GeoDataFrame) -> None:
         table = context.definition_metadata["table_name"]
+        primary_key = context.definition_metadata["primary_key"]
+
+        print(primary_key)
         with self._engine.connect() as conn:
             obj.to_postgis(table, conn, if_exists="replace")
+            conn.execute(
+                sqlalchemy.text(
+                    f'ALTER TABLE {table} ADD PRIMARY KEY ("{primary_key}");'
+                )
+            )
+            conn.commit()
 
     def load_input(self, context: dg.InputContext) -> gpd.GeoDataFrame:
         upstream_output = context.upstream_output

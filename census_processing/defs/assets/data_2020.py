@@ -34,15 +34,17 @@ def geometry_2020_factory(
                 extracted_path = Path(tmpdir) / compressed_path.stem
 
                 suffix_map = {
-                    "ent": "ent",
-                    "mun": "mun",
-                    "loc": "l",
-                    "ageb": "a",
-                    "mza": "m",
+                    "ent": ["ent"],
+                    "mun": ["mun"],
+                    "loc": ["l"],
+                    "ageb": ["a"],
+                    "mza": ["m"],
                 }
-                df_geoms.append(
-                    gpd.read_file(extracted_path / f"{i:02d}{suffix_map[level]}.shp")
-                )
+                for suffix in suffix_map[level]:
+                    df_read = gpd.read_file(extracted_path / f"{i:02d}{suffix}.shp")
+                    if level == "mza":
+                        df_read = df_read.query("AMBITO == 'Urbana'")
+                    df_geoms.append(df_read)
 
         crs = df_geoms[0].crs
         if crs is None:
@@ -74,7 +76,9 @@ ageb_2020 = merged_factory(
     geometry_op_map={
         "mza": geometry_2020_factory(level="mza"),
         "ageb": geometry_2020_factory(level="ageb"),
+        "loc": geometry_2020_factory(level="loc"),
         "mun": geometry_2020_factory(level="mun"),
+        "ent": geometry_2020_factory(level="ent"),
     },
     year=2020,
 )
