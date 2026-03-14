@@ -71,7 +71,7 @@ census_2020 = full_census_2010_2020_factory(
     csv_template="conjunto_de_datos_ageb_urbana_{i:02d}_cpv2020.csv",
 )
 
-ageb_2020 = merged_factory(
+data_2020 = merged_factory(
     census_op=census_2020,
     geometry_op_map={
         "mza": geometry_2020_factory(level="mza"),

@@ -26,7 +26,7 @@ def load_metropoli_df(path_resource: PathResource) -> gpd.GeoDataFrame:
         zipfile.ZipFile(raw_path / "metropolis_2020.zip") as zf,
     ):
         zf.extractall(tmpdir)
-        return gpd.read_file(tmpdir)
+        return gpd.read_file(tmpdir).to_crs("EPSG:6372")
 
 
 @dg.op(

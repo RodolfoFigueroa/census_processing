@@ -39,5 +39,6 @@ directory_type = "project"
 root_module = "census_processing"
 registry_modules = [
     "census_processing.assets.*",
-    "census_processing.managers"
+    "census_processing.managers",
+    "census_processing.resources"
 ]

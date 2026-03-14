@@ -14,6 +14,7 @@ from census_processing.defs.assets.common import (
     cast_all_columns_to_numeric,
     get_loc_geometry_from_agebs,
     merge_census_and_geometry,
+    merged_factory,
 )
 from census_processing.defs.managers import PathResource
 
@@ -178,21 +179,23 @@ def geometry_1990_ageb(path_resource: PathResource) -> gpd.GeoDataFrame:
 
     return (
         df.assign(
-            CVEGEO=lambda df: df["CVE_ENT"].astype(str).str.zfill(2)
-            + df["CVE_MUN"].astype(str).str.zfill(3)
-            + df["CVE_LOC"].astype(str).str.zfill(4)
-            + df["CVE_AGEB"].astype(str).str.zfill(4),
+            CVEGEO=lambda df: (
+                df["CVE_ENT"].astype(str).str.zfill(2)
+                + df["CVE_MUN"].astype(str).str.zfill(3)
+                + df["CVE_LOC"].astype(str).str.zfill(4)
+                + df["CVE_AGEB"].astype(str).str.zfill(4)
+            ),
         )
         .drop(columns=["CVE_ENT", "CVE_MUN", "CVE_LOC", "CVE_AGEB", "OBJECTID"])
         .to_crs("EPSG:6372")
     )
 
 
-# ageb_1990 = merged_factory(
-#     census_op=census_1990_ageb,
-#     geometry_op_map={"ageb": geometry_1990_ageb},
-#     year=1990,
-# )
+ageb_1990 = merged_factory(
+    census_op=census_1990_ageb,
+    geometry_op_map={"ageb": geometry_1990_ageb},
+    year=1990,
+)
 
 
 # load_census_1990 = census_1990_2000_factory(

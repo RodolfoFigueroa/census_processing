@@ -39,9 +39,11 @@ def read_census(
     return (
         pd.read_csv(fpath, sep=sep, encoding=encoding)
         .assign(
-            CVEGEO=lambda df: df["entidad"].astype(str).str.zfill(2)
-            + df["mun"].astype(str).str.zfill(3)
-            + df["loc"].astype(str).str.zfill(4),
+            CVEGEO=lambda df: (
+                df["entidad"].astype(str).str.zfill(2)
+                + df["mun"].astype(str).str.zfill(3)
+                + df["loc"].astype(str).str.zfill(4)
+            ),
         )
         .drop(columns=["longitud", "latitud", "altitud"])
         .set_index("CVEGEO")
@@ -121,11 +123,9 @@ def full_census_2010_2020_factory(
             LOC=lambda df: df["LOC"].astype(int).astype(str).str.zfill(4),
             AGEB=lambda df: df["AGEB"].astype(str).str.zfill(4),
             MZA=lambda df: df["MZA"].astype(str).str.zfill(3),
-            CVEGEO=lambda df: df["ENTIDAD"]
-            + df["MUN"]
-            + df["LOC"]
-            + df["AGEB"]
-            + df["MZA"],
+            CVEGEO=lambda df: (
+                df["ENTIDAD"] + df["MUN"] + df["LOC"] + df["AGEB"] + df["MZA"]
+            ),
         )
 
     return _op
@@ -283,6 +283,23 @@ def add_metropoli_to_muns(
     return df_mun.merge(df_metropoli[["CVEGEO", "CVE_MET"]], how="left", on="CVEGEO")
 
 
+@dg.op
+def add_metropoli_to_agebs(
+    df_agebs: gpd.GeoDataFrame, df_metropoli: gpd.GeoDataFrame
+) -> gpd.GeoDataFrame:
+    overlay = (
+        df_agebs[["CVEGEO", "geometry"]]
+        .assign(orig_area=lambda df: df["geometry"].area)
+        .overlay(df_metropoli[["CVE_MET", "geometry"]], how="intersection")
+        .assign(area_frac=lambda df: df["geometry"].area / df["orig_area"])
+        .sort_values("area_frac", ascending=False)
+        .drop_duplicates(subset=["CVEGEO"], keep="first")
+        .set_index("CVEGEO")["CVE_MET"]
+    )
+
+    return df_agebs.set_index("CVEGEO").assign(CVE_MET=overlay).reset_index()
+
+
 def merged_factory(
     *,
     census_op: dg.OpDefinition,
@@ -314,7 +331,7 @@ def merged_factory(
 
         out = {}
         for level, geometry_op in geometry_op_map.items():
-            if level != "mza":
+            if year in [2010, 2020] and level != "mza":
                 census = extract_op_map[level](census_orig)
             else:
                 census = census_orig
@@ -324,10 +341,16 @@ def merged_factory(
             if level != "ent":
                 census = add_higher_levels_cvegeo(census)
 
-            if level == "mun":
+            # Since metropoli are defined with 2020 muns we only link them to the 2020 census.
+            if year == 2020 and level == "mun":
                 census = add_metropoli_to_muns(census, df_metropoli)
 
             geometry = geometry_op()
+
+            # For other years, we link the metropoli to the AGEBs directly.
+            if year != 2020 and level == "ageb":
+                geometry = add_metropoli_to_agebs(geometry, df_metropoli)
+
             out[level] = merge_census_and_geometry(census, geometry)
 
         return out

@@ -12,6 +12,7 @@ import rarfile
 import dagster as dg
 from census_processing.defs.assets.common import (
     cast_all_columns_to_numeric,
+    merged_factory,
 )
 from census_processing.defs.resources import PathResource
 
@@ -210,6 +211,11 @@ def extract_from_archive(arc: cabarchive.CabArchive) -> pd.DataFrame:
     return pd.concat(df_census)
 
 
+def foo(x):
+    print(x)
+    return x
+
+
 @dg.op(name="census_2000_ageb")
 def census_2000_ageb(path_resource: PathResource) -> pd.DataFrame:
     raw_path = Path(path_resource.data_path) / "raws"
@@ -235,14 +241,16 @@ def census_2000_ageb(path_resource: PathResource) -> pd.DataFrame:
 
             df_census.append(extract_from_archive(arc))
 
-    out = (
+    return (
         pd.concat(df_census)
         .sort_index()
         .assign(ageb_id=lambda df: df.index.str.slice(9, 13))
         .query("ageb_id != '0000'")
         .drop(columns=["ageb_id"])
+        .pipe(cast_all_columns_to_numeric)
+        .reset_index(names="CVEGEO")
+        .pipe(foo)
     )
-    return cast_all_columns_to_numeric(out).reset_index(names="CVEGEO")
 
 
 @dg.op(name="geometry_2000_ageb")
@@ -264,16 +272,15 @@ def geometry_2000_ageb(path_resource: PathResource) -> gpd.GeoDataFrame:
     return (
         df_geom.assign(CVEGEO=lambda df: df["CLVAGB"].str.replace("-", ""))
         .drop(columns=["CLVAGB", "OID_1", "LAYAGB"])
-        .set_index("CVEGEO")
         .to_crs("EPSG:6372")
     )
 
 
-# ageb_2000 = merged_factory(
-#     census_op=census_2000_ageb,
-#     geometry_op_map={"ageb": geometry_2000_ageb},
-#     year=2000,
-# )
+ageb_2000 = merged_factory(
+    census_op=census_2000_ageb,
+    geometry_op_map={"ageb": geometry_2000_ageb},
+    year=2000,
+)
 
 # census_2000_non_agebs = census_1990_2000_factory(
 #     compressed_path=Path("2000", "cgpv2000_iter_00_csv.zip"),
