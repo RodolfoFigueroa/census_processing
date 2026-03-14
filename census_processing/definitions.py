@@ -1,12 +1,14 @@
 from pathlib import Path
 
+from dagster_components.resources import PostGISResource
+
 import dagster as dg
 from census_processing.defs.managers import (
     DataFrameManager,
     GeoDataFrameManager,
     GeoDataFramePostgisManager,
 )
-from census_processing.defs.resources import PathResource, PostGISResource
+from census_processing.defs.resources import PathResource
 
 
 @dg.definitions

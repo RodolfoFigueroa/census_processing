@@ -1,7 +1,7 @@
 import sqlalchemy
+from dagster_components.resources import PostGISResource
 
 import dagster as dg
-from census_processing.defs.resources import PostGISResource
 
 
 @dg.asset(
