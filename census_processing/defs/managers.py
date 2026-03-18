@@ -95,7 +95,7 @@ class GeoDataFramePostgisManager(dg.ConfigurableIOManager):
 
     def setup_for_execution(self, context: dg.InitResourceContext) -> None:  # noqa: ARG002
         self._engine = sqlalchemy.create_engine(
-            f"postgresql+psycopg2://{self.user}:{self.password}@{self.host}:{self.port}/{self.db}",
+            f"postgresql+psycopg2://{self.user}:{self.password}@{self.host}:{self.port}/{self.db}?client_encoding=utf8"
         )
 
     def handle_output(self, context: dg.OutputContext, obj: gpd.GeoDataFrame) -> None:

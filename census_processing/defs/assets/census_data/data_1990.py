@@ -9,7 +9,7 @@ import pandas as pd
 import rarfile
 
 import dagster as dg
-from census_processing.defs.assets.common import (
+from census_processing.defs.assets.census_data.common import (
     add_dummy_geometry,
     cast_all_columns_to_numeric,
     get_loc_geometry_from_agebs,

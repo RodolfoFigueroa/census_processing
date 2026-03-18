@@ -7,7 +7,7 @@ import geopandas as gpd
 import pandas as pd
 
 import dagster as dg
-from census_processing.defs.assets.common import (
+from census_processing.defs.assets.census_data.common import (
     full_census_2010_2020_factory,
     merged_factory,
 )

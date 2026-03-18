@@ -101,14 +101,23 @@ def full_census_2010_2020_factory(
             ):
                 zf.extractall(tmpdir)
 
-                df_census.append(
-                    pd.read_csv(
+                try:
+                    temp = pd.read_csv(
+                        Path(tmpdir)
+                        / inner_dir_template.format(i=i)
+                        / "conjunto_de_datos"
+                        / csv_template.format(i=i),
+                    )
+                except UnicodeDecodeError:
+                    temp = pd.read_csv(
                         Path(tmpdir)
                         / inner_dir_template.format(i=i)
                         / "conjunto_de_datos"
                         / csv_template.format(i=i),
                         encoding="latin1",
-                    ).rename(
+                    )
+                df_census.append(
+                    temp.rename(
                         columns={"ï»¿ENTIDAD": "ENTIDAD", 'ï»¿"entidad"': "entidad"},
                         errors="ignore",
                     )
@@ -116,6 +125,10 @@ def full_census_2010_2020_factory(
 
         out = pd.concat(df_census, ignore_index=True)
         out.columns = [c.upper() for c in out.columns]
+
+        print("=" * 80)
+        print(out["NOM_ENT"].unique())
+        print("=" * 80)
 
         return out.assign(
             ENTIDAD=lambda df: df["ENTIDAD"].astype(int).astype(str).str.zfill(2),
@@ -158,21 +171,26 @@ def extract_census_level_factory(
     return _op
 
 
-@dg.op
-def remove_unused_columns(df: pd.DataFrame) -> pd.DataFrame:
-    return df.drop(
-        columns=[
-            "ENTIDAD",
-            "MUN",
-            "LOC",
-            "AGEB",
-            "MZA",
-            "NOM_ENT",
-            "NOM_MUN",
-            "NOM_LOC",
-        ],
-        errors="ignore",
-    )
+def remove_unused_columns_factory(
+    level: Literal["ent", "mun", "loc", "other"],
+) -> dg.OpDefinition:
+    @dg.op(name=f"remove_unused_columns_{level}")
+    def _op(df: pd.DataFrame) -> pd.DataFrame:
+        out = df.drop(
+            columns=[
+                "ENTIDAD",
+                "MUN",
+                "LOC",
+                "AGEB",
+                "MZA",
+            ],
+            errors="ignore",
+        )
+
+        unwanted_names = {"NOM_ENT", "NOM_MUN", "NOM_LOC"} - {f"NOM_{level.upper()}"}
+        return out.drop(columns=unwanted_names, errors="ignore")
+
+    return _op
 
 
 extract_op_map = {
@@ -182,6 +200,15 @@ extract_op_map = {
     "ageb": extract_census_level_factory("ageb"),
 }
 
+other_remove_op = remove_unused_columns_factory("other")
+remove_unused_op_map = {
+    "ent": remove_unused_columns_factory("ent"),
+    "mun": remove_unused_columns_factory("mun"),
+    "loc": remove_unused_columns_factory("loc"),
+    "ageb": other_remove_op,
+    "mza": other_remove_op,
+}
+
 
 def add_derived_columns_factory(year: int) -> dg.OpDefinition:
     @dg.op(
@@ -189,14 +216,14 @@ def add_derived_columns_factory(year: int) -> dg.OpDefinition:
     )
     def _op(df: pd.DataFrame) -> pd.DataFrame:
         with (
-            Path(__file__).parent.parent.parent.parent
+            Path(__file__).parent.parent.parent.parent.parent
             / "config"
             / "derived_cols"
             / f"{year}.json"
         ).open() as f:
             column_expr: dict[str, str] = json.load(f)
 
-        return df.assign(**{col: df.eval(expr) for col, expr in column_expr.items()})  # pyright: ignore[reportArgumentType]
+        return df.assign(**{col: df.eval(expr) for col, expr in column_expr.items()})  # ty:ignore[invalid-argument-type]
 
     return _op
 
@@ -217,6 +244,9 @@ def merge_census_and_geometry(
                 "CVE_LOC",
                 "CVE_AGEB",
                 "CVE_MET",
+                "NOM_ENT",
+                "NOM_MUN",
+                "NOM_LOC",
                 "geometry",
             ],
         )
@@ -336,7 +366,7 @@ def merged_factory(
             else:
                 census = census_orig
 
-            census = remove_unused_columns(census)
+            census = remove_unused_op_map[level](census)
 
             if level != "ent":
                 census = add_higher_levels_cvegeo(census)
@@ -360,13 +390,12 @@ def merged_factory(
 
 @dg.op(out=dg.Out(io_manager_key="geodataframe_postgis_manager"))
 def add_dummy_geometry(df: pd.DataFrame) -> gpd.GeoDataFrame:
-    df = df.assign(
+    return df.assign(
         geometry=lambda df: shapely.empty(
             len(df),
             geom_type=shapely.GeometryType.POLYGON,
         ),
-    )
-    return gpd.GeoDataFrame(df, geometry="geometry", crs="EPSG:6372")
+    ).pipe(gpd.GeoDataFrame, geometry="geometry", crs="EPSG:6372")
 
 
 @dg.op

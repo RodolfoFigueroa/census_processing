@@ -10,7 +10,7 @@ import pandas as pd
 import rarfile
 
 import dagster as dg
-from census_processing.defs.assets.common import (
+from census_processing.defs.assets.census_data.common import (
     cast_all_columns_to_numeric,
     merged_factory,
 )
