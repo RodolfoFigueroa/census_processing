@@ -46,3 +46,8 @@ registry_modules = [
 
 [tool.uv.sources]
 dagster-components = { git = "https://github.com/RodolfoFigueroa/dagster_components" }
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.5.1",
+]

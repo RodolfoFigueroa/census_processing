@@ -4,8 +4,6 @@ from pathlib import Path
 
 import geopandas as gpd
 import pandas as pd
-import sqlalchemy
-from dagster_components.resources import PostGISResource
 
 import dagster as dg
 from census_processing.defs.resources import PathResource
@@ -28,7 +26,15 @@ def denue(path_resource: PathResource, df_mza: gpd.GeoDataFrame) -> gpd.GeoDataF
             tmp_path = Path(tmpdir)
             df_list.append(
                 gpd.read_file(tmp_path / "conjunto_de_datos").drop(
-                    columns=["latitud", "longitud", "cve_ent", "cve_mun", "cve_loc", "ageb", "manzana"]
+                    columns=[
+                        "latitud",
+                        "longitud",
+                        "cve_ent",
+                        "cve_mun",
+                        "cve_loc",
+                        "ageb",
+                        "manzana",
+                    ]
                 )
             )
 
