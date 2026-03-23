@@ -20,6 +20,20 @@ def cast_all_columns_to_numeric(
     df: pd.DataFrame | gpd.GeoDataFrame,
     ignore: Sequence[str] | None = None,
 ) -> pd.DataFrame | gpd.GeoDataFrame:
+    """Casts all columns in a DataFrame to numeric, optionally skipping some.
+
+    Applies ``pd.to_numeric`` with ``errors='coerce'`` to every column not in
+    ``ignore``, converting non-parseable values to ``NaN``. Operates on a copy
+    of the input, leaving the original unchanged.
+
+    Args:
+        df: The DataFrame or GeoDataFrame whose columns will be cast.
+        ignore: Column names to leave untouched. Defaults to ``None``, which
+            skips no columns.
+
+    Returns:
+        A copy of ``df`` with eligible columns converted to numeric dtypes.
+    """
     if ignore is None:
         ignore = []
 
@@ -36,6 +50,25 @@ def read_census(
     sep: str = ",",
     encoding: str = "utf-8",
 ) -> pd.DataFrame:
+    """Reads and processes census data from a CSV file.
+
+    This function reads census data from a CSV file, creates a geographic code (CVEGEO)
+    by concatenating state, municipality, and locality codes with zero-padding, removes
+    geographic coordinate columns, and replaces common missing value indicators with NaN.
+
+    Args:
+        fpath: Path to the census CSV file.
+        sep: Delimiter used in the CSV file. Defaults to ",".
+        encoding: Character encoding of the CSV file. Defaults to "utf-8".
+
+    Returns:
+        pd.DataFrame: A processed census dataframe indexed by CVEGEO (geographic code),
+            sorted by index, with missing value indicators replaced by NaN.
+
+    Raises:
+        FileNotFoundError: If the file at fpath does not exist.
+        pd.errors.ParserError: If the CSV file cannot be parsed correctly.
+    """
     return (
         pd.read_csv(fpath, sep=sep, encoding=encoding)
         .assign(
