@@ -6,8 +6,8 @@ import dagster as dg
 from census_processing.defs.managers import (
     DataFrameManager,
     GeoDataFrameManager,
-    GeoDataFramePostgisManager,
 )
+from dagster_components.managers import GeoDataFramePostgisManager
 from census_processing.defs.resources import PathResource
 
 

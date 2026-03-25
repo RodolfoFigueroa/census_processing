@@ -16,34 +16,6 @@ from census_processing.defs.assets.metropoli import load_metropoli_df
 from census_processing.defs.resources import PathResource
 
 
-def cast_all_columns_to_numeric(
-    df: pd.DataFrame | gpd.GeoDataFrame,
-    ignore: Sequence[str] | None = None,
-) -> pd.DataFrame | gpd.GeoDataFrame:
-    """Casts all columns in a DataFrame to numeric, optionally skipping some.
-
-    Applies ``pd.to_numeric`` with ``errors='coerce'`` to every column not in
-    ``ignore``, converting non-parseable values to ``NaN``. Operates on a copy
-    of the input, leaving the original unchanged.
-
-    Args:
-        df: The DataFrame or GeoDataFrame whose columns will be cast.
-        ignore: Column names to leave untouched. Defaults to ``None``, which
-            skips no columns.
-
-    Returns:
-        A copy of ``df`` with eligible columns converted to numeric dtypes.
-    """
-    if ignore is None:
-        ignore = []
-
-    df = df.copy()
-    for col in df.columns:
-        if col not in ignore:
-            df[col] = pd.to_numeric(df[col], errors="coerce")
-    return df
-
-
 def read_census(
     fpath: os.PathLike,
     *,
