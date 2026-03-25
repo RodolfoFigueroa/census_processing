@@ -36,32 +36,32 @@ def geometry_2010_factory(level: Literal["ageb", "mun"]) -> dg.OpDefinition:
                     Path(tmpdir_2) / f"{suffix_map[level][1]}_2010_5.shp"
                 )
 
-                if "CVEGEO" not in df.columns:
+                if "cvegeo" not in df.columns:
                     df = df.assign(
-                        CVEGEO=lambda df: (
-                            df["CVE_ENT"].astype(int).astype(str).str.zfill(2)
+                        cvegeo=lambda df: (
+                            df["cve_ent"].astype(int).astype(str).str.zfill(2)
                         )
                     )
 
                     if level in ["mun", "loc"]:
                         df = df.assign(
-                            CVEGEO=lambda df: (
-                                df["CVEGEO"]
-                                + df["CVE_MUN"].astype(int).astype(str).str.zfill(3)
+                            cvegeo=lambda df: (
+                                df["cvegeo"]
+                                + df["cve_mun"].astype(int).astype(str).str.zfill(3)
                             )
                         )
 
-                    # AGEBs already have a CVEGEO
+                    # AGEBs already have a cvegeo
 
                     if level == "loc":
                         df = df.assign(
-                            CVEGEO=lambda df: (
-                                df["CVEGEO"]
-                                + df["CVE_LOC"].astype(int).astype(str).str.zfill(4)
+                            cvegeo=lambda df: (
+                                df["cvegeo"]
+                                + df["cve_loc"].astype(int).astype(str).str.zfill(4)
                             )
                         )
 
-                return df[["CVEGEO", "geometry"]].set_crs(
+                return df[["cvegeo", "geometry"]].set_crs(
                     "EPSG:6372", allow_override=True
                 )
 

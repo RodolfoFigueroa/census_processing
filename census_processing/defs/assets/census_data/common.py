@@ -2,7 +2,6 @@ import json
 import os
 import tempfile
 import zipfile
-from collections.abc import Sequence
 from pathlib import Path
 from typing import Literal
 
@@ -10,6 +9,7 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 import shapely
+from dagster_components.utils import cast_all_columns_to_numeric
 
 import dagster as dg
 from census_processing.defs.assets.metropoli import load_metropoli_df
@@ -24,7 +24,7 @@ def read_census(
 ) -> pd.DataFrame:
     """Reads and processes census data from a CSV file.
 
-    This function reads census data from a CSV file, creates a geographic code (CVEGEO)
+    This function reads census data from a CSV file, creates a geographic code (cvegeo)
     by concatenating state, municipality, and locality codes with zero-padding, removes
     geographic coordinate columns, and replaces common missing value indicators with NaN.
 
@@ -34,7 +34,7 @@ def read_census(
         encoding: Character encoding of the CSV file. Defaults to "utf-8".
 
     Returns:
-        pd.DataFrame: A processed census dataframe indexed by CVEGEO (geographic code),
+        pd.DataFrame: A processed census dataframe indexed by cvegeo (geographic code),
             sorted by index, with missing value indicators replaced by NaN.
 
     Raises:
@@ -44,14 +44,14 @@ def read_census(
     return (
         pd.read_csv(fpath, sep=sep, encoding=encoding)
         .assign(
-            CVEGEO=lambda df: (
+            cvegeo=lambda df: (
                 df["entidad"].astype(str).str.zfill(2)
                 + df["mun"].astype(str).str.zfill(3)
                 + df["loc"].astype(str).str.zfill(4)
             ),
         )
         .drop(columns=["longitud", "latitud", "altitud"])
-        .set_index("CVEGEO")
+        .set_index("cvegeo")
         .sort_index()
         .replace(["*", "N.D.", "N/D"], np.nan)
     )
@@ -129,20 +129,16 @@ def full_census_2010_2020_factory(
                 )
 
         out = pd.concat(df_census, ignore_index=True)
-        out.columns = [c.upper() for c in out.columns]
-
-        print("=" * 80)
-        print(out["NOM_ENT"].unique())
-        print("=" * 80)
+        out.columns = out.columns.str.lower()
 
         return out.assign(
-            ENTIDAD=lambda df: df["ENTIDAD"].astype(int).astype(str).str.zfill(2),
-            MUN=lambda df: df["MUN"].astype(int).astype(str).str.zfill(3),
-            LOC=lambda df: df["LOC"].astype(int).astype(str).str.zfill(4),
-            AGEB=lambda df: df["AGEB"].astype(str).str.zfill(4),
-            MZA=lambda df: df["MZA"].astype(str).str.zfill(3),
-            CVEGEO=lambda df: (
-                df["ENTIDAD"] + df["MUN"] + df["LOC"] + df["AGEB"] + df["MZA"]
+            entidad=lambda df: df["entidad"].astype(int).astype(str).str.zfill(2),
+            mun=lambda df: df["mun"].astype(int).astype(str).str.zfill(3),
+            loc=lambda df: df["loc"].astype(int).astype(str).str.zfill(4),
+            ageb=lambda df: df["ageb"].astype(str).str.zfill(4),
+            mza=lambda df: df["mza"].astype(str).str.zfill(3),
+            cvegeo=lambda df: (
+                df["entidad"] + df["mun"] + df["loc"] + df["ageb"] + df["mza"]
             ),
         )
 
@@ -155,21 +151,21 @@ def extract_census_level_factory(
     @dg.op(name=f"extract_census_{level}")
     def _op(df: pd.DataFrame) -> pd.DataFrame:
         if level == "ageb":
-            df = df.query("MZA == '000'").assign(
-                CVEGEO=lambda df: df["CVEGEO"].str[:-3]
+            df = df.query("mza == '000'").assign(
+                cvegeo=lambda df: df["cvegeo"].str[:-3]
             )
         elif level == "loc":
-            df = df.query("MZA == '000' and AGEB == '0000'").assign(
-                CVEGEO=lambda df: df["CVEGEO"].str[:-7]
+            df = df.query("mza == '000' and ageb == '0000'").assign(
+                cvegeo=lambda df: df["cvegeo"].str[:-7]
             )
         elif level == "mun":
-            df = df.query("MZA == '000' and AGEB == '0000' and LOC == '0000'").assign(
-                CVEGEO=lambda df: df["CVEGEO"].str[:-11]
+            df = df.query("mza == '000' and ageb == '0000' and loc == '0000'").assign(
+                cvegeo=lambda df: df["cvegeo"].str[:-11]
             )
         elif level == "ent":
             df = df.query(
-                "MZA == '000' and AGEB == '0000' and LOC == '0000' and MUN == '000'"
-            ).assign(CVEGEO=lambda df: df["CVEGEO"].str[:2])
+                "mza == '000' and ageb == '0000' and loc == '0000' and mun == '000'"
+            ).assign(cvegeo=lambda df: df["cvegeo"].str[:2])
 
         return df
 
@@ -183,16 +179,16 @@ def remove_unused_columns_factory(
     def _op(df: pd.DataFrame) -> pd.DataFrame:
         out = df.drop(
             columns=[
-                "ENTIDAD",
-                "MUN",
-                "LOC",
-                "AGEB",
-                "MZA",
+                "entidad",
+                "mun",
+                "loc",
+                "ageb",
+                "mza",
             ],
             errors="ignore",
         )
 
-        unwanted_names = {"NOM_ENT", "NOM_MUN", "NOM_LOC"} - {f"NOM_{level.upper()}"}
+        unwanted_names = {"nom_ent", "nom_mun", "nom_loc"} - {f"nom_{level.lower()}"}
         return out.drop(columns=unwanted_names, errors="ignore")
 
     return _op
@@ -239,21 +235,22 @@ def merge_census_and_geometry(
     geometry: gpd.GeoDataFrame,
 ) -> gpd.GeoDataFrame:
     return (
-        geometry.merge(census, on="CVEGEO", how="inner")
+        geometry.merge(census, on="cvegeo", how="inner")
         .pipe(
             cast_all_columns_to_numeric,
             ignore=[
-                "CVEGEO",
-                "CVE_ENT",
-                "CVE_MUN",
-                "CVE_LOC",
-                "CVE_AGEB",
-                "CVE_MET",
-                "NOM_ENT",
-                "NOM_MUN",
-                "NOM_LOC",
+                "cvegeo",
+                "cve_ent",
+                "cve_mun",
+                "cve_loc",
+                "cve_ageb",
+                "cve_met",
+                "nom_ent",
+                "nom_mun",
+                "nom_loc",
                 "geometry",
             ],
+            errors="coerce",
         )
         .pipe(gpd.GeoDataFrame, geometry="geometry", crs=geometry.crs)
     )
@@ -280,7 +277,7 @@ def rename_columns_factory(year: int) -> dg.OpDefinition:
         column_name_map = {
             i + 1: list(column_map.values())[i] for i in range(len(column_map))
         }
-        wanted_cols = ["CVEGEO"] + [
+        wanted_cols = ["cvegeo"] + [
             key for key, value in column_name_map.items() if value is not None
         ]
 
@@ -291,22 +288,22 @@ def rename_columns_factory(year: int) -> dg.OpDefinition:
 
 @dg.op
 def add_higher_levels_cvegeo(df: pd.DataFrame) -> pd.DataFrame:
-    cvegeo_length = df["CVEGEO"].str.len().iloc[0]
+    cvegeo_length = df["cvegeo"].str.len().iloc[0]
 
     if cvegeo_length == 2:
-        err = "CVEGEO is already at the highest level (entidad)"
+        err = "cvegeo is already at the highest level (entidad)"
         raise ValueError(err)
 
-    df = df.assign(CVE_ENT=lambda df: df["CVEGEO"].str[:2])
+    df = df.assign(cve_ent=lambda df: df["cvegeo"].str[:2])
 
     if cvegeo_length >= 9:
-        df = df.assign(CVE_MUN=lambda df: df["CVEGEO"].str[:5])
+        df = df.assign(cve_mun=lambda df: df["cvegeo"].str[:5])
 
     if cvegeo_length >= 13:
-        df = df.assign(CVE_LOC=lambda df: df["CVEGEO"].str[:9])
+        df = df.assign(cve_loc=lambda df: df["cvegeo"].str[:9])
 
     if cvegeo_length == 16:
-        df = df.assign(CVE_AGEB=lambda df: df["CVEGEO"].str[:13])
+        df = df.assign(cve_ageb=lambda df: df["cvegeo"].str[:13])
 
     return df
 
@@ -315,7 +312,7 @@ def add_higher_levels_cvegeo(df: pd.DataFrame) -> pd.DataFrame:
 def add_metropoli_to_muns(
     df_mun: pd.DataFrame, df_metropoli: gpd.GeoDataFrame
 ) -> pd.DataFrame:
-    return df_mun.merge(df_metropoli[["CVEGEO", "CVE_MET"]], how="left", on="CVEGEO")
+    return df_mun.merge(df_metropoli[["cvegeo", "cve_met"]], how="left", on="cvegeo")
 
 
 @dg.op
@@ -323,16 +320,16 @@ def add_metropoli_to_agebs(
     df_agebs: gpd.GeoDataFrame, df_metropoli: gpd.GeoDataFrame
 ) -> gpd.GeoDataFrame:
     overlay = (
-        df_agebs[["CVEGEO", "geometry"]]
+        df_agebs[["cvegeo", "geometry"]]
         .assign(orig_area=lambda df: df["geometry"].area)
-        .overlay(df_metropoli[["CVE_MET", "geometry"]], how="intersection")
+        .overlay(df_metropoli[["cve_met", "geometry"]], how="intersection")
         .assign(area_frac=lambda df: df["geometry"].area / df["orig_area"])
         .sort_values("area_frac", ascending=False)
-        .drop_duplicates(subset=["CVEGEO"], keep="first")
-        .set_index("CVEGEO")["CVE_MET"]
+        .drop_duplicates(subset=["cvegeo"], keep="first")
+        .set_index("cvegeo")["cve_met"]
     )
 
-    return df_agebs.set_index("CVEGEO").assign(CVE_MET=overlay).reset_index()
+    return df_agebs.set_index("cvegeo").assign(cve_met=overlay).reset_index()
 
 
 def merged_factory(
@@ -348,7 +345,7 @@ def merged_factory(
                 key=["census", str(year), level],
                 io_manager_key="geodataframe_postgis_manager",
                 metadata={
-                    "primary_key": "CVEGEO",
+                    "primary_key": "cvegeo",
                     "table_name": f"census_{year}_{level}",
                 },
                 group_name=f"census_{year}",
@@ -406,9 +403,9 @@ def add_dummy_geometry(df: pd.DataFrame) -> gpd.GeoDataFrame:
 @dg.op
 def get_loc_geometry_from_agebs(ageb_geometries: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     return (
-        ageb_geometries.assign(CVEGEO=lambda df: df["CVEGEO"].str[:9])
+        ageb_geometries.assign(cvegeo=lambda df: df["cvegeo"].str[:9])
         .dissolve(
-            by="CVEGEO",
+            by="cvegeo",
         )[["geometry"]]
         .reset_index()
     )

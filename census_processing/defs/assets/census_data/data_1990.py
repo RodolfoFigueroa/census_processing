@@ -42,12 +42,12 @@ def extract_census_level_factory(
                     - {f"nom_{level}"},  # Keep the name of the wanted level
                 ),
             )
-            .assign(CVEGEO=lambda df: df.index.str.slice(0, cutoff))
+            .assign(cvegeo=lambda df: df.index.str.slice(0, cutoff))
             .reset_index(drop=True)
         )
-        out = cast_all_columns_to_numeric(out, ignore=["nombre", "CVEGEO"])
+        out = cast_all_columns_to_numeric(out, ignore=["nombre", "cvegeo"])
         return pd.DataFrame(
-            out[["CVEGEO"] + [col for col in out.columns if col != "CVEGEO"]],
+            out[["cvegeo"] + [col for col in out.columns if col != "cvegeo"]],
         )
 
     return _op
@@ -162,7 +162,7 @@ def census_1990_ageb(path_resource: PathResource) -> pd.DataFrame:
 
     out = pd.concat(df).replace(["*", "N.D.", "N/D"], np.nan).sort_index()
     out = cast_all_columns_to_numeric(out)
-    return out.reset_index(names="CVEGEO")
+    return out.reset_index(names="cvegeo")
 
 
 @dg.op(
@@ -176,17 +176,18 @@ def geometry_1990_ageb(path_resource: PathResource) -> gpd.GeoDataFrame:
     ):
         zf.extractall(tmpdir)
         df = gpd.read_file(Path(tmpdir) / "AGEBs 90_TecMonty_aj")
+        df.columns = df.columns.str.lower()
 
     return (
         df.assign(
-            CVEGEO=lambda df: (
-                df["CVE_ENT"].astype(str).str.zfill(2)
-                + df["CVE_MUN"].astype(str).str.zfill(3)
-                + df["CVE_LOC"].astype(str).str.zfill(4)
-                + df["CVE_AGEB"].astype(str).str.zfill(4)
+            cvegeo=lambda df: (
+                df["cve_ent"].astype(str).str.zfill(2)
+                + df["cve_mun"].astype(str).str.zfill(3)
+                + df["cve_loc"].astype(str).str.zfill(4)
+                + df["cve_aged"].astype(str).str.zfill(4)
             ),
         )
-        .drop(columns=["CVE_ENT", "CVE_MUN", "CVE_LOC", "CVE_AGEB", "OBJECTID"])
+        .drop(columns=["cve_ent", "cve_mun", "cve_loc", "cve_aged", "objectid"])
         .to_crs("EPSG:6372")
     )
 

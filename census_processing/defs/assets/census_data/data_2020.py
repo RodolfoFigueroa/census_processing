@@ -21,7 +21,7 @@ def geometry_2020_factory(
     def _op(path_resource: PathResource) -> gpd.GeoDataFrame:
         raw_path = Path(path_resource.data_path) / "raws"
 
-        df_geoms: list[gpd.GeoDataFrame] = []
+        df_geoms_list: list[gpd.GeoDataFrame] = []
         for i in range(1, 33):
             root_dir = raw_path / "2020" / "geom"
             compressed_path = next(root_dir.glob(f"{i:02d}_*"))
@@ -44,15 +44,16 @@ def geometry_2020_factory(
                     df_read = gpd.read_file(extracted_path / f"{i:02d}{suffix}.shp")
                     if level == "mza":
                         df_read = df_read.query("AMBITO == 'Urbana'")
-                    df_geoms.append(df_read)
+                    df_geoms_list.append(df_read)
 
-        crs = df_geoms[0].crs
+        crs = df_geoms_list[0].crs
         if crs is None:
             err = "CRS is None for geometry of state 0"
             raise ValueError(err)
 
         return (
-            pd.concat(df_geoms, ignore_index=True)[["CVEGEO", "geometry"]]
+            pd.concat(df_geoms_list, ignore_index=True)[["CVEGEO", "geometry"]]
+            .rename(columns={"CVEGEO": "cvegeo"})
             .pipe(
                 gpd.GeoDataFrame,
                 geometry="geometry",

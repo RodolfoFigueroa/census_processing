@@ -23,7 +23,7 @@ def link_tables(postgis_resource: PostGISResource) -> dg.MaterializeResult:
         for j in range(i + 1, 5):
             fk_table = f"census_2020_{level_order[i]}"
             pk_table = f"census_2020_{level_order[j]}"
-            col = f"CVE_{level_order[j].upper()}"
+            col = f"cve_{level_order[j]}"
             constraint_name = f"fk_census_2020_{level_order[i]}_{level_order[j]}"
 
             with postgis_resource.connect() as conn:
@@ -34,7 +34,7 @@ def link_tables(postgis_resource: PostGISResource) -> dg.MaterializeResult:
                 )
                 conn.execute(
                     sqlalchemy.text(
-                        f'ALTER TABLE {fk_table} ADD CONSTRAINT {constraint_name} FOREIGN KEY ("{col}") REFERENCES {pk_table} ("CVEGEO")'
+                        f'ALTER TABLE {fk_table} ADD CONSTRAINT {constraint_name} FOREIGN KEY ("{col}") REFERENCES {pk_table} ("cvegeo")'
                     )
                 )
                 conn.commit()
@@ -42,7 +42,7 @@ def link_tables(postgis_resource: PostGISResource) -> dg.MaterializeResult:
     with postgis_resource.connect() as conn:
         conn.execute(
             sqlalchemy.text(
-                'ALTER TABLE census_2020_mun ADD CONSTRAINT fk_census_2020_mun_met FOREIGN KEY ("CVE_MET") REFERENCES metropoli_2020 ("CVE_MET")'
+                'ALTER TABLE census_2020_mun ADD CONSTRAINT fk_census_2020_mun_met FOREIGN KEY ("cve_met") REFERENCES metropoli_2020 ("cve_met")'
             )
         )
         conn.commit()

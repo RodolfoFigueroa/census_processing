@@ -26,7 +26,9 @@ def load_metropoli_df(path_resource: PathResource) -> gpd.GeoDataFrame:
         zipfile.ZipFile(raw_path / "metropolis_2020.zip") as zf,
     ):
         zf.extractall(tmpdir)
-        return gpd.read_file(tmpdir).to_crs("EPSG:6372")
+        out = gpd.read_file(tmpdir).to_crs("EPSG:6372")
+        out.columns = out.columns.str.lower()
+        return out
 
 
 @dg.op(
@@ -35,12 +37,12 @@ def load_metropoli_df(path_resource: PathResource) -> gpd.GeoDataFrame:
 )
 def merge_metropoli_by_cve_met(df: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     return (
-        df.groupby("CVE_MET")
+        df.groupby("cve_met")
         .agg(
             {
                 "geometry": lambda x: x.unary_union,
-                "NOM_MET": "first",
-                "TIPO_MET": "first",
+                "nom_met": "first",
+                "tipo_met": "first",
             }
         )
         .reset_index()
@@ -53,7 +55,7 @@ def merge_metropoli_by_cve_met(df: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
 @dg.graph_asset(
     key="metropoli_2020",
     group_name="metropoli",
-    metadata={"table_name": "metropoli_2020", "primary_key": "CVE_MET"},
+    metadata={"table_name": "metropoli_2020", "primary_key": "cve_met"},
 )
 def metropoli() -> gpd.GeoDataFrame:
     return merge_metropoli_by_cve_met(load_metropoli_df())

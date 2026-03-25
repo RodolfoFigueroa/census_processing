@@ -220,7 +220,7 @@ def foo(x):
 def census_2000_ageb(path_resource: PathResource) -> pd.DataFrame:
     raw_path = Path(path_resource.data_path) / "raws"
 
-    df_census: list[pd.DataFrame] = []
+    df_census_list: list[pd.DataFrame] = []
     with (
         zipfile.ZipFile(raw_path / "2000" / "censo2000_scince.zip") as f,
         tempfile.TemporaryDirectory() as tmpdir,
@@ -239,16 +239,17 @@ def census_2000_ageb(path_resource: PathResource) -> pd.DataFrame:
                 with cab_path.open("rb") as cabf:
                     arc = cabarchive.CabArchive(cabf.read())
 
-            df_census.append(extract_from_archive(arc))
+            df_census_list.append(extract_from_archive(arc))
 
+    df_census = pd.concat(df_census_list)
+    df_census.columns = df_census.columns.str.lower()
     return (
-        pd.concat(df_census)
-        .sort_index()
+        df_census.sort_index()
         .assign(ageb_id=lambda df: df.index.str.slice(9, 13))
         .query("ageb_id != '0000'")
         .drop(columns=["ageb_id"])
         .pipe(cast_all_columns_to_numeric)
-        .reset_index(names="CVEGEO")
+        .reset_index(names="cvegeo")
         .pipe(foo)
     )
 
@@ -270,8 +271,8 @@ def geometry_2000_ageb(path_resource: PathResource) -> gpd.GeoDataFrame:
             df_geom = gpd.read_file(tmpdir)
 
     return (
-        df_geom.assign(CVEGEO=lambda df: df["CLVAGB"].str.replace("-", ""))
-        .drop(columns=["CLVAGB", "OID_1", "LAYAGB"])
+        df_geom.assign(cvegeo=lambda df: df["clvagb"].str.replace("-", ""))
+        .drop(columns=["clvagb", "oid_1", "layagb"])
         .to_crs("EPSG:6372")
     )
 

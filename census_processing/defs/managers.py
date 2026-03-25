@@ -3,8 +3,6 @@ from typing import Any
 
 import geopandas as gpd
 import pandas as pd
-import sqlalchemy
-from pydantic import PrivateAttr
 
 import dagster as dg
 from census_processing.defs.resources import PathResource
