@@ -1,6 +1,9 @@
 from pathlib import Path
 
-from dagster_components.managers import GeoDataFramePostgisManager
+from dagster_components.managers import (
+    DataFramePostgresManager,
+    GeoDataFramePostGISManager,
+)
 from dagster_components.resources import PostGISResource
 
 import dagster as dg
@@ -34,7 +37,14 @@ def defs() -> dg.Definitions:
                 suffix=".parquet",
                 path_resource=path_resource,
             ),
-            "geodataframe_postgis_manager": GeoDataFramePostgisManager(
+            "dataframe_postgres_manager": DataFramePostgresManager(
+                host="localhost",
+                port="5432",
+                user=dg.EnvVar("POSTGRES_USER"),
+                password=dg.EnvVar("POSTGRES_PASSWORD"),
+                db=dg.EnvVar("POSTGRES_DB"),
+            ),
+            "geodataframe_postgis_manager": GeoDataFramePostGISManager(
                 host="localhost",
                 port="5432",
                 user=dg.EnvVar("POSTGRES_USER"),
