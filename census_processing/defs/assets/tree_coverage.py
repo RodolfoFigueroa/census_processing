@@ -106,7 +106,17 @@ def process_chunks(
         "df_agebs": dg.AssetIn(key=["census", "2020", "ageb"], dagster_type=dg.Nothing)
     },
     group_name="tree_coverage_2020",
-    metadata={"table_name": "tree_coverage_2020_ageb", "primary_key": "cvegeo"},
+    metadata={
+        "table_name": "tree_coverage_2020_ageb",
+        "primary_key": "cvegeo",
+        "foreign_keys": [
+            {
+                "column": "cvegeo",
+                "ref_column": "cvegeo",
+                "ref_table": "census_2020_ageb",
+            }
+        ],
+    },
 )
 def tree_coverage_2020_ageb(df_agebs: None) -> pd.DataFrame:
     bbox_global = get_all_agebs_bbox(df_agebs)

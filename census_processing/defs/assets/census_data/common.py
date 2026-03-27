@@ -13,6 +13,7 @@ from dagster_components.utils import cast_all_columns_to_numeric
 
 import dagster as dg
 from census_processing.defs.assets.metropoli import load_metropoli_df
+from census_processing.defs.constants import LEVEL_ORDER
 from census_processing.defs.resources import PathResource
 
 
@@ -229,7 +230,17 @@ def add_derived_columns_factory(year: int) -> dg.OpDefinition:
     return _op
 
 
-@dg.op(out=dg.Out(io_manager_key="geodataframe_postgis_manager"))
+@dg.op(
+    ins={
+        "census": dg.In(),
+        "geometry": dg.In(),
+        "table_ent": dg.In(dagster_type=dg.Nothing),
+        "table_mun": dg.In(dagster_type=dg.Nothing),
+        "table_loc": dg.In(dagster_type=dg.Nothing),
+        "table_ageb": dg.In(dagster_type=dg.Nothing),
+    },
+    out=dg.Out(io_manager_key="geodataframe_postgis_manager"),
+)
 def merge_census_and_geometry(
     census: pd.DataFrame,
     geometry: gpd.GeoDataFrame,
@@ -308,14 +319,26 @@ def add_higher_levels_cvegeo(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-@dg.op
+@dg.op(
+    ins={
+        "df_mun": dg.In(),
+        "df_metropoli": dg.In(),
+        "df_metropoli_aggregated": dg.In(dagster_type=dg.Nothing),
+    }  # Dummy dependency to ensure metropoli asset is loaded before this op runs
+)
 def add_metropoli_to_muns(
     df_mun: pd.DataFrame, df_metropoli: gpd.GeoDataFrame
 ) -> pd.DataFrame:
     return df_mun.merge(df_metropoli[["cvegeo", "cve_met"]], how="left", on="cvegeo")
 
 
-@dg.op
+@dg.op(
+    ins={
+        "df_agebs": dg.In(),
+        "df_metropoli": dg.In(),
+        "df_metropoli_aggregated": dg.In(dagster_type=dg.Nothing),
+    }  # Dummy dependency to ensure metropoli asset is loaded before this op runs)
+)
 def add_metropoli_to_agebs(
     df_agebs: gpd.GeoDataFrame, df_metropoli: gpd.GeoDataFrame
 ) -> gpd.GeoDataFrame:
@@ -332,6 +355,43 @@ def add_metropoli_to_agebs(
     return df_agebs.set_index("cvegeo").assign(cve_met=overlay).reset_index()
 
 
+def generate_single_level_metadata(
+    level: str, year: int
+) -> dict[str, str | list[dict]]:
+    out: dict[str, str | list[dict[str, str]]] = {
+        "primary_key": "cvegeo",
+        "table_name": f"census_{year}_{level}",
+    }
+
+    level_idx = LEVEL_ORDER.index(level)
+    if level != "ent":
+        out["foreign_keys"] = [
+            {
+                "column": f"cve_{LEVEL_ORDER[i + 1]}",
+                "ref_column": "cvegeo",
+                "ref_table": f"census_{year}_{LEVEL_ORDER[i + 1]}",
+            }
+            for i in range(level_idx, len(LEVEL_ORDER) - 1)
+        ]
+
+    curr_fk = out.get("foreign_keys", [])
+    if not isinstance(curr_fk, list):
+        err = f"Expected 'foreign_keys' to be a list, got {type(curr_fk)}"
+        raise TypeError(err)
+
+    if (year == 2020 and level == "mun") or (year != 2020 and level == "ageb"):
+        out["foreign_keys"] = [
+            *curr_fk,
+            {
+                "column": "cve_met",
+                "ref_column": "cve_met",
+                "ref_table": "metropoli_2020",
+            },
+        ]
+
+    return out
+
+
 def merged_factory(
     *,
     census_op: dg.OpDefinition,
@@ -340,21 +400,24 @@ def merged_factory(
 ) -> dg.AssetsDefinition:
     @dg.graph_multi_asset(
         name=f"census_graph_{year}",
+        ins={
+            "df_metropoli_aggregated": dg.AssetIn(
+                key=["metropoli", "2020"], dagster_type=dg.Nothing
+            )
+        },
         outs={
             level: dg.AssetOut(
                 key=["census", str(year), level],
                 io_manager_key="geodataframe_postgis_manager",
-                metadata={
-                    "primary_key": "cvegeo",
-                    "table_name": f"census_{year}_{level}",
-                },
+                metadata=generate_single_level_metadata(level, year),
                 group_name=f"census_{year}",
             )
-            for level in geometry_op_map
+            for level in LEVEL_ORDER
+            if level in geometry_op_map
         },
         group_name=f"census_{year}",
     )
-    def _asset() -> dict[str, gpd.GeoDataFrame]:
+    def _asset(df_metropoli_aggregated: None) -> dict[str, gpd.GeoDataFrame]:
         df_metropoli = load_metropoli_df()
 
         census_orig = census_op()
@@ -362,7 +425,12 @@ def merged_factory(
         census_orig = add_derived_columns_factory(year)(census_orig)
 
         out = {}
-        for level, geometry_op in geometry_op_map.items():
+        for level in reversed(LEVEL_ORDER):
+            if level not in geometry_op_map:
+                continue
+
+            geometry = geometry_op_map[level]()
+
             if year in [2010, 2020] and level != "mza":
                 census = extract_op_map[level](census_orig)
             else:
@@ -373,17 +441,28 @@ def merged_factory(
             if level != "ent":
                 census = add_higher_levels_cvegeo(census)
 
-            # Since metropoli are defined with 2020 muns we only link them to the 2020 census.
+            # Since metropolitan zones are defined with 2020 muns we only link them to said year's muns.
             if year == 2020 and level == "mun":
-                census = add_metropoli_to_muns(census, df_metropoli)
+                census = add_metropoli_to_muns(
+                    census,
+                    df_metropoli,
+                    df_metropoli_aggregated=df_metropoli_aggregated,
+                )
 
-            geometry = geometry_op()
-
-            # For other years, we link the metropoli to the AGEBs directly.
+            # For other years, we link the metropoli to the AGEBs directly based on geometric intersections.
             if year != 2020 and level == "ageb":
-                geometry = add_metropoli_to_agebs(geometry, df_metropoli)
+                geometry = add_metropoli_to_agebs(
+                    geometry,
+                    df_metropoli,
+                    df_metropoli_aggregated=df_metropoli_aggregated,
+                )
 
-            out[level] = merge_census_and_geometry(census, geometry)
+            # Add dependencies to higher levels if they exist, so that they are written
+            # into the database sequentially, to avoid foreign key constraint issues.
+            other_ops = {
+                f"table_{key}": out[key] for key in out if key != level and key in out
+            }
+            out[level] = merge_census_and_geometry(census, geometry, **other_ops)
 
         return out
 

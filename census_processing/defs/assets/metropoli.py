@@ -53,7 +53,7 @@ def merge_metropoli_by_cve_met(df: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
 
 
 @dg.graph_asset(
-    key="metropoli_2020",
+    key=["metropoli", "2020"],
     group_name="metropoli",
     metadata={"table_name": "metropoli_2020", "primary_key": "cve_met"},
 )
