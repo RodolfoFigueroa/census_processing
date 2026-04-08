@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import ee
 from dagster_components.managers import (
     DataFramePostgresManager,
     GeoDataFramePostGISManager,
@@ -13,6 +14,8 @@ from census_processing.defs.managers import (
 )
 from census_processing.defs.resources import PathResource
 
+ee.Initialize()
+
 
 @dg.definitions
 def defs() -> dg.Definitions:
@@ -23,8 +26,8 @@ def defs() -> dg.Definitions:
         resources={
             "path_resource": path_resource,
             "postgis_resource": PostGISResource(
-                host="localhost",
-                port="5432",
+                host=dg.EnvVar("POSTGRES_HOST"),
+                port=dg.EnvVar("POSTGRES_PORT"),
                 db=dg.EnvVar("POSTGRES_DB"),
                 user=dg.EnvVar("POSTGRES_USER"),
                 password=dg.EnvVar("POSTGRES_PASSWORD"),
@@ -38,15 +41,15 @@ def defs() -> dg.Definitions:
                 path_resource=path_resource,
             ),
             "dataframe_postgres_manager": DataFramePostgresManager(
-                host="localhost",
-                port="5432",
+                host=dg.EnvVar("POSTGRES_HOST"),
+                port=dg.EnvVar("POSTGRES_PORT"),
                 user=dg.EnvVar("POSTGRES_USER"),
                 password=dg.EnvVar("POSTGRES_PASSWORD"),
                 db=dg.EnvVar("POSTGRES_DB"),
             ),
             "geodataframe_postgis_manager": GeoDataFramePostGISManager(
-                host="localhost",
-                port="5432",
+                host=dg.EnvVar("POSTGRES_HOST"),
+                port=dg.EnvVar("POSTGRES_PORT"),
                 user=dg.EnvVar("POSTGRES_USER"),
                 password=dg.EnvVar("POSTGRES_PASSWORD"),
                 db=dg.EnvVar("POSTGRES_DB"),
