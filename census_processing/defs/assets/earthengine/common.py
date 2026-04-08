@@ -57,7 +57,6 @@ def process_cvegeo_chunk_factory(
 
         # TODO: Temporary fix until ty respects annotated over inferred types
         gdf = gpd.GeoDataFrame(computed)
-        print(gdf.columns)
         return gdf[["cvegeo", "sum"]]
 
     return _op
@@ -68,13 +67,13 @@ def get_all_agebs_bbox(postgis_resource: PostGISResource) -> ee.Geometry:
     with postgis_resource.connect() as conn:
         bounds_series: pd.Series = pd.read_sql(
             """
-        SELECT 
+        SELECT
         ST_Xmin(bbox) AS xmin,
         ST_Xmax(bbox) AS xmax,
         ST_Ymin(bbox) AS ymin,
         ST_Ymax(bbox) AS ymax
         FROM (
-            SELECT ST_Extent(ST_Transform(geometry, 4326)) AS bbox 
+            SELECT ST_Extent(ST_Transform(geometry, 4326)) AS bbox
                 FROM census_2020_ageb
         )
         """,
