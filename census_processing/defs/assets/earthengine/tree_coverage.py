@@ -31,7 +31,7 @@ asset = reduce_ee_image_factory(
                 key=["census", "2020", "ageb"], dagster_type=dg.Nothing
             )
         },
-        "group_name": "tree_coverage_2020",
+        "group_name": "ageb_stats_2020",
         "metadata": {
             "table_name": "tree_coverage_2020_ageb",
             "primary_key": "cvegeo",

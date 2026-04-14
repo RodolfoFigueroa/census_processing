@@ -57,7 +57,7 @@ def process_cvegeo_chunk_factory(
 
         # TODO: Temporary fix until ty respects annotated over inferred types
         gdf = gpd.GeoDataFrame(computed)
-        return gdf[["cvegeo", "sum"]]
+        return gdf[["cvegeo", "sum"]].rename(columns={"sum": "area_m2"})
 
     return _op
 

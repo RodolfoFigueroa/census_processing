@@ -28,7 +28,7 @@ asset = reduce_ee_image_factory(
                 key=["census", "2020", "ageb"], dagster_type=dg.Nothing
             )
         },
-        "group_name": "urbanized_area_2020",
+        "group_name": "ageb_stats_2020",
         "metadata": {
             "table_name": "urbanized_area_2020_ageb",
             "primary_key": "cvegeo",
