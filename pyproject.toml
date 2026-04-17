@@ -18,6 +18,7 @@ dependencies = [
     "geopandas>=1.1.1",
     "ipykernel<7",
     "matplotlib>=3.10.7",
+    "pandana>=0.7",
     "pandas>=2.3.3",
     "pandas-stubs>=3.0.0.260204",
     "psycopg2>=2.9.11",
@@ -25,6 +26,8 @@ dependencies = [
     "rarfile>=4.2",
     "sqlalchemy>=2.0.44",
     "sqlalchemy-utils>=0.42.0",
+    "types-requests>=2.33.0.20260408",
+    "websockets>=16.0",
 ]
 
 [tool.ruff.lint]

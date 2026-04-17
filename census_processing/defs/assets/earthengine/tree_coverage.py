@@ -1,29 +1,9 @@
-import ee
-
 import dagster as dg
 from census_processing.defs.assets.earthengine.common import (
     reduce_ee_image_factory,
 )
 
-
-@dg.op
-def load_tree_coverage_img(bbox: ee.Geometry) -> ee.Image:
-    return (
-        ee.ImageCollection(
-            "projects/sat-io/open-datasets/facebook/meta-canopy-height",
-        )
-        .filterBounds(bbox)
-        .mean()
-        .gte(ee.Number(3))
-        .multiply(ee.image.Image.pixelArea())
-    )
-
-
 asset = reduce_ee_image_factory(
-    reducer=ee.Reducer.sum(),
-    scale=25,
-    table_name="census_2020_ageb",
-    img_op=load_tree_coverage_img,
     decorator_kwargs={
         "key": ["tree_coverage", "2020", "ageb"],
         "ins": {
