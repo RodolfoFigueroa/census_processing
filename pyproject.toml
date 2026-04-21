@@ -16,6 +16,7 @@ dependencies = [
     "geemap>=0.37.2",
     "geoalchemy2>=0.18.1",
     "geopandas>=1.1.1",
+    "httpx>=0.28.1",
     "ipykernel<7",
     "matplotlib>=3.10.7",
     "pandana>=0.7",
