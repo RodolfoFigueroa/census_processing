@@ -9,7 +9,7 @@ import websockets
 import dagster as dg
 
 
-def _get_logger(context: dg.InitResourceContext) -> dg.Logger:
+def _get_logger(context: dg.InitResourceContext) -> dg.DagsterLogManager:
     logger = context.log
     if logger is None:
         err = "Context log is not available. Ensure this function is called within a Dagster resource or op context."
