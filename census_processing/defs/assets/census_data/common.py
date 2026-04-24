@@ -2,6 +2,7 @@ import json
 import os
 import tempfile
 import zipfile
+from collections.abc import Sequence
 from pathlib import Path
 from typing import Literal
 
@@ -216,7 +217,7 @@ def add_derived_columns_factory(year: int) -> dg.OpDefinition:
     @dg.op(
         name=f"add_derived_columns_{year}",
     )
-    def _op(df: pd.DataFrame) -> pd.DataFrame:
+    def _op(context: dg.OpExecutionContext, df: pd.DataFrame) -> pd.DataFrame:
         with (
             Path(__file__).parent.parent.parent.parent.parent
             / "config"
@@ -271,15 +272,17 @@ def rename_columns_factory(year: int) -> dg.OpDefinition:
     @dg.op(
         name=f"rename_columns_{year}",
     )
-    def _op(df: pd.DataFrame) -> pd.DataFrame:
+    def _op(context: dg.OpExecutionContext, df: pd.DataFrame) -> pd.DataFrame:
         name_map_path = (
-            Path(__file__).parent.parent.parent.parent
+            Path(__file__).parent.parent.parent.parent.parent
             / "config"
             / "column_maps"
             / f"{year}.json"
         )
 
         if not name_map_path.exists():
+            msg = f"No column map found for year {year} at {name_map_path}, skipping renaming."
+            context.log.warning(msg)
             return df
 
         with name_map_path.open(encoding="latin1") as f:
@@ -355,23 +358,34 @@ def add_metropoli_to_agebs(
     return df_agebs.set_index("cvegeo").assign(cve_met=overlay).reset_index()
 
 
+def get_all_higher_levels(level: str) -> list[str]:
+    if level not in LEVEL_ORDER:
+        err = f"Invalid level: {level}. Must be one of {LEVEL_ORDER}."
+        raise ValueError(err)
+
+    level_idx = LEVEL_ORDER.index(level)
+    return list(LEVEL_ORDER[level_idx + 1 :])
+
+
 def generate_single_level_metadata(
-    level: str, year: int
+    level: str, year: int, fk_levels: Sequence[str] | None = None
 ) -> dict[str, str | list[dict]]:
+    if fk_levels is None:
+        fk_levels = []
+
     out: dict[str, str | list[dict[str, str]]] = {
         "primary_key": "cvegeo",
         "table_name": f"census_{year}_{level}",
     }
 
-    level_idx = LEVEL_ORDER.index(level)
     if level != "ent":
         out["foreign_keys"] = [
             {
-                "column": f"cve_{LEVEL_ORDER[i + 1]}",
+                "column": f"cve_{fk_level}",
                 "ref_column": "cvegeo",
-                "ref_table": f"census_{year}_{LEVEL_ORDER[i + 1]}",
+                "ref_table": f"census_{year}_{fk_level}",
             }
-            for i in range(level_idx, len(LEVEL_ORDER) - 1)
+            for fk_level in fk_levels
         ]
 
     curr_fk = out.get("foreign_keys", [])
@@ -409,7 +423,11 @@ def merged_factory(
             level: dg.AssetOut(
                 key=["census", str(year), level],
                 io_manager_key="geodataframe_postgis_manager",
-                metadata=generate_single_level_metadata(level, year),
+                metadata=generate_single_level_metadata(
+                    level,
+                    year,
+                    fk_levels=get_all_higher_levels(level) if year == 2020 else None,
+                ),
                 group_name=f"census_{year}",
             )
             for level in LEVEL_ORDER

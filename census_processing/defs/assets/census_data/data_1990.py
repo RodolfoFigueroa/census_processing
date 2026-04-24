@@ -184,10 +184,10 @@ def geometry_1990_ageb(path_resource: PathResource) -> gpd.GeoDataFrame:
                 df["cve_ent"].astype(str).str.zfill(2)
                 + df["cve_mun"].astype(str).str.zfill(3)
                 + df["cve_loc"].astype(str).str.zfill(4)
-                + df["cve_aged"].astype(str).str.zfill(4)
+                + df["cve_ageb"].astype(str).str.zfill(4)
             ),
         )
-        .drop(columns=["cve_ent", "cve_mun", "cve_loc", "cve_aged", "objectid"])
+        .drop(columns=["cve_ent", "cve_mun", "cve_loc", "cve_ageb", "objectid"])
         .to_crs("EPSG:6372")
     )
 
