@@ -4,6 +4,7 @@ import pandas as pd
 from dagster_components.resources import PostGISResource
 
 import dagster as dg
+from census_processing.defs.assets.common import concat_dataframes
 from census_processing.defs.resources import LyraResource
 
 
@@ -42,11 +43,6 @@ def process_cvegeo_chunk_factory(name: str) -> dg.OpDefinition:
     return _op
 
 
-@dg.op(out=dg.Out(io_manager_key="dataframe_postgres_manager"))
-def concat_processed_chunks(chunks: list[pd.DataFrame]) -> pd.DataFrame:
-    return pd.concat(chunks, ignore_index=True)
-
-
 def reduce_ee_image_factory(decorator_kwargs: dict) -> dg.AssetsDefinition:
     op_name = "_".join(decorator_kwargs["key"]) + "_chunk_processor"
     process_op = process_cvegeo_chunk_factory(op_name)
@@ -55,6 +51,6 @@ def reduce_ee_image_factory(decorator_kwargs: dict) -> dg.AssetsDefinition:
     def _asset(df_agebs: None) -> pd.DataFrame:
         cvegeo_chunks = get_cvegeo_chunks(df_agebs)
 
-        return concat_processed_chunks(cvegeo_chunks.map(process_op).collect())
+        return concat_dataframes(cvegeo_chunks.map(process_op).collect())
 
     return _asset
