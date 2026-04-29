@@ -35,6 +35,7 @@ def geometry_2010_factory(level: Literal["ageb", "mun"]) -> dg.OpDefinition:
                 df = gpd.read_file(
                     Path(tmpdir_2) / f"{suffix_map[level][1]}_2010_5.shp"
                 )
+                df.columns = df.columns.str.lower()
 
                 if "cvegeo" not in df.columns:
                     df = df.assign(

@@ -211,11 +211,6 @@ def extract_from_archive(arc: cabarchive.CabArchive) -> pd.DataFrame:
     return pd.concat(df_census)
 
 
-def foo(x):
-    print(x)
-    return x
-
-
 @dg.op(name="census_2000_ageb")
 def census_2000_ageb(path_resource: PathResource) -> pd.DataFrame:
     raw_path = Path(path_resource.data_path) / "raws"
@@ -242,7 +237,6 @@ def census_2000_ageb(path_resource: PathResource) -> pd.DataFrame:
             df_census_list.append(extract_from_archive(arc))
 
     df_census = pd.concat(df_census_list)
-    df_census.columns = df_census.columns.str.lower()
     return (
         df_census.sort_index()
         .assign(ageb_id=lambda df: df.index.str.slice(9, 13))
@@ -250,7 +244,6 @@ def census_2000_ageb(path_resource: PathResource) -> pd.DataFrame:
         .drop(columns=["ageb_id"])
         .pipe(cast_all_columns_to_numeric)
         .reset_index(names="cvegeo")
-        .pipe(foo)
     )
 
 
@@ -270,11 +263,11 @@ def geometry_2000_ageb(path_resource: PathResource) -> gpd.GeoDataFrame:
             f_nested.extractall(tmpdir)
             df_geom = gpd.read_file(tmpdir)
 
-    return (
-        df_geom.assign(cvegeo=lambda df: df["clvagb"].str.replace("-", ""))
-        .drop(columns=["clvagb", "oid_1", "layagb"])
-        .to_crs("EPSG:6372")
-    )
+    df_geom.columns = df_geom.columns.str.lower()
+
+    return df_geom.assign(cvegeo=lambda df: df["clvagb"].str.replace("-", ""))[
+        ["cvegeo", "geometry"]
+    ].to_crs("EPSG:6372")
 
 
 ageb_2000 = merged_factory(
