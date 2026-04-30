@@ -5,7 +5,7 @@ from dagster_components.managers import (
     DataFramePostgresManager,
     GeoDataFramePostGISManager,
 )
-from dagster_components.resources import PostGISResource
+from dagster_components.resources import PostgresResource
 
 import dagster as dg
 from census_processing.defs.managers import (
@@ -22,16 +22,19 @@ def defs() -> dg.Definitions:
     main_defs = dg.load_from_defs_folder(project_root=Path(__file__).parent.parent)
 
     path_resource = PathResource(data_path=dg.EnvVar("DATA_PATH"))
+
+    postgres_resource = PostgresResource(
+        host=dg.EnvVar("POSTGRES_HOST"),
+        port=dg.EnvVar("POSTGRES_PORT"),
+        db=dg.EnvVar("POSTGRES_DB"),
+        user=dg.EnvVar("POSTGRES_USER"),
+        password=dg.EnvVar("POSTGRES_PASSWORD"),
+    )
+
     extra_defs = dg.Definitions(
         resources={
             "path_resource": path_resource,
-            "postgis_resource": PostGISResource(
-                host=dg.EnvVar("POSTGRES_HOST"),
-                port=dg.EnvVar("POSTGRES_PORT"),
-                db=dg.EnvVar("POSTGRES_DB"),
-                user=dg.EnvVar("POSTGRES_USER"),
-                password=dg.EnvVar("POSTGRES_PASSWORD"),
-            ),
+            "postgres_resource": postgres_resource,
             "geodataframe_manager": GeoDataFrameManager(
                 suffix=".gpkg",
                 path_resource=path_resource,
@@ -41,18 +44,10 @@ def defs() -> dg.Definitions:
                 path_resource=path_resource,
             ),
             "dataframe_postgres_manager": DataFramePostgresManager(
-                host=dg.EnvVar("POSTGRES_HOST"),
-                port=dg.EnvVar("POSTGRES_PORT"),
-                user=dg.EnvVar("POSTGRES_USER"),
-                password=dg.EnvVar("POSTGRES_PASSWORD"),
-                db=dg.EnvVar("POSTGRES_DB"),
+                postgres_resource=postgres_resource
             ),
             "geodataframe_postgis_manager": GeoDataFramePostGISManager(
-                host=dg.EnvVar("POSTGRES_HOST"),
-                port=dg.EnvVar("POSTGRES_PORT"),
-                user=dg.EnvVar("POSTGRES_USER"),
-                password=dg.EnvVar("POSTGRES_PASSWORD"),
-                db=dg.EnvVar("POSTGRES_DB"),
+                postgres_resource=postgres_resource
             ),
             "lyra_resource": LyraResource(
                 host=dg.EnvVar("LYRA_HOST"),

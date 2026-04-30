@@ -13,8 +13,8 @@ import shapely
 from dagster_components.utils import cast_all_columns_to_numeric
 
 import dagster as dg
+from census_processing.constants import LEVEL_ORDER
 from census_processing.defs.assets.metropoli import load_metropoli_df
-from census_processing.defs.constants import LEVEL_ORDER
 from census_processing.defs.resources import PathResource
 
 

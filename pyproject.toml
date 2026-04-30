@@ -29,6 +29,7 @@ dependencies = [
     "sqlalchemy-utils>=0.42.0",
     "types-requests>=2.33.0.20260408",
     "websockets>=16.0",
+    "xarray>=2026.4.0",
 ]
 
 [tool.ruff.lint]

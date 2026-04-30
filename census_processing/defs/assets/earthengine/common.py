@@ -1,7 +1,7 @@
 from collections.abc import Iterator
 
 import pandas as pd
-from dagster_components.resources import PostGISResource
+from dagster_components.resources import PostgresResource
 
 import dagster as dg
 from census_processing.defs.assets.common import concat_dataframes
@@ -10,9 +10,9 @@ from census_processing.defs.resources import LyraResource
 
 @dg.op(ins={"df_agebs": dg.In(dagster_type=dg.Nothing)}, out=dg.DynamicOut())
 def get_cvegeo_chunks(
-    postgis_resource: PostGISResource,
+    postgres_resource: PostgresResource,
 ) -> Iterator[dg.DynamicOutput[list[str]]]:
-    with postgis_resource.connect() as conn:
+    with postgres_resource.connect() as conn:
         cvegeo_flat = pd.read_sql(
             "SELECT cvegeo FROM census_2020_ageb ORDER BY cvegeo", conn
         )
