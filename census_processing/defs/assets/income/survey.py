@@ -14,8 +14,16 @@ def fix_folioviv(s: pd.Series) -> pd.Series:
     return s.astype(str).str.zfill(10)
 
 
-@dg.op
-def get_muns_from_zone(postgres_resource: PostgresResource, met_zone: str) -> list[str]:
+@dg.op(
+    ins={
+        "met_zone": dg.In(dagster_type=str),
+        "muns_2020": dg.In(dagster_type=dg.Nothing),
+    }
+)
+def get_muns_from_zone(
+    postgres_resource: PostgresResource,
+    met_zone: str,
+) -> list[str]:
     with postgres_resource.connect() as conn:
         df = pd.read_sql(
             """
@@ -208,8 +216,8 @@ def merge_dfs(
 
 
 @dg.graph
-def load_survey(met_zone: str) -> pd.DataFrame:
-    muns = get_muns_from_zone(met_zone)
+def load_survey(met_zone: str, muns_2020: None) -> pd.DataFrame:
+    muns = get_muns_from_zone(met_zone, muns_2020)
 
     enigh_census_map = extract_enigh_census()
 

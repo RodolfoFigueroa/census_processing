@@ -64,10 +64,10 @@ def calculate_income(
 
 
 @dg.graph
-def full_graph(met_zone: str, agebs_2020: None) -> dict:
+def full_graph(met_zone: str, agebs_2020: None, muns_2020: None) -> dict:
     df_census = load_census(met_zone, agebs_2020)
     df_census_geometries = load_census_geometries(met_zone, agebs_2020)
-    df_survey = load_survey(met_zone)
+    df_survey = load_survey(met_zone, muns_2020)
     return calculate_income(df_survey, df_census, df_census_geometries)
 
 
@@ -97,7 +97,11 @@ def concat_results(results_list: list[dict]) -> tuple[pd.DataFrame, pd.DataFrame
     ins={
         "agebs_2020": dg.AssetIn(
             key=["census", "2020", "ageb"], dagster_type=dg.Nothing
-        )
+        ),
+        "muns_2020": dg.AssetIn(key=["census", "2020", "mun"], dagster_type=dg.Nothing),
+        "metropoli_2020": dg.AssetIn(
+            key=["metropoli", "2020"], dagster_type=dg.Nothing
+        ),
     },
     outs={
         "income": dg.AssetOut(
@@ -131,10 +135,14 @@ def concat_results(results_list: list[dict]) -> tuple[pd.DataFrame, pd.DataFrame
     },
     group_name="income",
 )
-def income(agebs_2020: None) -> dict[str, pd.DataFrame]:
-    met_zones = get_met_zones()
+def income(
+    agebs_2020: None, muns_2020: None, metropoli_2020: None
+) -> dict[str, pd.DataFrame]:
+    met_zones = get_met_zones(metropoli_2020)
     df_income, df_h = concat_results(
-        met_zones.map(lambda met_zone: full_graph(met_zone, agebs_2020)).collect()
+        met_zones.map(
+            lambda met_zone: full_graph(met_zone, agebs_2020, muns_2020)
+        ).collect()
     )
     return {
         "income": df_income,

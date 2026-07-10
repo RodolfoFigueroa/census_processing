@@ -6,7 +6,7 @@ from cfc_dagster_utils.resources import PostgresResource
 import dagster as dg
 
 
-@dg.op(out=dg.DynamicOut())
+@dg.op(ins={"metropoli_2020": dg.In(dagster_type=dg.Nothing)}, out=dg.DynamicOut())
 def get_met_zones(
     postgres_resource: PostgresResource,
 ) -> Iterator[dg.DynamicOutput[str]]:
