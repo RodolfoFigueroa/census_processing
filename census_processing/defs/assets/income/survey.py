@@ -3,8 +3,8 @@ import zipfile
 from pathlib import Path
 
 import pandas as pd
-from dagster_components.resources import PostgresResource
-from dagster_components.utils import cast_all_columns_to_numeric
+from cfc_dagster_utils.resources import PostgresResource
+from cfc_dagster_utils.utils import cast_all_columns_to_numeric
 
 import dagster as dg
 from census_processing.defs.resources import PathResource
@@ -37,7 +37,7 @@ def extract_enigh_census(
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     year = 2020
 
-    enigh_path = Path(path_resource.data_path) / "raws" / "enigh"
+    enigh_path = Path(path_resource.data_path) / "input" / "enigh"
 
     if year == "2018":
         zf_path = enigh_path / "conjunto_de_datos_enigh_2018_ns_csv.zip"
@@ -68,7 +68,7 @@ def extract_enigh_census(
             )
             out.append(pd.read_csv(fpath))
 
-    return tuple(out)
+    return tuple(out)  # ty:ignore[invalid-return-type]
 
 
 @dg.op

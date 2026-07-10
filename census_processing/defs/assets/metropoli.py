@@ -19,7 +19,7 @@ def make_polygon_solid(
 
 @dg.op(name="load_metropoli_df")
 def load_metropoli_df(path_resource: PathResource) -> gpd.GeoDataFrame:
-    raw_path = Path(path_resource.data_path) / "raws"
+    raw_path = Path(path_resource.data_path) / "input"
 
     with (
         tempfile.TemporaryDirectory() as tmpdir,

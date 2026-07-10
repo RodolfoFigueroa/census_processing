@@ -23,7 +23,7 @@ def mesh_factory(level: int) -> dg.AssetsDefinition:
         with (
             tempfile.TemporaryDirectory() as tmpdir,
             zipfile.ZipFile(
-                Path(path_resource.data_path) / "raws" / "889463868842_gpk.zip"
+                Path(path_resource.data_path) / "input" / "889463868842_gpk.zip"
             ) as zf,
         ):
             zf.extractall(tmpdir)

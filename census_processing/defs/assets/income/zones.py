@@ -1,7 +1,7 @@
 from collections.abc import Iterator
 
 import pandas as pd
-from dagster_components.resources import PostgresResource
+from cfc_dagster_utils.resources import PostgresResource
 
 import dagster as dg
 

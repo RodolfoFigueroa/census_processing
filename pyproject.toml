@@ -8,7 +8,7 @@ dependencies = [
     "cabarchive>=0.2.4",
     "contextily>=1.6.2",
     "dagster>=1.12.0",
-    "dagster-components",
+    "cfc-dagster-utils>=0.2.0",
     "dagster-dg-cli>=1.12.0",
     "dagster-webserver>=1.12.0",
     "earthengine-api>=1.7.19",
@@ -47,14 +47,11 @@ root_module = "census_processing"
 registry_modules = [
     "census_processing.assets.*",
     "census_processing.managers",
-    "census_processing.resources"
+    "census_processing.resources",
 ]
 
 [tool.uv.sources]
-dagster-components = { git = "https://github.com/RodolfoFigueroa/dagster_components" }
+cfc-dagster-utils = { git = "https://github.com/RodolfoFigueroa/cfc-dagster-utils" }
 
 [dependency-groups]
-dev = [
-    "ipykernel>=7.2.0",
-    "pre-commit>=4.5.1",
-]
+dev = ["ipykernel>=7.2.0", "pre-commit>=4.5.1"]

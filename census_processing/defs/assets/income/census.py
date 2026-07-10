@@ -1,8 +1,8 @@
 import geopandas as gpd
 import numpy as np
 import pandas as pd
-from dagster_components.resources import PostgresResource
-from dagster_components.utils import cast_all_columns_to_numeric
+from cfc_dagster_utils.resources import PostgresResource
+from cfc_dagster_utils.utils import cast_all_columns_to_numeric
 
 import dagster as dg
 

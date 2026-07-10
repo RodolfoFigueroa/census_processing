@@ -10,7 +10,7 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 import shapely
-from dagster_components.utils import cast_all_columns_to_numeric
+from cfc_dagster_utils.utils import cast_all_columns_to_numeric
 
 import dagster as dg
 from census_processing.constants import LEVEL_ORDER
@@ -69,7 +69,7 @@ def census_1990_2000_factory(
 ) -> dg.OpDefinition:
     @dg.op(name=f"load_census_{year}_df")
     def _op(path_resource: PathResource) -> pd.DataFrame:
-        raw_path = Path(path_resource.data_path) / "raws"
+        raw_path = Path(path_resource.data_path) / "input"
         fpath_compressed = raw_path / compressed_path
 
         with (
@@ -95,7 +95,7 @@ def full_census_2010_2020_factory(
 ) -> dg.OpDefinition:
     @dg.op(name=f"census_{year}")
     def _op(path_resource: PathResource) -> pd.DataFrame:
-        raw_path = Path(path_resource.data_path) / "raws"
+        raw_path = Path(path_resource.data_path) / "input"
 
         df_census: list[pd.DataFrame] = []
 

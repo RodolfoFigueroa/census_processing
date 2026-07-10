@@ -14,7 +14,7 @@ from census_processing.defs.resources import PathResource
 def get_denue_paths_factory(date: str) -> dg.OpDefinition:
     @dg.op(name=f"get_denue_paths_{date}", out=dg.DynamicOut())
     def _op(path_resource: PathResource) -> Iterator[dg.DynamicOutput[Path]]:
-        denue_path = Path(path_resource.data_path) / "raws" / "denue" / date
+        denue_path = Path(path_resource.data_path) / "input" / "denue" / date
         for path in denue_path.glob("*.zip"):
             yield dg.DynamicOutput(path, mapping_key=path.stem.replace("-", "_"))
 

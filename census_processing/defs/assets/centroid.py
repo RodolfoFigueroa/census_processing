@@ -25,7 +25,7 @@ from census_processing.defs.resources import PathResource
     group_name="centroids",
 )
 def centroids(path_resource: PathResource) -> gpd.GeoDataFrame:
-    centroid_dir = Path(path_resource.data_path) / "raws" / "centroids" / "historical"
+    centroid_dir = Path(path_resource.data_path) / "input" / "centroids" / "historical"
 
     out: list[pd.DataFrame] = [
         gpd.read_file(path).assign(cve_met=path.stem)[["cve_met", "geometry"]]

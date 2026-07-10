@@ -1,11 +1,11 @@
 from pathlib import Path
 
 import ee
-from dagster_components.managers import (
+from cfc_dagster_utils.managers import (
     DataFramePostgresManager,
     GeoDataFramePostGISManager,
 )
-from dagster_components.resources import PostgresResource
+from cfc_dagster_utils.resources import PostgresResource
 
 import dagster as dg
 from census_processing.defs.managers import (
@@ -21,7 +21,7 @@ ee.Initialize()
 def defs() -> dg.Definitions:
     main_defs = dg.load_from_defs_folder(project_root=Path(__file__).parent.parent)
 
-    path_resource = PathResource(data_path=dg.EnvVar("DATA_PATH"))
+    path_resource = PathResource(data_path=str(Path(__file__).parent.parent / "data"))
 
     postgres_resource = PostgresResource(
         host=dg.EnvVar("POSTGRES_HOST"),
@@ -44,10 +44,10 @@ def defs() -> dg.Definitions:
                 path_resource=path_resource,
             ),
             "dataframe_postgres_manager": DataFramePostgresManager(
-                postgres_resource=postgres_resource
+                postgres_resource=postgres_resource, if_exists="cascade_replace"
             ),
             "geodataframe_postgis_manager": GeoDataFramePostGISManager(
-                postgres_resource=postgres_resource
+                postgres_resource=postgres_resource, if_exists="cascade_replace"
             ),
             "lyra_resource": LyraResource(
                 host=dg.EnvVar("LYRA_HOST"),

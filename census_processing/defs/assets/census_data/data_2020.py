@@ -19,7 +19,7 @@ def geometry_2020_factory(
 ) -> dg.OpDefinition:
     @dg.op(name=f"geometry_2020_{level}")
     def _op(path_resource: PathResource) -> gpd.GeoDataFrame:
-        raw_path = Path(path_resource.data_path) / "raws"
+        raw_path = Path(path_resource.data_path) / "input"
 
         df_geoms_list: list[gpd.GeoDataFrame] = []
         for i in range(1, 33):

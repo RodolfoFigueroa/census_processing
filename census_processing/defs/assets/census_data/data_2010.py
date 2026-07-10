@@ -18,7 +18,7 @@ def geometry_2010_factory(level: Literal["ageb", "mun"]) -> dg.OpDefinition:
 
     @dg.op(name=f"geometry_2010_{level}")
     def _op(path_resource: PathResource) -> gpd.GeoDataFrame:
-        raw_path = Path(path_resource.data_path) / "raws"
+        raw_path = Path(path_resource.data_path) / "input"
 
         with (
             tempfile.TemporaryDirectory() as tmpdir_1,

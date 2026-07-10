@@ -213,7 +213,7 @@ def extract_from_archive(arc: cabarchive.CabArchive) -> pd.DataFrame:
 
 @dg.op(name="census_2000_ageb")
 def census_2000_ageb(path_resource: PathResource) -> pd.DataFrame:
-    raw_path = Path(path_resource.data_path) / "raws"
+    raw_path = Path(path_resource.data_path) / "input"
 
     df_census_list: list[pd.DataFrame] = []
     with (
@@ -249,7 +249,7 @@ def census_2000_ageb(path_resource: PathResource) -> pd.DataFrame:
 
 @dg.op(name="geometry_2000_ageb")
 def geometry_2000_ageb(path_resource: PathResource) -> gpd.GeoDataFrame:
-    raw_path = Path(path_resource.data_path) / "raws"
+    raw_path = Path(path_resource.data_path) / "input"
 
     with (
         zipfile.ZipFile(raw_path / "2000" / "702825292843_s.zip") as f,

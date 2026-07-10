@@ -130,7 +130,7 @@ def row_to_frame(row: str) -> pd.DataFrame:
     name="census_1990_ageb",
 )
 def census_1990_ageb(path_resource: PathResource) -> pd.DataFrame:
-    raw_path = Path(path_resource.data_path) / "raws"
+    raw_path = Path(path_resource.data_path) / "input"
 
     with (
         tempfile.TemporaryDirectory() as tmpdir,
@@ -169,7 +169,7 @@ def census_1990_ageb(path_resource: PathResource) -> pd.DataFrame:
     name="geometry_1990_ageb",
 )
 def geometry_1990_ageb(path_resource: PathResource) -> gpd.GeoDataFrame:
-    raw_path = Path(path_resource.data_path) / "raws"
+    raw_path = Path(path_resource.data_path) / "input"
     with (
         zipfile.ZipFile(raw_path / "1990" / "AGEBs 90_TecMonty_aj.zip") as zf,
         tempfile.TemporaryDirectory() as tmpdir,
