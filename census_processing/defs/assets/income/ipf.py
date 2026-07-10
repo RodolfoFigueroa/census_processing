@@ -56,13 +56,14 @@ def weighted_mean(x: np.ndarray, w):
 
 def get_marginals(seed: xr.DataArray, row: pd.Series) -> list[tuple[int, int, float]]:
     """
-    Extract marginal values from a pandas Series based on coordinates in a DataArray. \
-    This function iterates through the coordinates of a DataArray and matches them \
+    Extract marginal values from a pandas Series based on coordinates in a DataArray.
+    This function iterates through the coordinates of a DataArray and matches them
     against the index of a pandas Series to extract corresponding marginal values.
 
     Args:
-        seed (xr.DataArray): xarray DataArray containing coordinate dimensions to iterate over.
-        row (pd.Series): pandas Series with index labels matching the coordinate names \
+        seed (xr.DataArray): xarray DataArray containing coordinate dimensions to
+        iterate over.
+        row (pd.Series): pandas Series with index labels matching the coordinate names
             in the format "{dimension_name}_{coordinate_value}".
 
     Returns:
@@ -247,7 +248,9 @@ def weight_ind_fast(df: pd.DataFrame, ds: xr.DataArray) -> pd.DataFrame:
         n_ind = len(df_w.loc[idx])
 
         # Distribute weight uniformly among all individuals
-        df_w.loc[idx, columns] = np.broadcast_to(row.values / n_ind, (n_ind, len(row)))
+        df_w.loc[idx, columns] = np.broadcast_to(
+            row.to_numpy() / n_ind, (n_ind, len(row))
+        )
         # df_w.loc[idx] = single_class_df
 
     return df_w
@@ -260,7 +263,8 @@ def get_income_df(
     df_ind: pd.DataFrame,
 ) -> gpd.GeoDataFrame:
     """
-    Build a GeoDataFrame with IPF-estimated income distribution and income aggregates per AGEB.
+    Build a GeoDataFrame with IPF-estimated income distribution and income
+    aggregates per AGEB.
     This function computes, for each AGEB in ``agebs``, the estimated population by
     income bracket from an ``xarray.DataArray`` of local contingency tables. It then
     derives total IPF population, merges census totals and geometry, and computes
@@ -342,7 +346,7 @@ def generate_contingency_table(
     """
 
     out = (
-        pd.crosstab(
+        pd.crosstab(  # noqa: PD013
             [df_survey[c] for c in linking_cols],
             df_survey["Ingreso"],
             dropna=False,
@@ -353,7 +357,10 @@ def generate_contingency_table(
     )
 
     if not isinstance(out, xr.DataArray):
-        err = "Output of contingency table generation must be an xarray DataArray. Check the dimensions of the crosstab output."
+        err = (
+            "Output of contingency table generation must be an xarray "
+            "DataArray. Check the dimensions of the crosstab output."
+        )
         raise TypeError(err)
 
     return out

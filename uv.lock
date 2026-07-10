@@ -251,7 +251,6 @@ dependencies = [
     { name = "matplotlib" },
     { name = "pandana" },
     { name = "pandas" },
-    { name = "pandas-stubs" },
     { name = "psycopg2" },
     { name = "pyarrow" },
     { name = "rarfile" },
@@ -265,7 +264,9 @@ dependencies = [
 [package.dev-dependencies]
 dev = [
     { name = "ipykernel" },
+    { name = "pandas-stubs" },
     { name = "pre-commit" },
+    { name = "types-geopandas" },
 ]
 
 [package.metadata]
@@ -285,7 +286,6 @@ requires-dist = [
     { name = "matplotlib", specifier = ">=3.10.7" },
     { name = "pandana", specifier = ">=0.7" },
     { name = "pandas", specifier = ">=2.3.3" },
-    { name = "pandas-stubs", specifier = ">=3.0.0.260204" },
     { name = "psycopg2", specifier = ">=2.9.11" },
     { name = "pyarrow", specifier = ">=22.0.0" },
     { name = "rarfile", specifier = ">=4.2" },
@@ -299,7 +299,9 @@ requires-dist = [
 [package.metadata.requires-dev]
 dev = [
     { name = "ipykernel", specifier = ">=7.2.0" },
+    { name = "pandas-stubs", specifier = ">=3.0.3.260530" },
     { name = "pre-commit", specifier = ">=4.5.1" },
+    { name = "types-geopandas", specifier = ">=1.1.4.20260628" },
 ]
 
 [[package]]
@@ -4720,6 +4722,22 @@ wheels = [
 ]
 
 [[package]]
+name = "types-geopandas"
+version = "1.1.4.20260628"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
+    { name = "numpy", version = "2.5.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
+    { name = "pandas-stubs" },
+    { name = "pyproj" },
+    { name = "types-shapely" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/a2/99/e692cefdd54c970c139ce42543330dfdad779101ed68437c873a57d2fd0f/types_geopandas-1.1.4.20260628.tar.gz", hash = "sha256:4b62c384d966f7dcabb0e417d978769a97d1e942779dbcf630f4637476c34169", size = 23909, upload-time = "2026-06-28T06:05:26.556Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e4/aa/1d98d58e873d1fdff210995ec561b9d66cf63606f29abdff5ad16b2d45c3/types_geopandas-1.1.4.20260628-py3-none-any.whl", hash = "sha256:6603f58c5a4d4dacb155570b04a93bc720c2d49d8e4dfb78b75816e835a0041e", size = 31849, upload-time = "2026-06-28T06:05:25.515Z" },
+]
+
+[[package]]
 name = "types-requests"
 version = "2.33.0.20260518"
 source = { registry = "https://pypi.org/simple" }
@@ -4729,6 +4747,19 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/e0/01/c5a19253fe1ac159159ddf9a3a07cec8bb5e486ec4d9002ad2821da0e5d2/types_requests-2.33.0.20260518.tar.gz", hash = "sha256:df7bd3bfe0ca8402dfb841e7d9be714bb5578203283d66d7dc4ef69343449a5e", size = 24752, upload-time = "2026-05-18T06:07:37.966Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/1c/bc/b139710a3b6018f7fb2b9508b35c8af564e61bf2bf4fa619d088f3e16f85/types_requests-2.33.0.20260518-py3-none-any.whl", hash = "sha256:626d697d1adaaff76e2044dc8c5c051d8f21abc157bdfe204a75558076fe0bf0", size = 21391, upload-time = "2026-05-18T06:07:37.044Z" },
+]
+
+[[package]]
+name = "types-shapely"
+version = "2.1.0.20260630"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
+    { name = "numpy", version = "2.5.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/e8/10/fabba1860b907f4ec575e3c159da7adb49456a0d5d843101c6d101c9b8b7/types_shapely-2.1.0.20260630.tar.gz", hash = "sha256:727c8e42b182d9fb6df3a9376d8ac7ade56e5b13fde5bc69b9541ce66ed56eec", size = 27341, upload-time = "2026-06-30T06:00:08.012Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/27/43/d02f2d5a230d3c58cbe473b4efaa0af8a29d8e7fd43c39ea1c6a102e7c89/types_shapely-2.1.0.20260630-py3-none-any.whl", hash = "sha256:43cd568af2ab74c81600bc43ea0560e2f270cdd620bc59dfc1c380186951fd64", size = 38522, upload-time = "2026-06-30T06:00:06.92Z" },
 ]
 
 [[package]]

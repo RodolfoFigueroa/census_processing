@@ -14,7 +14,7 @@ def get_met_zones(
         df = pd.read_sql(
             """
             SELECT DISTINCT cve_met FROM metropoli_2020
-            WHERE tipo_met IN ('Zona metropolitana', 'Metrópoli municipal') 
+            WHERE tipo_met IN ('Zona metropolitana', 'Metrópoli municipal')
             """,
             conn,
         )

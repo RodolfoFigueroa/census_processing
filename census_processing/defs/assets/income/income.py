@@ -90,7 +90,6 @@ def concat_results(results_list: list[dict]) -> tuple[pd.DataFrame, pd.DataFrame
         .reset_index(names="cve_met")
         .assign(cve_met=lambda df: df["cve_met"].str.replace("_", "."))
     )
-    print(df_h)
     return df_income, df_h
 
 

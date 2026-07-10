@@ -106,7 +106,7 @@ def global_H_index(df_ind: pd.DataFrame, agebs: list[str]):
     # of local deviations
     # entropy_index_df = local_deviations.multiply(pn).sum(axis=1)
     mean_kl_series = local_kl.multiply(pn).sum(axis=1)
-    norm_H_series = mean_kl_series / binary_entropy(df_cdf.w_MZ.values[:-1])
+    norm_H_series = mean_kl_series / binary_entropy(df_cdf.w_MZ.to_numpy()[:-1])  # noqa: N806
 
     # But the above is not the function to integrate,
     # we must multiply by E(p) to recovr the
@@ -118,7 +118,7 @@ def global_H_index(df_ind: pd.DataFrame, agebs: list[str]):
     # global entropy , it seems safe to integrate numerically the KL
     # function directly, despite the high level of noise at the tails
     # of H (see plots)
-    H = integrate.simpson(y=mean_kl_series.values, x=df_cdf.w_MZ.values[:-1])
+    H = integrate.simpson(y=mean_kl_series.values, x=df_cdf.w_MZ.to_numpy()[:-1])  # noqa: N806
 
     # Return the cdf, the local_h, the expected kl, and H
     return (
