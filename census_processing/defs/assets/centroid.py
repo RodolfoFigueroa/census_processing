@@ -27,8 +27,10 @@ from census_processing.defs.resources import PathResource
 def centroids(path_resource: PathResource) -> gpd.GeoDataFrame:
     centroid_dir = Path(path_resource.data_path) / "input" / "centroids" / "historical"
 
-    out: list[pd.DataFrame] = [
+    out: list[gpd.GeoDataFrame] = [
         gpd.read_file(path).assign(cve_met=path.stem)[["cve_met", "geometry"]]
         for path in centroid_dir.glob("*.gpkg")
     ]
-    return pd.concat(out).pipe(gpd.GeoDataFrame, crs=out[0].crs, geometry="geometry")
+    return pd.concat(out).pipe(
+        lambda df: gpd.GeoDataFrame(df, crs=out[0].crs, geometry="geometry")
+    )

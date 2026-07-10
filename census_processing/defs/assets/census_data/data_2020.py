@@ -54,11 +54,7 @@ def geometry_2020_factory(
         return (
             pd.concat(df_geoms_list, ignore_index=True)[["CVEGEO", "geometry"]]
             .rename(columns={"CVEGEO": "cvegeo"})
-            .pipe(
-                gpd.GeoDataFrame,
-                geometry="geometry",
-                crs=crs,
-            )
+            .pipe(lambda df: gpd.GeoDataFrame(df, geometry="geometry", crs=crs))
             .to_crs("EPSG:6372")
         )
 

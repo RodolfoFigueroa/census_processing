@@ -249,20 +249,22 @@ def merge_census_and_geometry(
     return (
         geometry.merge(census, on="cvegeo", how="inner")
         .pipe(
-            cast_all_columns_to_numeric,
-            ignore=[
-                "cvegeo",
-                "cve_ent",
-                "cve_mun",
-                "cve_loc",
-                "cve_ageb",
-                "cve_met",
-                "nom_ent",
-                "nom_mun",
-                "nom_loc",
-                "geometry",
-            ],
-            errors="coerce",
+            lambda df: cast_all_columns_to_numeric(
+                df,
+                ignore=[
+                    "cvegeo",
+                    "cve_ent",
+                    "cve_mun",
+                    "cve_loc",
+                    "cve_ageb",
+                    "cve_met",
+                    "nom_ent",
+                    "nom_mun",
+                    "nom_loc",
+                    "geometry",
+                ],
+                errors="coerce",
+            )
         )
         .pipe(gpd.GeoDataFrame, geometry="geometry", crs=geometry.crs)
     )
@@ -494,7 +496,7 @@ def add_dummy_geometry(df: pd.DataFrame) -> gpd.GeoDataFrame:
             len(df),
             geom_type=shapely.GeometryType.POLYGON,
         ),
-    ).pipe(gpd.GeoDataFrame, geometry="geometry", crs="EPSG:6372")
+    ).pipe(lambda df: gpd.GeoDataFrame(df, geometry="geometry", crs="EPSG:6372"))
 
 
 @dg.op

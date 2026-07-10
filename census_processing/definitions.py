@@ -12,7 +12,7 @@ from census_processing.defs.managers import (
     DataFrameManager,
     GeoDataFrameManager,
 )
-from census_processing.defs.resources import LyraResource, PathResource
+from census_processing.defs.resources import PathResource
 
 ee.Initialize()
 
@@ -48,13 +48,6 @@ def defs() -> dg.Definitions:
             ),
             "geodataframe_postgis_manager": GeoDataFramePostGISManager(
                 postgres_resource=postgres_resource, if_exists="cascade_replace"
-            ),
-            "lyra_resource": LyraResource(
-                host=dg.EnvVar("LYRA_HOST"),
-                headers={
-                    "P-Access-Token-Id": dg.EnvVar("PANGOLIN_ACCES_TOKEN_ID"),
-                    "P-Access-Token": dg.EnvVar("PANGOLIN_ACCESS_TOKEN"),
-                },
             ),
         },
     )

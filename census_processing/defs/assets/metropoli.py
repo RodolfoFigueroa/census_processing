@@ -47,7 +47,7 @@ def merge_metropoli_by_cve_met(df: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
         )
         .reset_index()
         .assign(geometry=lambda df: df["geometry"].apply(make_polygon_solid))  # ty:ignore[no-matching-overload]
-        .pipe(gpd.GeoDataFrame, geometry="geometry", crs=df.crs)  # ty:ignore[no-matching-overload]
+        .pipe(lambda df: gpd.GeoDataFrame(df, geometry="geometry", crs=df.crs))
         .to_crs("EPSG:6372")
     )
 

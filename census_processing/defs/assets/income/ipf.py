@@ -245,7 +245,7 @@ def weight_ind_fast(df: pd.DataFrame, ds: xr.DataArray) -> pd.DataFrame:
         # A small dataframe with individuals with the same
         # combination of variables
         # single_class_df = df_w.loc[idx]
-        n_ind = len(df_w.loc[idx])
+        n_ind = len(df_w.loc[idx])  # ty:ignore[invalid-argument-type]
 
         # Distribute weight uniformly among all individuals
         df_w.loc[idx, columns] = np.broadcast_to(
