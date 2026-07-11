@@ -1,7 +1,6 @@
 from pathlib import Path
 
-import ee
-from cfc_dagster_utils.managers import (
+from cfc_dagster_utils.managers.postgres import (
     DataFramePostgresManager,
     GeoDataFramePostGISManager,
 )
@@ -13,8 +12,6 @@ from census_processing.defs.managers import (
     GeoDataFrameManager,
 )
 from census_processing.defs.resources import PathResource
-
-ee.Initialize()
 
 
 @dg.definitions
