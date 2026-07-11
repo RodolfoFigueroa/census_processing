@@ -51,6 +51,7 @@ cfc-dagster-utils = { git = "https://github.com/RodolfoFigueroa/cfc-dagster-util
 
 [dependency-groups]
 dev = [
+    "dvc[azure]>=3.67.1",
     "ipykernel>=7.2.0",
     "pandas-stubs>=3.0.3.260530",
     "pre-commit>=4.5.1",
