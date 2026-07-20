@@ -36,6 +36,7 @@ def load_metropoli_df(path_resource: PathResource) -> gpd.GeoDataFrame:
     name="merge_metropoli_by_cve_met",
 )
 def merge_metropoli_by_cve_met(df: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    crs = df.crs
     return (
         df.groupby("cve_met")
         .agg(
@@ -47,7 +48,7 @@ def merge_metropoli_by_cve_met(df: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
         )
         .reset_index()
         .assign(geometry=lambda df: df["geometry"].apply(make_polygon_solid))  # ty:ignore[no-matching-overload]
-        .pipe(lambda df: gpd.GeoDataFrame(df, geometry="geometry", crs=df.crs))
+        .pipe(lambda df: gpd.GeoDataFrame(df, geometry="geometry", crs=crs))
         .to_crs("EPSG:6372")
     )
 
