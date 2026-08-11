@@ -4,6 +4,11 @@ from pathlib import Path
 
 import geopandas as gpd
 import shapely
+from cfc_dagster_utils.types import (
+    PostgresRelation,
+    PostgresTableSpec,
+    PostgresWriteMode,
+)
 
 import dagster as dg
 from census_processing.defs.resources import PathResource
@@ -32,7 +37,7 @@ def load_metropoli_df(path_resource: PathResource) -> gpd.GeoDataFrame:
 
 
 @dg.op(
-    out=dg.Out(io_manager_key="geodataframe_postgis_manager"),
+    out=dg.Out(io_manager_key="postgres_manager"),
     name="merge_metropoli_by_cve_met",
 )
 def merge_metropoli_by_cve_met(df: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
@@ -53,10 +58,21 @@ def merge_metropoli_by_cve_met(df: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     )
 
 
+METROPOLI_TABLE_SPEC = PostgresTableSpec(
+    relation=PostgresRelation(
+        schema="public",
+        name="metropoli_2020",
+    ),
+    write_mode=PostgresWriteMode.REPLACE,
+    primary_key=("cve_met",),
+    geometry_column="geometry",
+)
+
+
 @dg.graph_asset(
     key=["metropoli", "2020"],
     group_name="metropoli",
-    metadata={"table_name": "metropoli_2020", "primary_key": "cve_met"},
+    metadata=METROPOLI_TABLE_SPEC.to_dagster_metadata(),
 )
 def metropoli() -> gpd.GeoDataFrame:
     return merge_metropoli_by_cve_met(load_metropoli_df())

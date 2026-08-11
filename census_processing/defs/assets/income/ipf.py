@@ -157,13 +157,13 @@ def ipf(
 def apply_ipf(df_censo: pd.DataFrame, seed: xr.DataArray) -> xr.DataArray:
     """Apply IPF to each census row and stack results into one DataArray.
 
-    The function iterates over each row in df_censo, builds marginal \
-    constraints for that geographic unit using seed coordinates, and runs \
-    iterative proportional fitting. Each fitted contingency table is then \
+    The function iterates over each row in df_censo, builds marginal
+    constraints for that geographic unit using seed coordinates, and runs
+    iterative proportional fitting. Each fitted contingency table is then
     concatenated along a new cvegeo dimension.
 
     Args:
-        df_censo: Census dataframe indexed by geographic key (for example, \
+        df_censo: Census dataframe indexed by geographic key (for example,
             cvegeo) with columns used to derive marginals.
         seed: Seed contingency table as an xarray DataArray.
 

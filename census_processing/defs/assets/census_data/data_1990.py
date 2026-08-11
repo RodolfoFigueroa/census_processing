@@ -7,16 +7,24 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 import rarfile
+from cfc_dagster_utils.types import (
+    PostgresRelation,
+    PostgresTableSpec,
+    PostgresWriteMode,
+)
 
 import dagster as dg
 from census_processing.defs.assets.census_data.common import (
+    add_derived_columns_factory,
     add_dummy_geometry,
+    add_higher_levels_cvegeo,
     cast_all_columns_to_numeric,
     get_loc_geometry_from_agebs,
     merge_census_and_geometry,
-    merged_factory,
+    remove_unused_op_map,
+    rename_columns_factory,
 )
-from census_processing.defs.managers import PathResource
+from census_processing.defs.resources import PathResource
 
 
 def extract_census_level_factory(
@@ -128,6 +136,7 @@ def row_to_frame(row: str) -> pd.DataFrame:
 
 @dg.op(
     name="census_1990_ageb",
+    ins={"scince_1990": dg.In(dagster_type=dg.Nothing)},
 )
 def census_1990_ageb(path_resource: PathResource) -> pd.DataFrame:
     raw_path = Path(path_resource.data_path) / "input"
@@ -192,11 +201,38 @@ def geometry_1990_ageb(path_resource: PathResource) -> gpd.GeoDataFrame:
     )
 
 
-ageb_1990 = merged_factory(
-    census_op=census_1990_ageb,
-    geometry_op_map={"ageb": geometry_1990_ageb},
-    year=1990,
+PREPARED_TABLE_SPEC = PostgresTableSpec(
+    relation=PostgresRelation(
+        schema="staging",
+        name="census_1990_ageb_prepared",
+    ),
+    write_mode=PostgresWriteMode.REPLACE,
+    primary_key=("cvegeo",),
+    geometry_column="geometry",
 )
+
+
+@dg.graph_asset(
+    key=["census", "1990", "ageb_prepared"],
+    ins={
+        "scince_1990": dg.AssetIn(
+            key=["input", "1990", "SCINCE"], dagster_type=dg.Nothing
+        ),
+    },
+    metadata=PREPARED_TABLE_SPEC.to_dagster_metadata(),
+    group_name="census_1990",
+)
+def census_graph_1990(scince_1990: None) -> gpd.GeoDataFrame:
+    census = census_1990_ageb(scince_1990)
+    census = rename_columns_factory(1990)(census)
+    census = add_derived_columns_factory(1990)(census)
+
+    geometry = geometry_1990_ageb()
+
+    census = remove_unused_op_map["ageb"](census)
+    census = add_higher_levels_cvegeo(census)
+
+    return merge_census_and_geometry(census, geometry)
 
 
 # load_census_1990 = census_1990_2000_factory(

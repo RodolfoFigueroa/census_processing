@@ -73,8 +73,8 @@ def full_graph(met_zone: str, agebs_2020: None, muns_2020: None) -> dict:
 
 @dg.op(
     out={
-        "income": dg.Out(io_manager_key="dataframe_postgres_manager"),
-        "H": dg.Out(io_manager_key="dataframe_postgres_manager"),
+        "income": dg.Out(io_manager_key="postgres_manager"),
+        "H": dg.Out(io_manager_key="postgres_manager"),
     }
 )
 def concat_results(results_list: list[dict]) -> tuple[pd.DataFrame, pd.DataFrame]:

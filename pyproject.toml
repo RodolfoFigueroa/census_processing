@@ -8,7 +8,7 @@ dependencies = [
     "cabarchive>=0.2.4",
     "contextily>=1.6.2",
     "dagster>=1.12.0",
-    "cfc-dagster-utils[dagster,xarray]>=0.3.0",
+    "cfc-dagster-utils[dagster,dvc,postgres,xarray]>=0.3.0",
     "dagster-dg-cli>=1.12.0",
     "dagster-webserver>=1.12.0",
     "fiona>=1.10.1",
@@ -16,7 +16,6 @@ dependencies = [
     "geopandas>=1.1.1",
     "httpx>=0.28.1",
     "matplotlib>=3.10.7",
-    "pandana>=0.7",
     "pandas>=2.3.3",
     "psycopg2>=2.9.11",
     "pyarrow>=22.0.0",
@@ -25,11 +24,16 @@ dependencies = [
     "sqlalchemy-utils>=0.42.0",
     "types-requests>=2.33.0.20260408",
     "xarray>=2026.4.0",
+    "dvc[azure]>=3.67.1",
+    "pyyaml>=6.0.3",
+    "scipy>=1.17.1",
+    "typer<0.26",
 ]
 
 [tool.ruff.lint]
 select = ["ALL"]
-ignore = ["D", "PLR2004", "COM812", "PLC0206"]
+ignore = ["D", "PLR2004", "COM812", "CPY001", "ERA001"]
+per-file-ignores = { "tests/**/*.py" = ["S101"] }
 
 [tool.basedpyright]
 typeCheckingMode = "standard"
@@ -40,20 +44,18 @@ directory_type = "project"
 
 [tool.dg.project]
 root_module = "census_processing"
-registry_modules = [
-    "census_processing.assets.*",
-    "census_processing.managers",
-    "census_processing.resources",
-]
 
 [tool.uv.sources]
 cfc-dagster-utils = { git = "https://github.com/RodolfoFigueroa/cfc-dagster-utils" }
 
 [dependency-groups]
 dev = [
-    "dvc[azure]>=3.67.1",
     "ipykernel>=7.2.0",
     "pandas-stubs>=3.0.3.260530",
     "pre-commit>=4.5.1",
+    "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.16.0",
+    "ty>=0.0.64",
     "types-geopandas>=1.1.4.20260628",
 ]

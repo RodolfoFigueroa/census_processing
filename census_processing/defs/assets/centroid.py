@@ -21,7 +21,7 @@ from census_processing.defs.resources import PathResource
             }
         ],
     },
-    io_manager_key="geodataframe_postgis_manager",
+    io_manager_key="postgres_manager",
     group_name="centroids",
 )
 def centroids(path_resource: PathResource) -> gpd.GeoDataFrame:

@@ -240,7 +240,7 @@ def add_derived_columns_factory(year: int) -> dg.OpDefinition:
         "table_loc": dg.In(dagster_type=dg.Nothing),
         "table_ageb": dg.In(dagster_type=dg.Nothing),
     },
-    out=dg.Out(io_manager_key="geodataframe_postgis_manager"),
+    out=dg.Out(io_manager_key="postgres_manager"),
 )
 def merge_census_and_geometry(
     census: pd.DataFrame,
@@ -283,7 +283,10 @@ def rename_columns_factory(year: int) -> dg.OpDefinition:
         )
 
         if not name_map_path.exists():
-            msg = f"No column map found for year {year} at {name_map_path}, skipping renaming."
+            msg = (
+                f"No column map found for year {year} at {name_map_path}, "
+                "skipping renaming."
+            )
             context.log.warning(msg)
             return df
 
@@ -413,18 +416,26 @@ def merged_factory(
     census_op: dg.OpDefinition,
     geometry_op_map: dict[str, dg.OpDefinition],
     year: int,
+    census_op_deps: dict[str, list[str]] | None = None,
 ) -> dg.AssetsDefinition:
+    if census_op_deps is None:
+        census_op_deps = {}
+
     @dg.graph_multi_asset(
         name=f"census_graph_{year}",
         ins={
             "df_metropoli_aggregated": dg.AssetIn(
                 key=["metropoli", "2020"], dagster_type=dg.Nothing
-            )
+            ),
+            **{
+                key: dg.AssetIn(key=value, dagster_type=dg.Nothing)
+                for key, value in census_op_deps.items()
+            },
         },
         outs={
             level: dg.AssetOut(
                 key=["census", str(year), level],
-                io_manager_key="geodataframe_postgis_manager",
+                io_manager_key="postgres_manager",
                 metadata=generate_single_level_metadata(
                     level,
                     year,
@@ -437,10 +448,10 @@ def merged_factory(
         },
         group_name=f"census_{year}",
     )
-    def _asset(df_metropoli_aggregated: None) -> dict[str, gpd.GeoDataFrame]:
+    def _asset(df_metropoli_aggregated: None, **kwargs) -> dict[str, gpd.GeoDataFrame]:
         df_metropoli = load_metropoli_df()
 
-        census_orig = census_op()
+        census_orig = census_op(**kwargs)
         census_orig = rename_columns_factory(year)(census_orig)
         census_orig = add_derived_columns_factory(year)(census_orig)
 
@@ -461,7 +472,8 @@ def merged_factory(
             if level != "ent":
                 census = add_higher_levels_cvegeo(census)
 
-            # Since metropolitan zones are defined with 2020 muns we only link them to said year's muns.
+            # Since metropolitan zones are defined with 2020 muns we only link
+            # them to said year's muns.
             if year == 2020 and level == "mun":
                 census = add_metropoli_to_muns(
                     census,
@@ -469,7 +481,8 @@ def merged_factory(
                     df_metropoli_aggregated=df_metropoli_aggregated,
                 )
 
-            # For other years, we link the metropoli to the AGEBs directly based on geometric intersections.
+            # For other years, we link the metropoli to the AGEBs directly based
+            # on geometric intersections.
             if year != 2020 and level == "ageb":
                 geometry = add_metropoli_to_agebs(
                     geometry,
@@ -489,7 +502,7 @@ def merged_factory(
     return _asset
 
 
-@dg.op(out=dg.Out(io_manager_key="geodataframe_postgis_manager"))
+@dg.op(out=dg.Out(io_manager_key="postgres_manager"))
 def add_dummy_geometry(df: pd.DataFrame) -> gpd.GeoDataFrame:
     return df.assign(
         geometry=lambda df: shapely.empty(

@@ -4,12 +4,12 @@ import pandas as pd
 import dagster as dg
 
 
-@dg.op(out=dg.Out(io_manager_key="dataframe_postgres_manager"))
+@dg.op(out=dg.Out(io_manager_key="postgres_manager"))
 def concat_dataframes(chunks: list[pd.DataFrame]) -> pd.DataFrame:
     return pd.concat(chunks, ignore_index=True)
 
 
-@dg.op(out=dg.Out(io_manager_key="geodataframe_postgis_manager"))
+@dg.op(out=dg.Out(io_manager_key="postgres_manager"))
 def concat_geodataframes(gdfs: list[gpd.GeoDataFrame]) -> gpd.GeoDataFrame:
     unique_crs = set()
     for i, gdf in enumerate(gdfs):

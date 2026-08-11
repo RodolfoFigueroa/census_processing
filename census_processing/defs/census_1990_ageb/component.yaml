@@ -1,0 +1,27 @@
+type: cfc_dagster_utils.components.postgres.PostgresTemplatedSqlComponent
+attributes:
+  connection: "{{ context.load_component('postgres') }}"
+  assets:
+    - key: census/1990/ageb
+      deps:
+        - census/1990/ageb_prepared
+        - metropoli/2020
+      group_name: census_1990
+  table_spec:
+    relation:
+      schema: public
+      name: census_1990_ageb
+    write_mode: replace
+    primary_key:
+      - cvegeo
+    foreign_keys:
+      - columns:
+          - cve_met
+        referenced_relation:
+          schema: public
+          name: metropoli_2020
+        referenced_columns:
+          - cve_met
+    geometry_column: geometry
+  sql_template:
+    path: census_1990_ageb.sql
