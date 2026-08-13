@@ -1,0 +1,4 @@
+type: cfc_dagster_utils.components.dvc.DvcInputComponent
+attributes:
+  key: input/metropolis_2020
+  dvc_file: data/input/metropolis_2020.zip.dvc

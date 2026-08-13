@@ -1,4 +1,0 @@
-type: cfc_dagster_utils.components.dvc.DvcInputComponent
-attributes:
-  key: input/1990/SCINCE
-  dvc_file: data/input/1990/SCINCE1990.rar.dvc

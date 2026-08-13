@@ -71,6 +71,11 @@ METROPOLI_TABLE_SPEC = PostgresTableSpec(
 
 @dg.graph_asset(
     key=["metropoli", "2020"],
+    ins={
+        "metropolis_2020": dg.AssetIn(
+            key=["input", "metropolis_2020"], dagster_type=dg.Nothing
+        )
+    },
     group_name="metropoli",
     metadata=METROPOLI_TABLE_SPEC.to_dagster_metadata(),
 )

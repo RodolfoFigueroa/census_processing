@@ -233,15 +233,3 @@ def census_graph_1990(scince_1990: None) -> gpd.GeoDataFrame:
     census = add_higher_levels_cvegeo(census)
 
     return merge_census_and_geometry(census, geometry)
-
-
-# load_census_1990 = census_1990_2000_factory(
-#     compressed_path=Path("1990", "00_nacional_1990_iter_txt.zip"),
-#     extracted_path=Path("ITER_NALTXT90.txt"),
-#     year=1990,
-#     encoding="latin1",
-#     sep="\t",
-# )
-
-
-# other_1990 = multi_merged_factory(year=1990, df_op=load_census_1990)
