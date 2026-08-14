@@ -1,0 +1,6 @@
+outs:
+- md5: 28c5af48bf288b643b7cbd059d84df36.dir
+  size: 163654242
+  nfiles: 32
+  hash: md5
+  path: census

@@ -93,7 +93,7 @@ def full_census_2010_2020_factory(
     inner_dir_template: str,
     csv_template: str,
 ) -> dg.OpDefinition:
-    @dg.op(name=f"census_{year}")
+    @dg.op(name=f"census_{year}", ins={"demography": dg.In(dagster_type=dg.Nothing)})
     def _op(path_resource: PathResource) -> pd.DataFrame:
         raw_path = Path(path_resource.data_path) / "input"
 

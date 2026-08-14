@@ -1,18 +1,18 @@
 type: cfc_dagster_utils.components.dvc.DvcInputComponent
 attributes:
-  key: input/2000/demography
-  dvc_file: data/input/2000/censo2000_scince.zip.dvc
+  key: input/2010/demography
+  dvc_file: data/input/2010/census.dvc
 post_processing:
   assets:
     - attributes:
-        group_name: "input_2000"
+        group_name: "input_2010"
 
 ---
 type: cfc_dagster_utils.components.dvc.DvcInputComponent
 attributes:
-  key: input/2000/geometry/ageb
-  dvc_file: data/input/2000/702825292843_s.zip.dvc
+  key: input/2010/geometry/ageb
+  dvc_file: data/input/2010/702825292812_s.zip.dvc
 post_processing:
   assets:
     - attributes:
-        group_name: "input_2000"
+        group_name: "input_2010"

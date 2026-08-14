@@ -282,11 +282,10 @@ def census_graph_2000(demography: None, geometry: None) -> gpd.GeoDataFrame:
     census = census_2000_ageb(demography)
     census = rename_columns_factory(2000)(census)
     census = add_derived_columns_factory(2000)(census)
-
-    geometry = geometry_2000_ageb(geometry)
-
     census = remove_unused_op_map["ageb"](census)
     census = add_higher_levels_cvegeo(census)
+
+    geometry = geometry_2000_ageb(geometry)
 
     return merge_census_and_geometry(census, geometry)
 

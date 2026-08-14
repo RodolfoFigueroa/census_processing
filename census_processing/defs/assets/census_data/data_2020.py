@@ -5,11 +5,21 @@ from typing import Literal
 
 import geopandas as gpd
 import pandas as pd
+from cfc_dagster_utils.types import (
+    PostgresRelation,
+    PostgresTableSpec,
+    PostgresWriteMode,
+)
 
 import dagster as dg
 from census_processing.defs.assets.census_data.common import (
+    add_derived_columns_factory,
+    add_higher_levels_cvegeo,
+    extract_op_map,
     full_census_2010_2020_factory,
-    merged_factory,
+    merge_census_and_geometry,
+    remove_unused_op_map,
+    rename_columns_factory,
 )
 from census_processing.defs.resources import PathResource
 
@@ -17,7 +27,9 @@ from census_processing.defs.resources import PathResource
 def geometry_2020_factory(
     level: Literal["ent", "mun", "loc", "ageb", "mza"],
 ) -> dg.OpDefinition:
-    @dg.op(name=f"geometry_2020_{level}")
+    @dg.op(
+        name=f"geometry_2020_{level}", ins={"geometry": dg.In(dagster_type=dg.Nothing)}
+    )
     def _op(path_resource: PathResource) -> gpd.GeoDataFrame:
         raw_path = Path(path_resource.data_path) / "input"
 
@@ -68,14 +80,38 @@ census_2020 = full_census_2010_2020_factory(
     csv_template="conjunto_de_datos_ageb_urbana_{i:02d}_cpv2020.csv",
 )
 
-data_2020 = merged_factory(
-    census_op=census_2020,
-    geometry_op_map={
-        "mza": geometry_2020_factory(level="mza"),
-        "ageb": geometry_2020_factory(level="ageb"),
-        "loc": geometry_2020_factory(level="loc"),
-        "mun": geometry_2020_factory(level="mun"),
-        "ent": geometry_2020_factory(level="ent"),
-    },
-    year=2020,
+PREPARED_TABLE_SPEC = PostgresTableSpec(
+    relation=PostgresRelation(
+        schema="staging",
+        name="census_2020_ageb_prepared",
+    ),
+    write_mode=PostgresWriteMode.REPLACE,
+    primary_key=("cvegeo",),
+    geometry_column="geometry",
 )
+
+
+@dg.graph_asset(
+    key=["census", "2020", "ageb_prepared"],
+    ins={
+        "demography": dg.AssetIn(
+            key=["input", "2020", "demography"], dagster_type=dg.Nothing
+        ),
+        "geometry": dg.AssetIn(
+            key=["input", "2020", "geometry", "ageb"], dagster_type=dg.Nothing
+        ),
+    },
+    metadata=PREPARED_TABLE_SPEC.to_dagster_metadata(),
+    group_name="census_2020",
+)
+def _asset(demography: None, geometry: None) -> dict[str, gpd.GeoDataFrame]:
+    census = census_2020(demography)
+    census = rename_columns_factory(2020)(census)
+    census = add_derived_columns_factory(2020)(census)
+    census = extract_op_map["ageb"](census)
+    census = remove_unused_op_map["ageb"](census)
+    census = add_higher_levels_cvegeo(census)
+
+    geometry = geometry_2020_factory("ageb")(geometry)
+
+    return merge_census_and_geometry(census, geometry)

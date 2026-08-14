@@ -1,0 +1,6 @@
+outs:
+- md5: 15acb76c861f2a5b10a2e2dca1b98879.dir
+  size: 2350735369
+  nfiles: 32
+  hash: md5
+  path: geom

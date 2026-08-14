@@ -2,9 +2,17 @@ type: cfc_dagster_utils.components.dvc.DvcInputComponent
 attributes:
   key: input/1990/demography
   dvc_file: data/input/1990/SCINCE1990.rar.dvc
+post_processing:
+  assets:
+    - attributes:
+        group_name: "input_1990"
 
 ---
 type: cfc_dagster_utils.components.dvc.DvcInputComponent
 attributes:
   key: input/1990/geometry/ageb
   dvc_file: data/input/1990/AGEBs 90_TecMonty_aj.zip
+post_processing:
+  assets:
+    - attributes:
+        group_name: "input_1990"
