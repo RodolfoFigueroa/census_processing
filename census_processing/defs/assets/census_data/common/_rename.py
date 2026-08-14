@@ -4,19 +4,22 @@ from pathlib import Path
 import pandas as pd
 
 import dagster as dg
+from census_processing.defs.resources import PathResource
 
 
 def rename_columns_factory(year: int) -> dg.OpDefinition:
     @dg.op(
         name=f"rename_columns_{year}",
     )
-    def _op(context: dg.OpExecutionContext, df: pd.DataFrame) -> pd.DataFrame:
-        name_map_path = (
-            Path(__file__).parent.parent.parent.parent.parent
-            / "config"
-            / "column_maps"
-            / f"{year}.json"
-        )
+    def _op(
+        context: dg.OpExecutionContext, path_resource: PathResource, df: pd.DataFrame
+    ) -> pd.DataFrame:
+        config_path = Path(path_resource.config_path)
+        name_map_path = config_path / "column_maps" / f"{year}.json"
+
+        if not name_map_path.parent.exists():
+            err = f"No column map directory found at {name_map_path.parent}"
+            raise FileNotFoundError(err)
 
         if not name_map_path.exists():
             msg = (

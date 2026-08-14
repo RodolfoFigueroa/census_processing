@@ -10,7 +10,7 @@ post_processing:
 ---
 type: cfc_dagster_utils.components.dvc.DvcInputComponent
 attributes:
-  key: input/2020/geometry/ageb
+  key: input/2020/geometry
   dvc_file: data/input/2020/geom.dvc
 post_processing:
   assets:

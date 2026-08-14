@@ -1,0 +1,5 @@
+outs:
+- md5: a506522d86c392e56edcea36b03ef0d3
+  size: 376698243
+  hash: md5
+  path: census.parquet

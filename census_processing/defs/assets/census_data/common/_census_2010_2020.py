@@ -8,16 +8,24 @@ import dagster as dg
 from census_processing.defs.resources import PathResource
 
 
-def full_census_2010_2020_factory(
+def census_2010_2020_factory(
     *,
     year: int,
     zip_template: str,
     inner_dir_template: str,
     csv_template: str,
-) -> dg.OpDefinition:
-    @dg.op(name=f"census_{year}", ins={"demography": dg.In(dagster_type=dg.Nothing)})
-    def _op(path_resource: PathResource) -> pd.DataFrame:
-        raw_path = Path(path_resource.data_path) / "input"
+    **kwargs: dict,
+) -> dg.AssetsDefinition:
+    @dg.asset(
+        ins={
+            "demography_dep": dg.AssetIn(
+                key=["input", str(year), "demography"], dagster_type=dg.Nothing
+            )
+        },
+        **kwargs,
+    )  # ty: ignore[no-matching-overload]
+    def _asset(path_resource: PathResource) -> pd.DataFrame:
+        raw_path = Path(path_resource.in_path)
 
         df_census: list[pd.DataFrame] = []
 
@@ -66,4 +74,4 @@ def full_census_2010_2020_factory(
             ),
         )
 
-    return _op
+    return _asset

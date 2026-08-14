@@ -45,7 +45,7 @@ def extract_enigh_census(
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     year = 2020
 
-    enigh_path = Path(path_resource.data_path) / "input" / "enigh"
+    enigh_path = Path(path_resource.in_path) / "enigh"
 
     if year == "2018":
         zf_path = enigh_path / "conjunto_de_datos_enigh_2018_ns_csv.zip"

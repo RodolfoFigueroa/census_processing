@@ -197,7 +197,7 @@ def extract_from_archive(arc: cabarchive.CabArchive) -> pd.DataFrame:
 
 @dg.op(name="census_2000_ageb", ins={"demography": dg.In(dagster_type=dg.Nothing)})
 def census_2000_ageb(path_resource: PathResource) -> pd.DataFrame:
-    raw_path = Path(path_resource.data_path) / "input"
+    raw_path = Path(path_resource.in_path)
 
     df_census_list: list[pd.DataFrame] = []
     with (
@@ -233,7 +233,7 @@ def census_2000_ageb(path_resource: PathResource) -> pd.DataFrame:
 
 @dg.op(name="geometry_2000_ageb", ins={"geometry": dg.In(dagster_type=dg.Nothing)})
 def geometry_2000_ageb(path_resource: PathResource) -> gpd.GeoDataFrame:
-    raw_path = Path(path_resource.data_path) / "input"
+    raw_path = Path(path_resource.in_path)
 
     with (
         zipfile.ZipFile(raw_path / "2000" / "702825292843_s.zip") as f,
@@ -266,7 +266,7 @@ PREPARED_TABLE_SPEC = PostgresTableSpec(
 
 
 @dg.graph_asset(
-    key=["census", "2000", "ageb_prepared"],
+    key=["staging", "2000", "ageb"],
     ins={
         "demography": dg.AssetIn(
             key=["input", "2000", "demography"], dagster_type=dg.Nothing
@@ -276,7 +276,7 @@ PREPARED_TABLE_SPEC = PostgresTableSpec(
         ),
     },
     metadata=PREPARED_TABLE_SPEC.to_dagster_metadata(),
-    group_name="census_2000",
+    group_name="staging_2000",
 )
 def census_graph_2000(demography: None, geometry: None) -> gpd.GeoDataFrame:
     census = census_2000_ageb(demography)

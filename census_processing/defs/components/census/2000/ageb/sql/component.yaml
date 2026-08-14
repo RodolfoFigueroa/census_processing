@@ -4,7 +4,7 @@ attributes:
   assets:
     - key: census/2000/ageb
       deps:
-        - census/2000/ageb_prepared
+        - staging/2000/ageb
         - metropoli/2020
       group_name: census_2000
   table_spec:

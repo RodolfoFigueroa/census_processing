@@ -139,7 +139,7 @@ def row_to_frame(row: str) -> pd.DataFrame:
     ins={"scince_1990": dg.In(dagster_type=dg.Nothing)},
 )
 def census_1990_ageb(path_resource: PathResource) -> pd.DataFrame:
-    raw_path = Path(path_resource.data_path) / "input"
+    raw_path = Path(path_resource.in_path)
 
     with (
         tempfile.TemporaryDirectory() as tmpdir,
@@ -176,7 +176,7 @@ def census_1990_ageb(path_resource: PathResource) -> pd.DataFrame:
 
 @dg.op(name="geometry_1990_ageb", ins={"geometry": dg.In(dagster_type=dg.Nothing)})
 def geometry_1990_ageb(path_resource: PathResource) -> gpd.GeoDataFrame:
-    raw_path = Path(path_resource.data_path) / "input"
+    raw_path = Path(path_resource.in_path)
     with (
         zipfile.ZipFile(raw_path / "1990" / "AGEBs 90_TecMonty_aj.zip") as zf,
         tempfile.TemporaryDirectory() as tmpdir,
@@ -211,7 +211,7 @@ PREPARED_TABLE_SPEC = PostgresTableSpec(
 
 
 @dg.graph_asset(
-    key=["census", "1990", "ageb_prepared"],
+    key=["staging", "1990", "ageb"],
     ins={
         "demography": dg.AssetIn(
             key=["input", "1990", "demography"], dagster_type=dg.Nothing
@@ -221,7 +221,7 @@ PREPARED_TABLE_SPEC = PostgresTableSpec(
         ),
     },
     metadata=PREPARED_TABLE_SPEC.to_dagster_metadata(),
-    group_name="census_1990",
+    group_name="staging_1990",
 )
 def census_graph_1990(demography: None, geometry: None) -> gpd.GeoDataFrame:
     census = census_1990_ageb(demography)

@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Literal
 
 import geopandas as gpd
+import pandas as pd
 from cfc_dagster_utils.types import (
     PostgresRelation,
     PostgresTableSpec,
@@ -14,8 +15,8 @@ import dagster as dg
 from census_processing.defs.assets.census_data.common import (
     add_derived_columns_op_map,
     add_higher_levels_cvegeo,
+    census_2010_2020_factory,
     extract_op_map,
-    full_census_2010_2020_factory,
     merge_census_and_geometry,
     remove_unused_op_map,
     rename_columns_op_map,
@@ -31,7 +32,7 @@ def geometry_2010_factory(level: Literal["ageb", "mun"]) -> dg.OpDefinition:
         ins={"demography": dg.In(dagster_type=dg.Nothing)},
     )
     def _op(path_resource: PathResource) -> gpd.GeoDataFrame:
-        raw_path = Path(path_resource.data_path) / "input"
+        raw_path = Path(path_resource.in_path)
 
         with (
             tempfile.TemporaryDirectory() as tmpdir_1,
@@ -82,7 +83,10 @@ def geometry_2010_factory(level: Literal["ageb", "mun"]) -> dg.OpDefinition:
     return _op
 
 
-census_2010 = full_census_2010_2020_factory(
+census_2010 = census_2010_2020_factory(
+    key=["staging", "2010", "census"],  # ty: ignore[invalid-argument-type]
+    io_manager_key="dataframe_file_manager",  # ty: ignore[invalid-argument-type]
+    group_name="staging_2010",  # ty: ignore[invalid-argument-type]
     year=2010,
     zip_template="resageburb_{i:02d}_2010_csv.zip",
     inner_dir_template="resultados_ageb_urbana_{i:02d}_cpv2010",
@@ -105,16 +109,17 @@ PREPARED_TABLE_SPEC = PostgresTableSpec(
 
 
 @dg.graph_asset(
-    key=["census", "2010", "ageb_prepared"],
+    key=["staging", "2010", "ageb"],
     ins={
-        "demography": dg.AssetIn(key=["input", "2010", "demography"]),
-        "geometry": dg.AssetIn(key=["input", "2010", "geometry", "ageb"]),
+        "census": dg.AssetIn(key=["staging", "2010", "census"]),
+        "geometry": dg.AssetIn(
+            key=["input", "2010", "geometry", "ageb"], dagster_type=dg.Nothing
+        ),
     },
     metadata=PREPARED_TABLE_SPEC.to_dagster_metadata(),
-    group_name="census_2010",
+    group_name="staging_2010",
 )
-def _asset(demography: None, geometry: None) -> gpd.GeoDataFrame:
-    census = census_2010(demography)
+def _asset(census: pd.DataFrame, geometry: None) -> gpd.GeoDataFrame:
     census = rename_columns_op_map[2010](census)
     census = add_derived_columns_op_map[2010](census)
     census = extract_op_map["ageb"](census)

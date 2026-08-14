@@ -32,10 +32,10 @@ def add_higher_levels_cvegeo(df: pd.DataFrame) -> pd.DataFrame:
     ins={
         "census": dg.In(),
         "geometry": dg.In(),
-        "table_ent": dg.In(dagster_type=dg.Nothing),
-        "table_mun": dg.In(dagster_type=dg.Nothing),
-        "table_loc": dg.In(dagster_type=dg.Nothing),
-        "table_ageb": dg.In(dagster_type=dg.Nothing),
+        "ent_dep": dg.In(dagster_type=dg.Nothing),
+        "mun_dep": dg.In(dagster_type=dg.Nothing),
+        "loc_dep": dg.In(dagster_type=dg.Nothing),
+        "ageb_dep": dg.In(dagster_type=dg.Nothing),
     },
     out=dg.Out(io_manager_key="postgres_manager"),
 )

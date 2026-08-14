@@ -5,13 +5,13 @@ from pathlib import Path
 import geopandas as gpd
 import shapely
 from cfc_dagster_utils.types import (
-    PostgresRelation,
     PostgresTableSpec,
     PostgresWriteMode,
 )
 
 import dagster as dg
 from census_processing.defs.resources import PathResource
+from census_processing.relations import METROPOLI_2020_RELATION
 
 
 def make_polygon_solid(
@@ -26,7 +26,7 @@ def make_polygon_solid(
     name="load_metropoli_df", ins={"metropolis_2020": dg.In(dagster_type=dg.Nothing)}
 )
 def load_metropoli_df(path_resource: PathResource) -> gpd.GeoDataFrame:
-    raw_path = Path(path_resource.data_path) / "input"
+    raw_path = Path(path_resource.in_path)
 
     with (
         tempfile.TemporaryDirectory() as tmpdir,
@@ -61,10 +61,7 @@ def merge_metropoli_by_cve_met(df: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
 
 
 METROPOLI_TABLE_SPEC = PostgresTableSpec(
-    relation=PostgresRelation(
-        schema="public",
-        name="metropoli_2020",
-    ),
+    relation=METROPOLI_2020_RELATION,
     write_mode=PostgresWriteMode.REPLACE,
     primary_key=("cve_met",),
     geometry_column="geometry",

@@ -74,7 +74,7 @@ def census_1990_2000_factory(
 ) -> dg.OpDefinition:
     @dg.op(name=f"load_census_{year}_df")
     def _op(path_resource: PathResource) -> pd.DataFrame:
-        raw_path = Path(path_resource.data_path) / "input"
+        raw_path = Path(path_resource.in_path)
         fpath_compressed = raw_path / compressed_path
 
         with (
