@@ -1,0 +1,10 @@
+type: cfc_dagster_utils.components.dvc.DvcInputComponent
+attributes:
+  key: input/2000/demography
+  dvc_file: data/input/2000/censo2000_scince.zip.dvc
+
+---
+type: cfc_dagster_utils.components.dvc.DvcInputComponent
+attributes:
+  key: input/2000/geometry/ageb
+  dvc_file: data/input/2000/702825292843_s.zip.dvc

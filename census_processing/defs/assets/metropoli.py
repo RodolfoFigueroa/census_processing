@@ -22,7 +22,9 @@ def make_polygon_solid(
     return poly
 
 
-@dg.op(name="load_metropoli_df")
+@dg.op(
+    name="load_metropoli_df", ins={"metropolis_2020": dg.In(dagster_type=dg.Nothing)}
+)
 def load_metropoli_df(path_resource: PathResource) -> gpd.GeoDataFrame:
     raw_path = Path(path_resource.data_path) / "input"
 
@@ -79,5 +81,5 @@ METROPOLI_TABLE_SPEC = PostgresTableSpec(
     group_name="metropoli",
     metadata=METROPOLI_TABLE_SPEC.to_dagster_metadata(),
 )
-def metropoli() -> gpd.GeoDataFrame:
-    return merge_metropoli_by_cve_met(load_metropoli_df())
+def metropoli(metropolis_2020: None) -> gpd.GeoDataFrame:
+    return merge_metropoli_by_cve_met(load_metropoli_df(metropolis_2020))

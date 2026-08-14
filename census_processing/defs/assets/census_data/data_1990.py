@@ -174,9 +174,7 @@ def census_1990_ageb(path_resource: PathResource) -> pd.DataFrame:
     return out.reset_index(names="cvegeo")
 
 
-@dg.op(
-    name="geometry_1990_ageb",
-)
+@dg.op(name="geometry_1990_ageb", ins={"geometry": dg.In(dagster_type=dg.Nothing)})
 def geometry_1990_ageb(path_resource: PathResource) -> gpd.GeoDataFrame:
     raw_path = Path(path_resource.data_path) / "input"
     with (
@@ -215,19 +213,22 @@ PREPARED_TABLE_SPEC = PostgresTableSpec(
 @dg.graph_asset(
     key=["census", "1990", "ageb_prepared"],
     ins={
-        "scince_1990": dg.AssetIn(
-            key=["input", "1990", "SCINCE"], dagster_type=dg.Nothing
+        "demography": dg.AssetIn(
+            key=["input", "1990", "demography"], dagster_type=dg.Nothing
+        ),
+        "geometry": dg.AssetIn(
+            key=["input", "1990", "geometry", "ageb"], dagster_type=dg.Nothing
         ),
     },
     metadata=PREPARED_TABLE_SPEC.to_dagster_metadata(),
     group_name="census_1990",
 )
-def census_graph_1990(scince_1990: None) -> gpd.GeoDataFrame:
-    census = census_1990_ageb(scince_1990)
+def census_graph_1990(demography: None, geometry: None) -> gpd.GeoDataFrame:
+    census = census_1990_ageb(demography)
     census = rename_columns_factory(1990)(census)
     census = add_derived_columns_factory(1990)(census)
 
-    geometry = geometry_1990_ageb()
+    geometry = geometry_1990_ageb(geometry)
 
     census = remove_unused_op_map["ageb"](census)
     census = add_higher_levels_cvegeo(census)

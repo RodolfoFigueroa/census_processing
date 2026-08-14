@@ -8,11 +8,20 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 import rarfile
+from cfc_dagster_utils.types import (
+    PostgresRelation,
+    PostgresTableSpec,
+    PostgresWriteMode,
+)
 
 import dagster as dg
 from census_processing.defs.assets.census_data.common import (
+    add_derived_columns_factory,
+    add_higher_levels_cvegeo,
     cast_all_columns_to_numeric,
-    merged_factory,
+    merge_census_and_geometry,
+    remove_unused_op_map,
+    rename_columns_factory,
 )
 from census_processing.defs.resources import PathResource
 
@@ -21,14 +30,10 @@ def get_names_from_archive(arc: cabarchive.CabArchive) -> list[str]:
     """
     Extract and clean the variable names from the archive.
 
-    Parameters
-    ----------
-    arc : cabarchive.CabArchive
-        The CAB archive object.
+    Args:
+        arc: The CAB archive object.
 
-    Returns
-    -------
-    list[str]
+    Returns:
         A list of cleaned variable names.
     """
     names = None
@@ -61,14 +66,10 @@ def decode_chunk(buffer: bytes) -> str:
     """
     Decode a chunk of bytes into a clean string.
 
-    Parameters
-    ----------
-    buffer : bytes
-        The byte buffer to decode.
+    Args:
+        buffer: The byte buffer to decode.
 
-    Returns
-    -------
-    str
+    Returns:
         The cleaned string.
     """
     return (
@@ -85,16 +86,11 @@ def fix_merged_element(elem: str, affix: str) -> list:
     """
     Fix elements that have merged with affixes like "N.D." or "*".
 
-    Parameters
-    ----------
-    elem : str
-        The element to fix.
-    affix : str
-        The affix to split on.
+    Args:
+        elem: The element to fix.
+        affix: The affix to split on.
 
-    Returns
-    -------
-    list
+    Returns:
         A list of fixed elements, with np.nan for missing values.
     """
     out = []
@@ -114,14 +110,10 @@ def process_chunk(chunk: str) -> list[str]:
     """
     Process a chunk of data, handling special cases.
 
-    Parameters
-    ----------
-    chunk : str
-        The chunk of data to process.
+    Args:
+        chunk: The chunk of data to process.
 
-    Returns
-    -------
-    list[str]
+    Returns:
         A list of processed elements.
     """
     elems = []
@@ -148,14 +140,10 @@ def chunk_to_dataframe(rows: list[str]) -> pd.DataFrame:
     """
     Convert a list of rows into a structured DataFrame.
 
-    Parameters
-    ----------
-    rows : list[str]
-        The list of rows to convert.
+    Args:
+        rows: The list of rows to convert.
 
-    Returns
-    -------
-    pd.DataFrame
+    Returns:
         The structured DataFrame.
     """
     if len(rows) % 171 != 0:
@@ -180,14 +168,10 @@ def extract_from_archive(arc: cabarchive.CabArchive) -> pd.DataFrame:
     """
     Extract and process census data from a CAB archive.
 
-    Parameters
-    ----------
-    arc : cabarchive.CabArchive
-        The CAB archive object.
+    Args:
+        arc: The CAB archive object.
 
-    Returns
-    -------
-    pd.DataFrame
+    Returns:
         The processed census DataFrame.
     """
 
@@ -211,7 +195,7 @@ def extract_from_archive(arc: cabarchive.CabArchive) -> pd.DataFrame:
     return pd.concat(df_census)
 
 
-@dg.op(name="census_2000_ageb")
+@dg.op(name="census_2000_ageb", ins={"demography": dg.In(dagster_type=dg.Nothing)})
 def census_2000_ageb(path_resource: PathResource) -> pd.DataFrame:
     raw_path = Path(path_resource.data_path) / "input"
 
@@ -247,7 +231,7 @@ def census_2000_ageb(path_resource: PathResource) -> pd.DataFrame:
     )
 
 
-@dg.op(name="geometry_2000_ageb")
+@dg.op(name="geometry_2000_ageb", ins={"geometry": dg.In(dagster_type=dg.Nothing)})
 def geometry_2000_ageb(path_resource: PathResource) -> gpd.GeoDataFrame:
     raw_path = Path(path_resource.data_path) / "input"
 
@@ -270,11 +254,42 @@ def geometry_2000_ageb(path_resource: PathResource) -> gpd.GeoDataFrame:
     ].to_crs("EPSG:6372")
 
 
-ageb_2000 = merged_factory(
-    census_op=census_2000_ageb,
-    geometry_op_map={"ageb": geometry_2000_ageb},
-    year=2000,
+PREPARED_TABLE_SPEC = PostgresTableSpec(
+    relation=PostgresRelation(
+        schema="staging",
+        name="census_2000_ageb_prepared",
+    ),
+    write_mode=PostgresWriteMode.REPLACE,
+    primary_key=("cvegeo",),
+    geometry_column="geometry",
 )
+
+
+@dg.graph_asset(
+    key=["census", "2000", "ageb_prepared"],
+    ins={
+        "demography": dg.AssetIn(
+            key=["input", "2000", "demography"], dagster_type=dg.Nothing
+        ),
+        "geometry": dg.AssetIn(
+            key=["input", "2000", "geometry", "ageb"], dagster_type=dg.Nothing
+        ),
+    },
+    metadata=PREPARED_TABLE_SPEC.to_dagster_metadata(),
+    group_name="census_2000",
+)
+def census_graph_2000(demography: None, geometry: None) -> gpd.GeoDataFrame:
+    census = census_2000_ageb(demography)
+    census = rename_columns_factory(2000)(census)
+    census = add_derived_columns_factory(2000)(census)
+
+    geometry = geometry_2000_ageb(geometry)
+
+    census = remove_unused_op_map["ageb"](census)
+    census = add_higher_levels_cvegeo(census)
+
+    return merge_census_and_geometry(census, geometry)
+
 
 # census_2000_non_agebs = census_1990_2000_factory(
 #     compressed_path=Path("2000", "cgpv2000_iter_00_csv.zip"),

@@ -204,7 +204,7 @@ extract_op_map = {
 }
 
 other_remove_op = remove_unused_columns_factory("other")
-remove_unused_op_map = {
+remove_unused_op_map: dict[str, dg.OpDefinition] = {
     "ent": remove_unused_columns_factory("ent"),
     "mun": remove_unused_columns_factory("mun"),
     "loc": remove_unused_columns_factory("loc"),
@@ -217,7 +217,7 @@ def add_derived_columns_factory(year: int) -> dg.OpDefinition:
     @dg.op(
         name=f"add_derived_columns_{year}",
     )
-    def _op(context: dg.OpExecutionContext, df: pd.DataFrame) -> pd.DataFrame:
+    def _op(df: pd.DataFrame) -> pd.DataFrame:
         with (
             Path(__file__).parent.parent.parent.parent.parent
             / "config"
