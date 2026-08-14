@@ -74,12 +74,12 @@ METROPOLI_TABLE_SPEC = PostgresTableSpec(
 @dg.graph_asset(
     key=["metropoli", "2020"],
     ins={
-        "metropolis_2020": dg.AssetIn(
+        "metropolis_2020_input": dg.AssetIn(
             key=["input", "metropolis_2020"], dagster_type=dg.Nothing
         )
     },
     group_name="metropoli",
     metadata=METROPOLI_TABLE_SPEC.to_dagster_metadata(),
 )
-def metropoli(metropolis_2020: None) -> gpd.GeoDataFrame:
-    return merge_metropoli_by_cve_met(load_metropoli_df(metropolis_2020))
+def metropoli(metropolis_2020_input: None) -> gpd.GeoDataFrame:
+    return merge_metropoli_by_cve_met(load_metropoli_df(metropolis_2020_input))

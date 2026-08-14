@@ -12,13 +12,13 @@ from cfc_dagster_utils.types import (
 
 import dagster as dg
 from census_processing.defs.assets.census_data.common import (
-    add_derived_columns_factory,
+    add_derived_columns_op_map,
     add_higher_levels_cvegeo,
     extract_op_map,
     full_census_2010_2020_factory,
     merge_census_and_geometry,
     remove_unused_op_map,
-    rename_columns_factory,
+    rename_columns_op_map,
 )
 from census_processing.defs.resources import PathResource
 
@@ -115,8 +115,8 @@ PREPARED_TABLE_SPEC = PostgresTableSpec(
 )
 def _asset(demography: None, geometry: None) -> gpd.GeoDataFrame:
     census = census_2010(demography)
-    census = rename_columns_factory(2010)(census)
-    census = add_derived_columns_factory(2010)(census)
+    census = rename_columns_op_map[2010](census)
+    census = add_derived_columns_op_map[2010](census)
     census = extract_op_map["ageb"](census)
     census = remove_unused_op_map["ageb"](census)
     census = add_higher_levels_cvegeo(census)
