@@ -6,7 +6,6 @@ from typing import Literal
 import geopandas as gpd
 import pandas as pd
 from cfc_dagster_utils.types import (
-    PostgresForeignKey,
     PostgresRelation,
     PostgresTableSpec,
     PostgresWriteMode,
@@ -24,9 +23,26 @@ from census_processing.defs.assets.census_data.common import (
 )
 from census_processing.defs.resources import PathResource
 
+PREPARED_TABLE_SPEC_MAP = {
+    key: PostgresTableSpec(
+        relation=PostgresRelation(
+            schema="staging",
+            name=f"census_2010_{key}_prepared",
+        ),
+        write_mode=PostgresWriteMode.REPLACE,
+        primary_key=("cvegeo",),
+        geometry_column="geometry",
+    )
+    for key in ("ageb", "mun", "ent")
+}
+
 
 def geometry_2010_factory(level: Literal["ageb", "mun", "ent"]) -> dg.OpDefinition:
-    suffix_map = {"ageb": ["au", "AGEB_urb"], "mun": ["m", "Municipios"]}
+    suffix_map = {
+        "ageb": ["au", "AGEB_urb"],
+        "mun": ["m", "Municipios"],
+        "ent": ["e", "Entidades"],
+    }
 
     @dg.op(
         name=f"geometry_2010_{level}",
@@ -98,27 +114,17 @@ geometry_2010_map: dict[str, dg.OpDefinition] = {
     level: geometry_2010_factory(level) for level in ("ageb", "mun", "ent")
 }
 
-PREPARED_ENT_TABLE_SPEC = PostgresTableSpec(
-    relation=PostgresRelation(
-        schema="public",
-        name="census_2010_ent",
-    ),
-    write_mode=PostgresWriteMode.REPLACE,
-    primary_key=("cvegeo",),
-    geometry_column="geometry",
-)
-
 
 @dg.graph_asset(
-    key=["census", "2010", "ent"],
+    key=["staging", "2010", "ent"],
     ins={
         "census": dg.AssetIn(key=["staging", "2010", "census"]),
         "geometry_dep": dg.AssetIn(
             key=["input", "2010", "geometry"], dagster_type=dg.Nothing
         ),
     },
-    metadata=PREPARED_ENT_TABLE_SPEC.to_dagster_metadata(),
-    group_name="census_2010",
+    metadata=PREPARED_TABLE_SPEC_MAP["ent"].to_dagster_metadata(),
+    group_name="staging_2010",
 )
 def _asset(census: pd.DataFrame, geometry_dep: None) -> dict[str, gpd.GeoDataFrame]:
     census = rename_columns_op_map[2010](census)
@@ -131,28 +137,16 @@ def _asset(census: pd.DataFrame, geometry_dep: None) -> dict[str, gpd.GeoDataFra
     return merge_census_and_geometry(census, geometry)
 
 
-PREPARED_MUN_TABLE_SPEC = PostgresTableSpec(
-    relation=PostgresRelation(
-        schema="public",
-        name="census_2010_mun",
-    ),
-    write_mode=PostgresWriteMode.REPLACE,
-    primary_key=("cvegeo",),
-    foreign_keys=(PostgresForeignKey(columns=("cve_ent",)),),
-    geometry_column="geometry",
-)
-
-
 @dg.graph_asset(
-    key=["census", "2010", "mun"],
+    key=["staging", "2010", "mun"],
     ins={
         "census": dg.AssetIn(key=["staging", "2010", "census"]),
         "geometry_dep": dg.AssetIn(
             key=["input", "2010", "geometry"], dagster_type=dg.Nothing
         ),
     },
-    metadata=PREPARED_MUN_TABLE_SPEC.to_dagster_metadata(),
-    group_name="census_2010",
+    metadata=PREPARED_TABLE_SPEC_MAP["mun"].to_dagster_metadata(),
+    group_name="staging_2010",
 )
 def mun_2010(census: pd.DataFrame, geometry_dep: None) -> gpd.GeoDataFrame:
     census = rename_columns_op_map[2010](census)
@@ -166,17 +160,6 @@ def mun_2010(census: pd.DataFrame, geometry_dep: None) -> gpd.GeoDataFrame:
     return merge_census_and_geometry(census, geometry)
 
 
-PREPARED_AGEB_TABLE_SPEC = PostgresTableSpec(
-    relation=PostgresRelation(
-        schema="staging",
-        name="census_2010_ageb_prepared",
-    ),
-    write_mode=PostgresWriteMode.REPLACE,
-    primary_key=("cvegeo",),
-    geometry_column="geometry",
-)
-
-
 @dg.graph_asset(
     key=["staging", "2010", "ageb"],
     ins={
@@ -185,7 +168,7 @@ PREPARED_AGEB_TABLE_SPEC = PostgresTableSpec(
             key=["input", "2010", "geometry"], dagster_type=dg.Nothing
         ),
     },
-    metadata=PREPARED_AGEB_TABLE_SPEC.to_dagster_metadata(),
+    metadata=PREPARED_TABLE_SPEC_MAP["ageb"].to_dagster_metadata(),
     group_name="staging_2010",
 )
 def ageb_2010_staging(census: pd.DataFrame, geometry_dep: None) -> gpd.GeoDataFrame:

@@ -1,0 +1,28 @@
+version: 2
+
+sources:
+  - name: census_staging
+    schema: staging
+    tables:
+      - name: census_2010_ent_prepared
+        meta:
+          dagster:
+            asset_key: ["staging", "2010", "ent"]
+
+      - name: census_2010_mun_prepared
+        meta:
+          dagster:
+            asset_key: ["staging", "2010", "mun"]
+
+      - name: census_2010_ageb_prepared
+        meta:
+          dagster:
+            asset_key: ["staging", "2010", "ageb"]
+
+  - name: published_inputs
+    schema: public
+    tables:
+      - name: metropoli_2020
+        meta:
+          dagster:
+            asset_key: ["metropoli", "2020"]

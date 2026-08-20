@@ -1,0 +1,31 @@
+version: 2
+
+models:
+  - name: census_2010_mun
+    description: 2010 census statistics aggregated by municipality.
+
+    config:
+      contract:
+        enforced: true
+
+      meta:
+        spatial: true
+        dagster:
+          asset_key: ["census", "2010", "mun"]
+          group: census_2010
+
+    constraints:
+      - type: primary_key
+        columns: [cvegeo]
+
+      - type: foreign_key
+        columns: [cve_ent]
+        to: ref("census_2010_ent")
+        to_columns: [cvegeo]
+
+    columns:
+      - name: cvegeo
+        data_type: text
+
+      - name: cve_ent
+        data_type: text

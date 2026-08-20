@@ -1,0 +1,44 @@
+version: 2
+
+models:
+  - name: census_2010_ageb
+    description: 2010 census statistics aggregated by AGEB.
+
+    config:
+      contract:
+        enforced: true
+
+      meta:
+        spatial: true
+        dagster:
+          asset_key: ["census", "2010", "ageb"]
+          group: census_2010
+
+    constraints:
+      - type: primary_key
+        columns: [cvegeo]
+
+      - type: foreign_key
+        columns: [cve_ent]
+        to: ref("census_2010_ent")
+        to_columns: [cvegeo]
+
+      - type: foreign_key
+        columns: [cve_mun]
+        to: ref("census_2010_mun")
+        to_columns: [cvegeo]
+
+      - type: foreign_key
+        columns: [cve_met]
+        to: source("published_inputs", "metropoli_2020")
+        to_columns: [cve_met]
+
+    columns:
+      - name: cvegeo
+        data_type: text
+
+      - name: cve_ent
+        data_type: text
+
+      - name: cve_mun
+        data_type: text

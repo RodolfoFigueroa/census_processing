@@ -1,0 +1,14 @@
+name: census_processing
+version: "1.0.0"
+config-version: 2
+
+profile: census_processing
+model-paths: ["models"]
+
+models:
+  census_processing:
+    census:
+      +materialized: table
+
+flags:
+  send_anonymous_usage_stats: false
