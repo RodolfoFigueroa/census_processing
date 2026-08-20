@@ -10,7 +10,7 @@ post_processing:
 ---
 type: cfc_dagster_utils.components.dvc.DvcInputComponent
 attributes:
-  key: input/2010/geometry/ageb
+  key: input/2010/geometry
   dvc_file: data/input/2010/702825292812_s.zip.dvc
 post_processing:
   assets:

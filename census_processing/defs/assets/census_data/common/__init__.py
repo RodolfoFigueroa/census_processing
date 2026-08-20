@@ -1,3 +1,6 @@
+from census_processing.defs.assets.census_data.common._ageb_1990_to_2010 import (
+    census_ageb_factory,
+)
 from census_processing.defs.assets.census_data.common._census_2010_2020 import (
     census_2010_2020_factory,
 )
@@ -23,6 +26,7 @@ __all__ = [
     "add_dummy_geometry",
     "add_higher_levels_cvegeo",
     "census_2010_2020_factory",
+    "census_ageb_factory",
     "extract_op_map",
     "get_loc_geometry_from_agebs",
     "merge_census_and_geometry",
