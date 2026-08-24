@@ -61,8 +61,9 @@ def merge_census_and_geometry(
                     "geometry",
                 ],
                 errors="coerce",
-                int_type="int32",
+                int_type="Int32",
                 float_type="float64",
+                make_valid_int=True,
             )
         )
         .pipe(gpd.GeoDataFrame, geometry="geometry", crs=geometry.crs)

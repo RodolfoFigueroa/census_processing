@@ -26,6 +26,389 @@ models:
     columns:
       - name: cvegeo
         data_type: text
-
       - name: cve_ent
         data_type: text
+      - name: geometry
+        data_type: geometry
+      - name: graproes
+        data_type: float
+      - name: graproes_f
+        data_type: float
+      - name: graproes_m
+        data_type: float
+      - name: hogjef_f
+        data_type: int
+      - name: hogjef_m
+        data_type: int
+      - name: nom_mun
+        data_type: text
+      - name: ocupvivpar
+        data_type: int
+      - name: p12a14noa
+        data_type: int
+      - name: p12a14noaf
+        data_type: int
+      - name: p12a14noam
+        data_type: int
+      - name: p12ym_casa
+        data_type: int
+      - name: p12ym_sepa
+        data_type: int
+      - name: p12ym_solt
+        data_type: int
+      - name: p15a17a
+        data_type: int
+      - name: p15a17a_f
+        data_type: int
+      - name: p15a17a_m
+        data_type: int
+      - name: p15pri_co
+        data_type: int
+      - name: p15pri_cof
+        data_type: int
+      - name: p15pri_com
+        data_type: int
+      - name: p15pri_in
+        data_type: int
+      - name: p15pri_inf
+        data_type: int
+      - name: p15pri_inm
+        data_type: int
+      - name: p15sec_co
+        data_type: int
+      - name: p15sec_cof
+        data_type: int
+      - name: p15sec_com
+        data_type: int
+      - name: p15sec_in
+        data_type: int
+      - name: p15sec_inf
+        data_type: int
+      - name: p15sec_inm
+        data_type: int
+      - name: p15ym_an
+        data_type: int
+      - name: p15ym_an_f
+        data_type: int
+      - name: p15ym_an_m
+        data_type: int
+      - name: p15ym_se
+        data_type: int
+      - name: p15ym_se_f
+        data_type: int
+      - name: p15ym_se_m
+        data_type: int
+      - name: p18a24a
+        data_type: int
+      - name: p18a24a_f
+        data_type: int
+      - name: p18a24a_m
+        data_type: int
+      - name: p18ym_pb
+        data_type: int
+      - name: p18ym_pb_f
+        data_type: int
+      - name: p18ym_pb_m
+        data_type: int
+      - name: p3a5_noa
+        data_type: int
+      - name: p3a5_noa_f
+        data_type: int
+      - name: p3a5_noa_m
+        data_type: int
+      - name: p3hli_he
+        data_type: int
+      - name: p3hli_he_f
+        data_type: int
+      - name: p3hli_he_m
+        data_type: int
+      - name: p3hlinhe
+        data_type: int
+      - name: p3hlinhe_f
+        data_type: int
+      - name: p3hlinhe_m
+        data_type: int
+      - name: p3ym_hli
+        data_type: int
+      - name: p3ym_hli_f
+        data_type: int
+      - name: p3ym_hli_m
+        data_type: int
+      - name: p5_hli
+        data_type: int
+      - name: p5_hli_he
+        data_type: int
+      - name: p5_hli_nhe
+        data_type: int
+      - name: p6a11_noa
+        data_type: int
+      - name: p6a11_noaf
+        data_type: int
+      - name: p6a11_noam
+        data_type: int
+      - name: p8a14an
+        data_type: int
+      - name: p8a14an_f
+        data_type: int
+      - name: p8a14an_m
+        data_type: int
+      - name: p_0a2
+        data_type: int
+      - name: p_0a2_f
+        data_type: int
+      - name: p_0a2_m
+        data_type: int
+      - name: p_12a14
+        data_type: int
+      - name: p_12a14_f
+        data_type: int
+      - name: p_12a14_m
+        data_type: int
+      - name: p_12ymas
+        data_type: int
+      - name: p_12ymas_f
+        data_type: int
+      - name: p_12ymas_m
+        data_type: int
+      - name: p_15a17
+        data_type: int
+      - name: p_15a17_f
+        data_type: int
+      - name: p_15a17_m
+        data_type: int
+      - name: p_15a49_f
+        data_type: int
+      - name: p_15ymas
+        data_type: int
+      - name: p_15ymas_f
+        data_type: int
+      - name: p_15ymas_m
+        data_type: int
+      - name: p_18a24
+        data_type: int
+      - name: p_18a24_f
+        data_type: int
+      - name: p_18a24_m
+        data_type: int
+      - name: p_18ymas
+        data_type: int
+      - name: p_18ymas_f
+        data_type: int
+      - name: p_18ymas_m
+        data_type: int
+      - name: p_3a5
+        data_type: int
+      - name: p_3a5_f
+        data_type: int
+      - name: p_3a5_m
+        data_type: int
+      - name: p_3ymas
+        data_type: int
+      - name: p_3ymas_f
+        data_type: int
+      - name: p_3ymas_m
+        data_type: int
+      - name: p_5ymas
+        data_type: int
+      - name: p_5ymas_f
+        data_type: int
+      - name: p_5ymas_m
+        data_type: int
+      - name: p_60ymas
+        data_type: int
+      - name: p_60ymas_f
+        data_type: int
+      - name: p_60ymas_m
+        data_type: int
+      - name: p_6a11
+        data_type: int
+      - name: p_6a11_f
+        data_type: int
+      - name: p_6a11_m
+        data_type: int
+      - name: p_8a14
+        data_type: int
+      - name: p_8a14_f
+        data_type: int
+      - name: p_8a14_m
+        data_type: int
+      - name: pcatolica
+        data_type: int
+      - name: pclim_aud
+        data_type: int
+      - name: pclim_leng
+        data_type: int
+      - name: pclim_men
+        data_type: int
+      - name: pclim_men2
+        data_type: int
+      - name: pclim_mot
+        data_type: int
+      - name: pclim_mot2
+        data_type: int
+      - name: pclim_vis
+        data_type: int
+      - name: pcon_lim
+        data_type: int
+      - name: pder_imss
+        data_type: int
+      - name: pder_iste
+        data_type: int
+      - name: pder_istee
+        data_type: int
+      - name: pder_segp
+        data_type: int
+      - name: pder_ss
+        data_type: int
+      - name: pdesocup
+        data_type: int
+      - name: pdesocup_f
+        data_type: int
+      - name: pdesocup_m
+        data_type: int
+      - name: pe_inac
+        data_type: int
+      - name: pe_inac_f
+        data_type: int
+      - name: pe_inac_m
+        data_type: int
+      - name: pea
+        data_type: int
+      - name: pea_f
+        data_type: int
+      - name: pea_m
+        data_type: int
+      - name: phog_ind
+        data_type: int
+      - name: phogjef_f
+        data_type: int
+      - name: phogjef_m
+        data_type: int
+      - name: pnacent
+        data_type: int
+      - name: pnacent_f
+        data_type: int
+      - name: pnacent_m
+        data_type: int
+      - name: pnacoe
+        data_type: int
+      - name: pnacoe_f
+        data_type: int
+      - name: pnacoe_m
+        data_type: int
+      - name: pncatolica
+        data_type: int
+      - name: pob0_14
+        data_type: int
+      - name: pob15_64
+        data_type: int
+      - name: pob65_mas
+        data_type: int
+      - name: pobfem
+        data_type: int
+      - name: pobhog
+        data_type: int
+      - name: pobmas
+        data_type: int
+      - name: pobtot
+        data_type: int
+      - name: pocupada
+        data_type: int
+      - name: pocupada_f
+        data_type: int
+      - name: pocupada_m
+        data_type: int
+      - name: potras_rel
+        data_type: int
+      - name: pres2005
+        data_type: int
+      - name: pres2005_f
+        data_type: int
+      - name: pres2005_m
+        data_type: int
+      - name: presoe05
+        data_type: int
+      - name: presoe05_f
+        data_type: int
+      - name: presoe05_m
+        data_type: int
+      - name: pro_ocup_c
+        data_type: float
+      - name: prom_hnv
+        data_type: float
+      - name: prom_ocup
+        data_type: float
+      - name: psin_lim
+        data_type: int
+      - name: psin_relig
+        data_type: int
+      - name: psinder
+        data_type: int
+      - name: rel_h_m
+        data_type: float
+      - name: tothog
+        data_type: int
+      - name: tvivhab
+        data_type: int
+      - name: tvivpar
+        data_type: int
+      - name: tvivparhab
+        data_type: int
+      - name: vivpar_des
+        data_type: int
+      - name: vivpar_hab
+        data_type: int
+      - name: vivpar_ut
+        data_type: int
+      - name: vivtot
+        data_type: int
+      - name: vph_1cuart
+        data_type: int
+      - name: vph_1dor
+        data_type: int
+      - name: vph_2cuart
+        data_type: int
+      - name: vph_2ymasd
+        data_type: int
+      - name: vph_3ymasc
+        data_type: int
+      - name: vph_aguadv
+        data_type: int
+      - name: vph_aguafv
+        data_type: int
+      - name: vph_autom
+        data_type: int
+      - name: vph_c_elec
+        data_type: int
+      - name: vph_c_serv
+        data_type: int
+      - name: vph_cel
+        data_type: int
+      - name: vph_drenaj
+        data_type: int
+      - name: vph_excsa
+        data_type: int
+      - name: vph_inter
+        data_type: int
+      - name: vph_lavad
+        data_type: int
+      - name: vph_nodren
+        data_type: int
+      - name: vph_pc
+        data_type: int
+      - name: vph_pisodt
+        data_type: int
+      - name: vph_pisoti
+        data_type: int
+      - name: vph_radio
+        data_type: int
+      - name: vph_refri
+        data_type: int
+      - name: vph_s_elec
+        data_type: int
+      - name: vph_snbien
+        data_type: int
+      - name: vph_telef
+        data_type: int
+      - name: vph_tv
+        data_type: int

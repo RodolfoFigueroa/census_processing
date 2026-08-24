@@ -6,4 +6,4 @@
 }}
 
 SELECT *
-FROM {{ source("census_staging", "census_2010_ent_prepared") }}
+FROM {{ source("census_staging", "census_2010_ent_prepared") }} 

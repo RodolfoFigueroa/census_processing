@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import get_args
 
 import geopandas as gpd
+import pandas as pd
 from cfc_dagster_utils.types import (
     PostgresRelation,
     PostgresTableSpec,
@@ -26,7 +27,6 @@ PREPARED_TABLE_SPEC_MAP = {
             name=f"denue_{key}_prepared",
         ),
         write_mode=PostgresWriteMode.REPLACE,
-        primary_key=("cvegeo",),
         geometry_column="geometry",
     )
     for key in DENUE_DATES
@@ -61,7 +61,7 @@ def read_df_fallback(path: Path) -> gpd.GeoDataFrame:
         return gpd.read_file(path, engine="fiona")
 
 
-@dg.op
+@dg.op(pool="denue_io")
 def process_denue_path(path: Path) -> gpd.GeoDataFrame:
     with zipfile.ZipFile(path) as zf, tempfile.TemporaryDirectory() as tmpdir:
         zf.extractall(tmpdir)
@@ -79,17 +79,36 @@ def process_denue_path(path: Path) -> gpd.GeoDataFrame:
                 raise DataSourceError(err) from e
 
         out.columns = out.columns.str.lower()
-        return out.drop(
-            columns=[
-                "latitud",
-                "longitud",
-                "cve_ent",
-                "cve_mun",
-                "cve_loc",
-                "ageb",
-                "manzana",
-            ]
-        ).to_crs("EPSG:6372")
+        return (
+            out.drop(
+                columns=[
+                    "latitud",
+                    "longitud",
+                    "cve_ent",
+                    "cve_mun",
+                    "cve_loc",
+                    "ageb",
+                    "manzana",
+                ]
+            )
+            .assign(
+                id=lambda df: df["id"].astype("int32"),
+                date_1=lambda df: (
+                    pd.to_datetime(
+                        df["fecha_alta"], format="%Y-%m", errors="coerce"
+                    ).dt.date
+                ),
+                date_2=lambda df: (
+                    pd.to_datetime(
+                        df["fecha_alta"], format="%Y %m", errors="coerce"
+                    ).dt.date
+                ),
+                fecha_alta=lambda df: df["date_1"].fillna(df["date_2"]),
+                codigo_act=lambda df: df["codigo_act"].astype("int32"),
+            )
+            .drop(columns=["date_1", "date_2"])
+            .to_crs("EPSG:6372")
+        )
 
 
 def denue_factory(date: DenueYearsT) -> dg.AssetsDefinition:

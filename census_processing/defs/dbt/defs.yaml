@@ -1,6 +1,6 @@
 type: dagster_dbt.DbtProjectComponent
 attributes:
   project: "{{ context.project_root }}/dbt"
-  select: "census_2010_ageb census_2010_mun census_2010_ent"
+  select: "census_2010_ageb census_2010_mun census_2010_ent denue_2020_11 denue_2021_11 denue_2022_11 denue_2023_11 denue_2024_11 denue_2025_05"
   cli_args:
     - build

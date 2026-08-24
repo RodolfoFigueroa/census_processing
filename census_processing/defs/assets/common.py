@@ -10,7 +10,9 @@ def concat_dataframes(chunks: list[pd.DataFrame]) -> pd.DataFrame:
 
 
 @dg.op(out=dg.Out(io_manager_key="postgres_manager"))
-def concat_geodataframes(gdfs: list[gpd.GeoDataFrame]) -> gpd.GeoDataFrame:
+def concat_geodataframes(
+    context: dg.OpExecutionContext, gdfs: list[gpd.GeoDataFrame]
+) -> gpd.GeoDataFrame:
     unique_crs = set()
     for i, gdf in enumerate(gdfs):
         crs = gdf.crs
@@ -30,6 +32,10 @@ def concat_geodataframes(gdfs: list[gpd.GeoDataFrame]) -> gpd.GeoDataFrame:
         err = f"Incompatible CRS found in GeoDataFrames: {unique_crs}"
         raise ValueError(err)
 
-    return gpd.GeoDataFrame(
-        pd.concat(gdfs, ignore_index=True), geometry="geometry", crs=unique_crs.pop()
+    out = pd.concat(gdfs, ignore_index=True).pipe(
+        lambda df: gpd.GeoDataFrame(df, geometry="geometry", crs=unique_crs.pop())
     )
+
+    context.log.info(out.columns)
+
+    return out

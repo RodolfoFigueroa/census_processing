@@ -1,0 +1,91 @@
+version: 2
+
+models:
+  - name: denue_2020_11
+    description: DENUE statistics for November 2020.
+
+    config:
+      contract:
+        enforced: true
+
+      meta:
+        spatial: true
+        dagster:
+          asset_key: ["denue", "2020_11"]
+          group: denue_2020_11
+
+    constraints:
+      - type: primary_key
+        columns: [id]
+
+    columns:
+      - name: id
+        data_type: int
+      - name: nom_estab
+        data_type: text
+      - name: raz_social
+        data_type: text
+      - name: codigo_act
+        data_type: int
+      - name: nombre_act
+        data_type: text
+      - name: per_ocu
+        data_type: text
+      - name: tipo_vial
+        data_type: text
+      - name: nom_vial
+        data_type: text
+      - name: tipo_v_e_1
+        data_type: text
+      - name: nom_v_e_1
+        data_type: text
+      - name: tipo_v_e_2
+        data_type: text
+      - name: nom_v_e_2
+        data_type: text
+      - name: tipo_v_e_3
+        data_type: text
+      - name: nom_v_e_3
+        data_type: text
+      - name: numero_ext
+        data_type: text
+      - name: letra_ext
+        data_type: text
+      - name: edificio
+        data_type: text
+      - name: edificio_e
+        data_type: text
+      - name: numero_int
+        data_type: text
+      - name: letra_int
+        data_type: text
+      - name: tipo_asent
+        data_type: text
+      - name: nomb_asent
+        data_type: text
+      - name: tipocencom
+        data_type: text
+      - name: nom_cencom
+        data_type: text
+      - name: num_local
+        data_type: text
+      - name: cod_postal
+        data_type: text
+      - name: entidad
+        data_type: text
+      - name: municipio
+        data_type: text
+      - name: localidad
+        data_type: text
+      - name: telefono
+        data_type: text
+      - name: correoelec
+        data_type: text
+      - name: www
+        data_type: text
+      - name: tipounieco
+        data_type: text
+      - name: fecha_alta
+        data_type: date
+      - name: geometry
+        data_type: geometry

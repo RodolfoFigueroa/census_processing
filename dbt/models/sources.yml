@@ -19,6 +19,36 @@ sources:
           dagster:
             asset_key: ["staging", "2010", "ageb"]
 
+      - name: denue_2020_11_prepared
+        meta:
+          dagster:
+            asset_key: ["staging", "denue", "2020_11"]
+
+      - name: denue_2021_11_prepared
+        meta:
+          dagster:
+            asset_key: ["staging", "denue", "2021_11"]
+
+      - name: denue_2022_11_prepared
+        meta:
+          dagster:
+            asset_key: ["staging", "denue", "2022_11"]
+
+      - name: denue_2023_11_prepared
+        meta:
+          dagster:
+            asset_key: ["staging", "denue", "2023_11"]
+
+      - name: denue_2024_11_prepared
+        meta:
+          dagster:
+            asset_key: ["staging", "denue", "2024_11"]
+
+      - name: denue_2025_05_prepared
+        meta:
+          dagster:
+            asset_key: ["staging", "denue", "2025_05"]
+
   - name: published_inputs
     schema: public
     tables:
