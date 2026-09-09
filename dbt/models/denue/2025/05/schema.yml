@@ -14,10 +14,6 @@ models:
           asset_key: ["denue", "2025_05"]
           group: denue_2025_05
 
-    constraints:
-      - type: primary_key
-        columns: [id]
-
     columns:
       - name: id
         data_type: int
@@ -87,5 +83,7 @@ models:
         data_type: text
       - name: fecha_alta
         data_type: date
+      - name: clee
+        data_type: text
       - name: geometry
         data_type: geometry

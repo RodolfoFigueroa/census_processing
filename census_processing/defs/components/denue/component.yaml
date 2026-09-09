@@ -1,0 +1,58 @@
+type: cfc_dagster_utils.components.dvc.DvcInputComponent
+attributes:
+  key: input/denue/2020_11
+  dvc_file: data/input/denue/2020_11.dvc
+post_processing:
+  assets:
+    - attributes:
+        group_name: "input_denue"
+
+---
+type: cfc_dagster_utils.components.dvc.DvcInputComponent
+attributes:
+  key: input/denue/2021_11
+  dvc_file: data/input/denue/2021_11.dvc
+post_processing:
+  assets:
+    - attributes:
+        group_name: "input_denue"
+
+---
+type: cfc_dagster_utils.components.dvc.DvcInputComponent
+attributes:
+  key: input/denue/2022_11
+  dvc_file: data/input/denue/2022_11.dvc
+post_processing:
+  assets:
+    - attributes:
+        group_name: "input_denue"
+
+---
+type: cfc_dagster_utils.components.dvc.DvcInputComponent
+attributes:
+  key: input/denue/2023_11
+  dvc_file: data/input/denue/2023_11.dvc
+post_processing:
+  assets:
+    - attributes:
+        group_name: "input_denue"
+
+---
+type: cfc_dagster_utils.components.dvc.DvcInputComponent
+attributes:
+  key: input/denue/2024_11
+  dvc_file: data/input/denue/2024_11.dvc
+post_processing:
+  assets:
+    - attributes:
+        group_name: "input_denue"
+
+---
+type: cfc_dagster_utils.components.dvc.DvcInputComponent
+attributes:
+  key: input/denue/2025_05
+  dvc_file: data/input/denue/2025_05.dvc
+post_processing:
+  assets:
+    - attributes:
+        group_name: "input_denue"

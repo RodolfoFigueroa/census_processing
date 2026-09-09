@@ -19,7 +19,11 @@ DENUE_DATES = get_args(DenueYearsT)
 def get_denue_paths_factory(
     date: DenueYearsT,
 ) -> dg.OpDefinition:
-    @dg.op(name=f"get_denue_paths_{date}", out=dg.DynamicOut())
+    @dg.op(
+        name=f"get_denue_paths_{date}",
+        ins={"denue_dir_dep": dg.In(dagster_type=dg.Nothing)},
+        out=dg.DynamicOut(),
+    )
     def _op(path_resource: PathResource) -> Iterator[dg.DynamicOutput[Path]]:
         denue_path = Path(path_resource.in_path) / "denue" / date
 
@@ -97,11 +101,12 @@ def process_denue_path(path: Path) -> gpd.GeoDataFrame:
 def denue_factory(date: DenueYearsT) -> dg.AssetsDefinition:
     @dg.graph_asset(
         key=["staging", "denue", date],
+        ins={"denue_dir_dep": dg.AssetIn(key=["input", "denue", date])},
         metadata={"schema": "staging", "table": f"denue_{date}_prepared"},
         group_name="staging_denue",
     )
-    def _asset() -> gpd.GeoDataFrame:
-        denue_paths = get_denue_paths_factory(date)()
+    def _asset(denue_dir_dep: None) -> gpd.GeoDataFrame:
+        denue_paths = get_denue_paths_op_map[date](denue_dir_dep=denue_dir_dep)
         return concat_geodataframes(denue_paths.map(process_denue_path).collect())
 
     return _asset
