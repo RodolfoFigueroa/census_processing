@@ -129,12 +129,16 @@ MUN_TABLE_SPEC = PostgresTableSpec(
         "metropoli_input": dg.AssetIn(
             key=["input", "metropolis_2020"], dagster_type=dg.Nothing
         ),
+        "metropoli_dep": dg.AssetIn(key=["metropoli", "2020"], dagster_type=dg.Nothing),
     },
     metadata=MUN_TABLE_SPEC.to_dagster_metadata(),
     group_name="census_2020",
 )
 def mun_2020(
-    census: pd.DataFrame, geometry_input: None, metropoli_input: None
+    census: pd.DataFrame,
+    geometry_input: None,
+    metropoli_input: None,
+    metropoli_dep: None,
 ) -> dict[str, gpd.GeoDataFrame]:
     census = rename_columns_op_map[2020](census)
     census = add_derived_columns_op_map[2020](census)
@@ -147,7 +151,7 @@ def mun_2020(
     df_metropoli = load_metropoli_df(metropoli_input)
     geometry_with_met = add_cve_met_column(geometry, df_metropoli)
 
-    return merge_census_and_geometry(census, geometry_with_met)
+    return merge_census_and_geometry(census, geometry_with_met, met_dep=metropoli_dep)
 
 
 AGEB_TABLE_SPEC = PostgresTableSpec(

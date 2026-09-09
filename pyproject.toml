@@ -30,6 +30,7 @@ dependencies = [
     "typer<0.26",
     "dagster-dbt>=0.29.17",
     "dbt-postgres>=1.11.0",
+    "dagster-postgres>=0.29.18",
 ]
 
 [tool.ruff.lint]

@@ -14,7 +14,7 @@ from cfc_dagster_utils.types import (
 import dagster as dg
 from census_processing.defs.assets.census_data.common import (
     add_derived_columns_op_map,
-    add_higher_levels_cvegeo,
+    add_one_higher_level_cvegeo,
     census_2010_2020_factory,
     extract_op_map,
     merge_census_and_geometry,
@@ -22,6 +22,15 @@ from census_processing.defs.assets.census_data.common import (
     rename_columns_op_map,
 )
 from census_processing.defs.resources import PathResource
+
+LEVELS_2010 = ("ent", "mun", "loc", "ageb")
+
+SUFFIX_MAP = {
+    "ent": ["e", "Entidades"],
+    "mun": ["m", "Municipios"],
+    "loc": ["lu", "Localidades_urbanas"],
+    "ageb": ["au", "AGEB_urb"],
+}
 
 PREPARED_TABLE_SPEC_MAP = {
     key: PostgresTableSpec(
@@ -33,17 +42,13 @@ PREPARED_TABLE_SPEC_MAP = {
         primary_key=("cvegeo",),
         geometry_column="geometry",
     )
-    for key in ("ageb", "mun", "ent")
+    for key in LEVELS_2010
 }
 
 
-def geometry_2010_factory(level: Literal["ageb", "mun", "ent"]) -> dg.OpDefinition:
-    suffix_map = {
-        "ageb": ["au", "AGEB_urb"],
-        "mun": ["m", "Municipios"],
-        "ent": ["e", "Entidades"],
-    }
-
+def geometry_2010_factory(
+    level: Literal["ageb", "mun", "ent", "loc"],
+) -> dg.OpDefinition:
     @dg.op(
         name=f"geometry_2010_{level}",
         ins={"demography": dg.In(dagster_type=dg.Nothing)},
@@ -59,12 +64,12 @@ def geometry_2010_factory(level: Literal["ageb", "mun", "ent"]) -> dg.OpDefiniti
             zf1.extractall(tmpdir_1)
 
             with zipfile.ZipFile(
-                Path(tmpdir_1) / f"mg{suffix_map[level][0]}2010v5_0.zip"
+                Path(tmpdir_1) / f"mg{SUFFIX_MAP[level][0]}2010v5_0.zip"
             ) as zf2:
                 zf2.extractall(tmpdir_2)
 
                 df = gpd.read_file(
-                    Path(tmpdir_2) / f"{suffix_map[level][1]}_2010_5.shp"
+                    Path(tmpdir_2) / f"{SUFFIX_MAP[level][1]}_2010_5.shp"
                 )
                 df.columns = df.columns.str.lower()
 
@@ -111,73 +116,38 @@ census_2010 = census_2010_2020_factory(
 )
 
 geometry_2010_map: dict[str, dg.OpDefinition] = {
-    level: geometry_2010_factory(level) for level in ("ageb", "mun", "ent")
+    level: geometry_2010_factory(level) for level in LEVELS_2010
 }
 
 
-@dg.graph_asset(
-    key=["staging", "2010", "ent"],
-    ins={
-        "census": dg.AssetIn(key=["staging", "2010", "census"]),
-        "geometry_dep": dg.AssetIn(
-            key=["input", "2010", "geometry"], dagster_type=dg.Nothing
-        ),
-    },
-    metadata=PREPARED_TABLE_SPEC_MAP["ent"].to_dagster_metadata(),
-    group_name="staging_2010",
-)
-def _asset(census: pd.DataFrame, geometry_dep: None) -> dict[str, gpd.GeoDataFrame]:
-    census = rename_columns_op_map[2010](census)
-    census = add_derived_columns_op_map[2010](census)
-    census = extract_op_map["ent"](census)
-    census = remove_unused_op_map["ent"](census)
+def full_2010_factory(
+    level: Literal["ent", "mun", "loc", "ageb"],
+) -> dg.AssetsDefinition:
+    @dg.graph_asset(
+        key=["staging", "2010", level],
+        ins={
+            "census": dg.AssetIn(key=["staging", "2010", "census"]),
+            "geometry_dep": dg.AssetIn(
+                key=["input", "2010", "geometry"], dagster_type=dg.Nothing
+            ),
+        },
+        metadata=PREPARED_TABLE_SPEC_MAP[level].to_dagster_metadata(),
+        group_name="staging_2010",
+    )
+    def _asset(census: pd.DataFrame, geometry_dep: None) -> dict[str, gpd.GeoDataFrame]:
+        census = rename_columns_op_map[2010](census)
+        census = add_derived_columns_op_map[2010](census)
+        census = extract_op_map[level](census)
+        census = remove_unused_op_map[level](census)
 
-    geometry = geometry_2010_map["ent"](geometry_dep)
+        if level != "ent":
+            census = add_one_higher_level_cvegeo(census)
 
-    return merge_census_and_geometry(census, geometry)
+        geometry = geometry_2010_map[level](geometry_dep)
 
+        return merge_census_and_geometry(census, geometry)
 
-@dg.graph_asset(
-    key=["staging", "2010", "mun"],
-    ins={
-        "census": dg.AssetIn(key=["staging", "2010", "census"]),
-        "geometry_dep": dg.AssetIn(
-            key=["input", "2010", "geometry"], dagster_type=dg.Nothing
-        ),
-    },
-    metadata=PREPARED_TABLE_SPEC_MAP["mun"].to_dagster_metadata(),
-    group_name="staging_2010",
-)
-def mun_2010(census: pd.DataFrame, geometry_dep: None) -> gpd.GeoDataFrame:
-    census = rename_columns_op_map[2010](census)
-    census = add_derived_columns_op_map[2010](census)
-    census = extract_op_map["mun"](census)
-    census = remove_unused_op_map["mun"](census)
-    census = add_higher_levels_cvegeo(census)
-
-    geometry = geometry_2010_map["mun"](geometry_dep)
-
-    return merge_census_and_geometry(census, geometry)
+    return _asset
 
 
-@dg.graph_asset(
-    key=["staging", "2010", "ageb"],
-    ins={
-        "census": dg.AssetIn(key=["staging", "2010", "census"]),
-        "geometry_dep": dg.AssetIn(
-            key=["input", "2010", "geometry"], dagster_type=dg.Nothing
-        ),
-    },
-    metadata=PREPARED_TABLE_SPEC_MAP["ageb"].to_dagster_metadata(),
-    group_name="staging_2010",
-)
-def ageb_2010_staging(census: pd.DataFrame, geometry_dep: None) -> gpd.GeoDataFrame:
-    census = rename_columns_op_map[2010](census)
-    census = add_derived_columns_op_map[2010](census)
-    census = extract_op_map["ageb"](census)
-    census = remove_unused_op_map["ageb"](census)
-    census = add_higher_levels_cvegeo(census)
-
-    geometry = geometry_2010_map["ageb"](geometry_dep)
-
-    return merge_census_and_geometry(census, geometry)
+dassets = [full_2010_factory(level) for level in LEVELS_2010]

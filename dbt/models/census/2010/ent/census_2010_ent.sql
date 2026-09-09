@@ -2,8 +2,8 @@
     config(
         materialized="table",
         alias="census_2010_ent",
+        indexes=spatial_index(),
     )
 }}
-
-SELECT *
-FROM {{ source("census_staging", "census_2010_ent_prepared") }} 
+select *
+from {{ source("census_staging", "census_2010_ent_prepared") }}

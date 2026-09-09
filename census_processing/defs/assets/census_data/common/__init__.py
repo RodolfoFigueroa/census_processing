@@ -11,6 +11,7 @@ from census_processing.defs.assets.census_data.common._extract import extract_op
 from census_processing.defs.assets.census_data.common._other import (
     add_dummy_geometry,
     add_higher_levels_cvegeo,
+    add_one_higher_level_cvegeo,
     get_loc_geometry_from_agebs,
     merge_census_and_geometry,
 )
@@ -25,6 +26,7 @@ __all__ = [
     "add_derived_columns_op_map",
     "add_dummy_geometry",
     "add_higher_levels_cvegeo",
+    "add_one_higher_level_cvegeo",
     "census_2010_2020_factory",
     "census_ageb_factory",
     "extract_op_map",

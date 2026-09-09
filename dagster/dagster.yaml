@@ -2,3 +2,17 @@ concurrency:
   pools:
     default_limit: 4
     granularity: op
+
+storage:
+  postgres:
+    postgres_db:
+      username:
+        env: POSTGRES_DAGSTER_USER
+      password:
+        env: POSTGRES_DAGSTER_PASSWORD
+      hostname:
+        env: POSTGRES_HOST
+      db_name:
+        env: POSTGRES_DAGSTER_DB
+      port:
+        env: POSTGRES_PORT
