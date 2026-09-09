@@ -1,0 +1,29 @@
+version: 2
+
+models:
+  - name: metropoli_2020
+    description: Metropolitan zones using 2020 definitions.
+
+    config:
+      contract:
+        enforced: true
+
+      meta:
+        spatial: true
+        dagster:
+          asset_key: ["metropoli", "2020"]
+          group: metropoli
+
+    constraints:
+      - type: primary_key
+        columns: [cve_met]
+
+    columns:
+      - name: cve_met
+        data_type: text
+      - name: nom_met
+        data_type: text
+      - name: tipo_met
+        data_type: text
+      - name: geometry
+        data_type: geometry

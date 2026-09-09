@@ -5,11 +5,6 @@ from typing import Literal
 
 import geopandas as gpd
 import pandas as pd
-from cfc_dagster_utils.types import (
-    PostgresRelation,
-    PostgresTableSpec,
-    PostgresWriteMode,
-)
 
 import dagster as dg
 from census_processing.defs.assets.census_data.common import (
@@ -30,19 +25,6 @@ SUFFIX_MAP = {
     "mun": ["m", "Municipios"],
     "loc": ["lu", "Localidades_urbanas"],
     "ageb": ["au", "AGEB_urb"],
-}
-
-PREPARED_TABLE_SPEC_MAP = {
-    key: PostgresTableSpec(
-        relation=PostgresRelation(
-            schema="staging",
-            name=f"census_2010_{key}_prepared",
-        ),
-        write_mode=PostgresWriteMode.REPLACE,
-        primary_key=("cvegeo",),
-        geometry_column="geometry",
-    )
-    for key in LEVELS_2010
 }
 
 
@@ -131,7 +113,7 @@ def full_2010_factory(
                 key=["input", "2010", "geometry"], dagster_type=dg.Nothing
             ),
         },
-        metadata=PREPARED_TABLE_SPEC_MAP[level].to_dagster_metadata(),
+        metadata={"schema": "staging", "table": f"census_2010_{level}_prepared"},
         group_name="staging_2010",
     )
     def _asset(census: pd.DataFrame, geometry_dep: None) -> dict[str, gpd.GeoDataFrame]:

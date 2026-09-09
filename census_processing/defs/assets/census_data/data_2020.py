@@ -5,17 +5,11 @@ from typing import Literal
 
 import geopandas as gpd
 import pandas as pd
-from cfc_dagster_utils.types import (
-    PostgresForeignKey,
-    PostgresRelation,
-    PostgresTableSpec,
-    PostgresWriteMode,
-)
 
 import dagster as dg
 from census_processing.defs.assets.census_data.common import (
     add_derived_columns_op_map,
-    add_higher_levels_cvegeo,
+    add_one_higher_level_cvegeo,
     census_2010_2020_factory,
     extract_op_map,
     merge_census_and_geometry,
@@ -24,7 +18,6 @@ from census_processing.defs.assets.census_data.common import (
 )
 from census_processing.defs.assets.metropoli import load_metropoli_df
 from census_processing.defs.resources import PathResource
-from census_processing.relations import METROPOLI_2020_RELATION, MUN_2020_RELATION
 
 SUFFIX_MAP = {
     "ent": ["ent"],
@@ -104,23 +97,8 @@ def add_cve_met_column(
     return df.assign(cve_met=df["cvegeo"].map(mun_to_met_map))
 
 
-MUN_TABLE_SPEC = PostgresTableSpec(
-    relation=MUN_2020_RELATION,
-    write_mode=PostgresWriteMode.REPLACE,
-    primary_key=("cvegeo",),
-    foreign_keys=(
-        PostgresForeignKey(
-            columns=("cve_met",),
-            referenced_relation=METROPOLI_2020_RELATION,
-            referenced_columns=("cve_met",),
-        ),
-    ),
-    geometry_column="geometry",
-)
-
-
 @dg.graph_asset(
-    key=["census", "2020", "mun"],
+    key=["staging", "2020", "mun"],
     ins={
         "census": dg.AssetIn(key=["staging", "2020", "census"]),
         "geometry_input": dg.AssetIn(
@@ -131,8 +109,8 @@ MUN_TABLE_SPEC = PostgresTableSpec(
         ),
         "metropoli_dep": dg.AssetIn(key=["metropoli", "2020"], dagster_type=dg.Nothing),
     },
-    metadata=MUN_TABLE_SPEC.to_dagster_metadata(),
-    group_name="census_2020",
+    metadata={"table": "census_2020_mun_prepared", "schema": "staging"},
+    group_name="staging_2020",
 )
 def mun_2020(
     census: pd.DataFrame,
@@ -144,7 +122,7 @@ def mun_2020(
     census = add_derived_columns_op_map[2020](census)
     census = extract_op_map["mun"](census)
     census = remove_unused_op_map["mun"](census)
-    census = add_higher_levels_cvegeo(census)
+    census = add_one_higher_level_cvegeo(census)
 
     geometry = geometry_2020_op_map["mun"](geometry_input)
 
@@ -154,45 +132,34 @@ def mun_2020(
     return merge_census_and_geometry(census, geometry_with_met, met_dep=metropoli_dep)
 
 
-AGEB_TABLE_SPEC = PostgresTableSpec(
-    relation=PostgresRelation(
-        schema="public",
-        name="census_2020_ageb",
-    ),
-    write_mode=PostgresWriteMode.REPLACE,
-    primary_key=("cvegeo",),
-    foreign_keys=(
-        PostgresForeignKey(
-            columns=("cve_mun",),
-            referenced_relation=MUN_2020_RELATION,
-            referenced_columns=("cvegeo",),
-        ),
-    ),
-    geometry_column="geometry",
-)
+def full_2020_factory(level: Literal["ent", "loc", "ageb"]) -> dg.AssetsDefinition:
+    @dg.graph_asset(
+        key=["staging", "2020", level],
+        ins={
+            "census": dg.AssetIn(key=["staging", "2020", "census"]),
+            "geometry_input": dg.AssetIn(
+                key=["input", "2020", "geometry"], dagster_type=dg.Nothing
+            ),
+        },
+        metadata={"table": f"census_2020_{level}_prepared", "schema": "staging"},
+        group_name="staging_2020",
+    )
+    def _asset(
+        census: pd.DataFrame, geometry_input: None
+    ) -> dict[str, gpd.GeoDataFrame]:
+        census = rename_columns_op_map[2020](census)
+        census = add_derived_columns_op_map[2020](census)
+        census = extract_op_map[level](census)
+        census = remove_unused_op_map[level](census)
+
+        if level != "ent":
+            census = add_one_higher_level_cvegeo(census)
+
+        geometry = geometry_2020_op_map[level](geometry_input)
+
+        return merge_census_and_geometry(census, geometry)
+
+    return _asset
 
 
-@dg.graph_asset(
-    key=["census", "2020", "ageb"],
-    ins={
-        "census": dg.AssetIn(key=["staging", "2020", "census"]),
-        "geometry_input": dg.AssetIn(
-            key=["input", "2020", "geometry"], dagster_type=dg.Nothing
-        ),
-        "mun_dep": dg.AssetIn(key=["census", "2020", "mun"], dagster_type=dg.Nothing),
-    },
-    metadata=AGEB_TABLE_SPEC.to_dagster_metadata(),
-    group_name="census_2020",
-)
-def ageb_2020(
-    census: pd.DataFrame, geometry_input: None, mun_dep: None
-) -> dict[str, gpd.GeoDataFrame]:
-    census = rename_columns_op_map[2020](census)
-    census = add_derived_columns_op_map[2020](census)
-    census = extract_op_map["ageb"](census)
-    census = remove_unused_op_map["ageb"](census)
-    census = add_higher_levels_cvegeo(census)
-
-    geometry = geometry_2020_op_map["ageb"](geometry_input)
-
-    return merge_census_and_geometry(census, geometry, mun_dep=mun_dep)
+dassets = [full_2020_factory(level) for level in ("ent", "loc", "ageb")]

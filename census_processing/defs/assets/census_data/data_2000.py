@@ -8,11 +8,6 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 import rarfile
-from cfc_dagster_utils.types import (
-    PostgresRelation,
-    PostgresTableSpec,
-    PostgresWriteMode,
-)
 from cfc_dagster_utils.utils import cast_all_columns_to_numeric
 
 import dagster as dg
@@ -254,17 +249,6 @@ def geometry_2000_ageb(path_resource: PathResource) -> gpd.GeoDataFrame:
     ].to_crs("EPSG:6372")
 
 
-PREPARED_TABLE_SPEC = PostgresTableSpec(
-    relation=PostgresRelation(
-        schema="staging",
-        name="census_2000_ageb_prepared",
-    ),
-    write_mode=PostgresWriteMode.REPLACE,
-    primary_key=("cvegeo",),
-    geometry_column="geometry",
-)
-
-
 @dg.graph_asset(
     key=["staging", "2000", "ageb"],
     ins={
@@ -275,7 +259,7 @@ PREPARED_TABLE_SPEC = PostgresTableSpec(
             key=["input", "2000", "geometry", "ageb"], dagster_type=dg.Nothing
         ),
     },
-    metadata=PREPARED_TABLE_SPEC.to_dagster_metadata(),
+    metadata={"schema": "staging", "table": "census_2000_ageb_prepared"},
     group_name="staging_2000",
 )
 def census_graph_2000(demography: None, geometry: None) -> gpd.GeoDataFrame:

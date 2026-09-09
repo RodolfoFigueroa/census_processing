@@ -7,11 +7,6 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 import rarfile
-from cfc_dagster_utils.types import (
-    PostgresRelation,
-    PostgresTableSpec,
-    PostgresWriteMode,
-)
 from cfc_dagster_utils.utils import cast_all_columns_to_numeric
 
 import dagster as dg
@@ -199,17 +194,6 @@ def geometry_1990_ageb(path_resource: PathResource) -> gpd.GeoDataFrame:
     )
 
 
-PREPARED_TABLE_SPEC = PostgresTableSpec(
-    relation=PostgresRelation(
-        schema="staging",
-        name="census_1990_ageb_prepared",
-    ),
-    write_mode=PostgresWriteMode.REPLACE,
-    primary_key=("cvegeo",),
-    geometry_column="geometry",
-)
-
-
 @dg.graph_asset(
     key=["staging", "1990", "ageb"],
     ins={
@@ -220,7 +204,7 @@ PREPARED_TABLE_SPEC = PostgresTableSpec(
             key=["input", "1990", "geometry", "ageb"], dagster_type=dg.Nothing
         ),
     },
-    metadata=PREPARED_TABLE_SPEC.to_dagster_metadata(),
+    metadata={"schema": "staging", "table": "census_1990_ageb_prepared"},
     group_name="staging_1990",
 )
 def census_graph_1990(demography: None, geometry: None) -> gpd.GeoDataFrame:

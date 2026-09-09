@@ -28,6 +28,30 @@ sources:
             dagster:
               asset_key: ["staging", "2010", "ageb"]
 
+      - name: census_2020_ent_prepared
+        config:
+          meta:
+            dagster:
+              asset_key: ["staging", "2020", "ent"]
+
+      - name: census_2020_mun_prepared
+        config:
+          meta:
+            dagster:
+              asset_key: ["staging", "2020", "mun"]
+
+      - name: census_2020_loc_prepared
+        config:
+          meta:
+            dagster:
+              asset_key: ["staging", "2020", "loc"]
+
+      - name: census_2020_ageb_prepared
+        config:
+          meta:
+            dagster:
+              asset_key: ["staging", "2020", "ageb"]
+
       - name: denue_2020_11_prepared
         config:
           meta:
@@ -64,11 +88,8 @@ sources:
             dagster:
               asset_key: ["staging", "denue", "2025_05"]
 
-  - name: published_inputs
-    schema: public
-    tables:
-      - name: metropoli_2020
+      - name: metropoli_2020_prepared
         config:
           meta:
             dagster:
-              asset_key: ["metropoli", "2020"]
+              asset_key: ["staging", "metropoli", "2020"]

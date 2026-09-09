@@ -23,7 +23,7 @@ left join
                     st_area(
                         st_intersection(ageb.geometry, metropoli.geometry)
                     ) as overlap_area
-                from {{ source("published_inputs", "metropoli_2020") }} as metropoli
+                from {{ ref("metropoli_2020") }} as metropoli
                 where st_intersects(ageb.geometry, metropoli.geometry)
             ) as ranked
         where ranked.overlap_area > 0

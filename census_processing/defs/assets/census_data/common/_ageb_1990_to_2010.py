@@ -1,11 +1,6 @@
 from typing import Literal
 
 import geopandas as gpd
-from cfc_dagster_utils.types import (
-    PostgresRelation,
-    PostgresTableSpec,
-    PostgresWriteMode,
-)
 
 import dagster as dg
 from census_processing.defs.assets.census_data.common._derived import (
@@ -23,25 +18,11 @@ from census_processing.defs.assets.census_data.common._rename import (
 )
 
 
-def _ageb_table_spec_factory(year: Literal[1990, 2000, 2010]) -> PostgresTableSpec:
-    return PostgresTableSpec(
-        relation=PostgresRelation(
-            schema="staging",
-            name=f"census_{year}_ageb_prepared",
-        ),
-        write_mode=PostgresWriteMode.REPLACE,
-        primary_key=("cvegeo",),
-        geometry_column="geometry",
-    )
-
-
 def census_ageb_factory(
     year: Literal[1990, 2000, 2010],
     census_op: dg.OpDefinition,
     geometry_op: dg.OpDefinition,
 ) -> dg.AssetsDefinition:
-    table_spec = _ageb_table_spec_factory(year)
-
     @dg.graph_asset(
         key=["staging", str(year), "ageb"],
         ins={
@@ -52,7 +33,7 @@ def census_ageb_factory(
                 key=["input", str(year), "geometry", "ageb"], dagster_type=dg.Nothing
             ),
         },
-        metadata=table_spec.to_dagster_metadata(),
+        metadata={"table": f"census_{year}_ageb_prepared", "schema": "staging"},
         group_name=f"staging_{year}",
     )
     def _asset(demography: None, geometry: None) -> gpd.GeoDataFrame:

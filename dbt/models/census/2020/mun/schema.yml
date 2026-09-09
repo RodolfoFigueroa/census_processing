@@ -1,8 +1,8 @@
 version: 2
 
 models:
-  - name: census_2010_ageb
-    description: 2010 census statistics aggregated by AGEB.
+  - name: census_2020_mun
+    description: 2020 census statistics aggregated by municipality.
 
     config:
       contract:
@@ -11,16 +11,16 @@ models:
       meta:
         spatial: true
         dagster:
-          asset_key: ["census", "2010", "ageb"]
-          group: census_2010
+          asset_key: ["census", "2020", "mun"]
+          group: census_2020
 
     constraints:
       - type: primary_key
         columns: [cvegeo]
 
       - type: foreign_key
-        columns: [cve_loc]
-        to: ref("census_2010_loc")
+        columns: [cve_ent]
+        to: ref("census_2020_ent")
         to_columns: [cvegeo]
 
       - type: foreign_key
@@ -31,12 +31,14 @@ models:
     columns:
       - name: cvegeo
         data_type: text
-      - name: cve_loc
+      - name: geometry
+        data_type: geometry
+      - name: cve_ent
         data_type: text
       - name: cve_met
         data_type: text
-      - name: geometry
-        data_type: geometry
+      - name: nom_mun
+        data_type: text
       - name: graproes
         data_type: float
       - name: graproes_f
@@ -237,25 +239,47 @@ models:
         data_type: int
       - name: p_8a14_m
         data_type: int
+      - name: pafil_ipriv
+        data_type: int
+      - name: pafil_otrai
+        data_type: int
+      - name: pafil_pdom
+        data_type: int
       - name: pcatolica
         data_type: int
-      - name: pclim_aud
+      - name: pcdisc_aud
         data_type: int
-      - name: pclim_leng
+      - name: pcdisc_leng
         data_type: int
-      - name: pclim_men
+      - name: pcdisc_men
         data_type: int
-      - name: pclim_men2
+      - name: pcdisc_mot
         data_type: int
-      - name: pclim_mot
+      - name: pcdisc_mot2
+        data_type: int
+      - name: pcdisc_vis
+        data_type: int
+      - name: pclim_csb
+        data_type: int
+      - name: pclim_haco
         data_type: int
       - name: pclim_mot2
         data_type: int
+      - name: pclim_oaud
+        data_type: int
+      - name: pclim_pmen
+        data_type: int
+      - name: pclim_re_co
+        data_type: int
       - name: pclim_vis
         data_type: int
-      - name: pcon_lim
+      - name: pcon_disc
+        data_type: int
+      - name: pcon_limi
         data_type: int
       - name: pder_imss
+        data_type: int
+      - name: pder_imssb
         data_type: int
       - name: pder_iste
         data_type: int
@@ -301,13 +325,17 @@ models:
         data_type: int
       - name: pnacoe_m
         data_type: int
-      - name: pncatolica
-        data_type: int
       - name: pob0_14
         data_type: int
       - name: pob15_64
         data_type: int
       - name: pob65_mas
+        data_type: int
+      - name: pob_afro
+        data_type: int
+      - name: pob_afro_f
+        data_type: int
+      - name: pob_afro_m
         data_type: int
       - name: pobfem
         data_type: int
@@ -325,17 +353,19 @@ models:
         data_type: int
       - name: potras_rel
         data_type: int
-      - name: pres2005
+      - name: pres2015
         data_type: int
-      - name: pres2005_f
+      - name: pres2015_f
         data_type: int
-      - name: pres2005_m
+      - name: pres2015_m
         data_type: int
-      - name: presoe05
+      - name: presoe15
         data_type: int
-      - name: presoe05_f
+      - name: presoe15_f
         data_type: int
-      - name: presoe05_m
+      - name: presoe15_m
+        data_type: int
+      - name: pro_crieva
         data_type: int
       - name: pro_ocup_c
         data_type: float
@@ -343,7 +373,7 @@ models:
         data_type: float
       - name: prom_ocup
         data_type: float
-      - name: psin_lim
+      - name: psind_lim
         data_type: int
       - name: psin_relig
         data_type: int
@@ -365,6 +395,8 @@ models:
         data_type: int
       - name: vivpar_ut
         data_type: int
+      - name: vivparh_cv
+        data_type: int
       - name: vivtot
         data_type: int
       - name: vph_1cuart
@@ -377,11 +409,15 @@ models:
         data_type: int
       - name: vph_3ymasc
         data_type: int
+      - name: vph_aeasp
+        data_type: int
       - name: vph_aguadv
         data_type: int
       - name: vph_aguafv
         data_type: int
       - name: vph_autom
+        data_type: int
+      - name: vph_bici
         data_type: int
       - name: vph_c_elec
         data_type: int
@@ -389,13 +425,29 @@ models:
         data_type: int
       - name: vph_cel
         data_type: int
+      - name: vph_cister
+        data_type: int
+      - name: vph_cvj
+        data_type: int
       - name: vph_drenaj
         data_type: int
+      - name: vph_dsadma
+        data_type: int
       - name: vph_excsa
+        data_type: int
+      - name: vph_hmicro
         data_type: int
       - name: vph_inter
         data_type: int
       - name: vph_lavad
+        data_type: int
+      - name: vph_letr
+        data_type: int
+      - name: vph_moto
+        data_type: int
+      - name: vph_ndacmm
+        data_type: int
+      - name: vph_ndeaed
         data_type: int
       - name: vph_nodren
         data_type: int
@@ -411,9 +463,23 @@ models:
         data_type: int
       - name: vph_s_elec
         data_type: int
+      - name: vph_sincint
+        data_type: int
+      - name: vph_sinltc
+        data_type: int
+      - name: vph_sinrtv
+        data_type: int
+      - name: vph_sintic
+        data_type: int
       - name: vph_snbien
         data_type: int
+      - name: vph_spmvpi
+        data_type: int
+      - name: vph_stvp
+        data_type: int
       - name: vph_telef
+        data_type: int
+      - name: vph_tinaco
         data_type: int
       - name: vph_tv
         data_type: int

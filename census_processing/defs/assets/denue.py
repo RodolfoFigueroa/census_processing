@@ -6,11 +6,6 @@ from typing import get_args
 
 import geopandas as gpd
 import pandas as pd
-from cfc_dagster_utils.types import (
-    PostgresRelation,
-    PostgresTableSpec,
-    PostgresWriteMode,
-)
 from pyogrio.errors import DataSourceError, FeatureError
 
 import dagster as dg
@@ -19,18 +14,6 @@ from census_processing.defs.resources import PathResource
 from census_processing.types import DenueYearsT
 
 DENUE_DATES = get_args(DenueYearsT)
-
-PREPARED_TABLE_SPEC_MAP = {
-    key: PostgresTableSpec(
-        relation=PostgresRelation(
-            schema="staging",
-            name=f"denue_{key}_prepared",
-        ),
-        write_mode=PostgresWriteMode.REPLACE,
-        geometry_column="geometry",
-    )
-    for key in DENUE_DATES
-}
 
 
 def get_denue_paths_factory(
@@ -114,7 +97,7 @@ def process_denue_path(path: Path) -> gpd.GeoDataFrame:
 def denue_factory(date: DenueYearsT) -> dg.AssetsDefinition:
     @dg.graph_asset(
         key=["staging", "denue", date],
-        metadata=PREPARED_TABLE_SPEC_MAP[date].to_dagster_metadata(),
+        metadata={"schema": "staging", "table": f"denue_{date}_prepared"},
         group_name="staging_denue",
     )
     def _asset() -> gpd.GeoDataFrame:
