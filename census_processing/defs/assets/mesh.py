@@ -10,10 +10,11 @@ from census_processing.defs.resources import PathResource
 
 def mesh_factory(level: int) -> dg.AssetsDefinition:
     @dg.asset(
-        key=f"mesh_level_{level}",
+        key=["staging", "mesh", f"level_{level}"],
+        deps=[["input", "mesh"]],
         io_manager_key="postgres_manager",
-        group_name="mesh",
-        metadata={"table_name": f"mesh_level_{level}", "primary_key": "codigo"},
+        group_name="staging_mesh",
+        metadata={"table": f"mesh_level_{level}_prepared", "schema": "staging"},
     )
     def _asset(path_resource: PathResource) -> gpd.GeoDataFrame:
         if level < 4 or level > 10:
@@ -27,14 +28,14 @@ def mesh_factory(level: int) -> dg.AssetsDefinition:
             zf.extractall(tmpdir)
             tmpdir_path = Path(tmpdir)
 
-            if level != 10:
-                fpath = "malla_niveles_4_al_9_continental_e_islas.gpkg"
-                zip_path = "malla_niveles_4_al_9_continental_e_islas_gpk.zip"
-                layer = f"n{level}"
-            else:
+            if level == 10:
                 fpath = "malla_nivel10.gpkg"
                 zip_path = "malla_nivel10_gpk.zip"
                 layer = None
+            else:
+                fpath = "malla_niveles_4_al_9_continental_e_islas.gpkg"
+                zip_path = "malla_niveles_4_al_9_continental_e_islas_gpk.zip"
+                layer = f"n{level}"
 
             with (
                 tempfile.TemporaryDirectory() as tmpdir2,

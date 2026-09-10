@@ -93,3 +93,9 @@ sources:
           meta:
             dagster:
               asset_key: ["staging", "metropoli", "2020"]
+
+      - name: mesh_level_9_prepared
+        config:
+          meta:
+            dagster:
+              asset_key: ["staging", "mesh", "level_9"]

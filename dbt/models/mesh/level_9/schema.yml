@@ -1,0 +1,25 @@
+version: 2
+
+models:
+  - name: mesh_level_9
+    description: Geostatistical mesh at level 9 (~470 m).
+
+    config:
+      contract:
+        enforced: true
+
+      meta:
+        spatial: true
+        dagster:
+          asset_key: ["mesh", "level_9"]
+          group: mesh
+
+    constraints:
+      - type: primary_key
+        columns: [codigo]
+
+    columns:
+      - name: codigo
+        data_type: text
+      - name: geometry
+        data_type: geometry

@@ -1,0 +1,8 @@
+type: cfc_dagster_utils.components.dvc.DvcInputComponent
+attributes:
+  key: input/mesh
+  dvc_file: data/input/889463868842_gpk.zip.dvc
+post_processing:
+  assets:
+    - attributes:
+        group_name: "input_mesh"
