@@ -2,6 +2,7 @@
     config(
         materialized="table",
         alias="denue_2023_11",
+        indexes=spatial_index(),
     )
 }}
 

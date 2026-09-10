@@ -12,11 +12,7 @@ models:
         spatial: true
         dagster:
           asset_key: ["denue", "2021_11"]
-          group: denue_2021_11
-
-    constraints:
-      - type: primary_key
-        columns: [id]
+          group: denue
 
     columns:
       - name: id
@@ -87,5 +83,7 @@ models:
         data_type: text
       - name: fecha_alta
         data_type: date
+      - name: clee
+        data_type: text
       - name: geometry
         data_type: geometry

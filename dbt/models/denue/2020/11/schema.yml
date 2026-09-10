@@ -12,11 +12,7 @@ models:
         spatial: true
         dagster:
           asset_key: ["denue", "2020_11"]
-          group: denue_2020_11
-
-    constraints:
-      - type: primary_key
-        columns: [id]
+          group: denue
 
     columns:
       - name: id

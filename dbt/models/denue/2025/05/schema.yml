@@ -12,7 +12,7 @@ models:
         spatial: true
         dagster:
           asset_key: ["denue", "2025_05"]
-          group: denue_2025_05
+          group: denue
 
     columns:
       - name: id
