@@ -7,13 +7,25 @@ import geopandas as gpd
 import pandas as pd
 
 import dagster as dg
-from census_processing.defs.assets.census_data.common import (
-    add_derived_columns_op_map,
-    add_one_higher_level_cvegeo,
+from census_processing.defs.assets.census_data.common.census_2010_2020 import (
     census_2010_2020_factory,
+)
+from census_processing.defs.assets.census_data.common.cvegeo import (
+    add_one_higher_level_cvegeo,
+)
+from census_processing.defs.assets.census_data.common.derived import (
+    add_derived_columns_op_map,
+)
+from census_processing.defs.assets.census_data.common.extract import (
     extract_op_map,
+)
+from census_processing.defs.assets.census_data.common.geometry import (
     merge_census_and_geometry,
+)
+from census_processing.defs.assets.census_data.common.remove_unused import (
     remove_unused_op_map,
+)
+from census_processing.defs.assets.census_data.common.rename import (
     rename_columns_op_map,
 )
 from census_processing.defs.assets.metropoli import load_metropoli_df
@@ -79,9 +91,9 @@ geometry_2020_op_map = {
 }
 
 census_2020 = census_2010_2020_factory(
-    key=["staging", "2020", "census"],  # ty: ignore[invalid-argument-type]
+    key=["staging", "2020", "census", "demographics"],  # ty: ignore[invalid-argument-type]
     io_manager_key="dataframe_file_manager",  # ty: ignore[invalid-argument-type]
-    group_name="staging_2020",  # ty: ignore[invalid-argument-type]
+    group_name="staging_census_2020",  # ty: ignore[invalid-argument-type]
     year=2020,
     zip_template="ageb_mza_urbana_{i:02d}_cpv2020_csv.zip",
     inner_dir_template="ageb_mza_urbana_{i:02d}_cpv2020",
@@ -98,9 +110,9 @@ def add_cve_met_column(
 
 
 @dg.graph_asset(
-    key=["staging", "2020", "mun"],
+    key=["staging", "2020", "census", "mun"],
     ins={
-        "census": dg.AssetIn(key=["staging", "2020", "census"]),
+        "census": dg.AssetIn(key=["staging", "2020", "census", "demographics"]),
         "geometry_input": dg.AssetIn(
             key=["input", "2020", "geometry"], dagster_type=dg.Nothing
         ),
@@ -110,7 +122,7 @@ def add_cve_met_column(
         "metropoli_dep": dg.AssetIn(key=["metropoli", "2020"], dagster_type=dg.Nothing),
     },
     metadata={"table": "census_2020_mun_prepared", "schema": "staging"},
-    group_name="staging_2020",
+    group_name="staging_census_2020",
 )
 def mun_2020(
     census: pd.DataFrame,
@@ -134,15 +146,15 @@ def mun_2020(
 
 def full_2020_factory(level: Literal["ent", "loc", "ageb"]) -> dg.AssetsDefinition:
     @dg.graph_asset(
-        key=["staging", "2020", level],
+        key=["staging", "2020", "census", level],
         ins={
-            "census": dg.AssetIn(key=["staging", "2020", "census"]),
+            "census": dg.AssetIn(key=["staging", "2020", "census", "demographics"]),
             "geometry_input": dg.AssetIn(
                 key=["input", "2020", "geometry"], dagster_type=dg.Nothing
             ),
         },
         metadata={"table": f"census_2020_{level}_prepared", "schema": "staging"},
-        group_name="staging_2020",
+        group_name="staging_census_2020",
     )
     def _asset(
         census: pd.DataFrame, geometry_input: None

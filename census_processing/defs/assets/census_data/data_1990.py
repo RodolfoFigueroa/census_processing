@@ -10,13 +10,21 @@ import rarfile
 from cfc_dagster_utils.utils import cast_all_columns_to_numeric
 
 import dagster as dg
-from census_processing.defs.assets.census_data.common import (
-    add_derived_columns_op_map,
-    add_dummy_geometry,
+from census_processing.defs.assets.census_data.common.cvegeo import (
     add_higher_levels_cvegeo,
+)
+from census_processing.defs.assets.census_data.common.derived import (
+    add_derived_columns_op_map,
+)
+from census_processing.defs.assets.census_data.common.geometry import (
+    add_dummy_geometry,
     get_loc_geometry_from_agebs,
     merge_census_and_geometry,
+)
+from census_processing.defs.assets.census_data.common.remove_unused import (
     remove_unused_op_map,
+)
+from census_processing.defs.assets.census_data.common.rename import (
     rename_columns_op_map,
 )
 from census_processing.defs.resources import PathResource
@@ -48,7 +56,9 @@ def extract_census_level_factory(
             .assign(cvegeo=lambda df: df.index.str.slice(0, cutoff))
             .reset_index(drop=True)
         )
-        out = cast_all_columns_to_numeric(out, ignore=["nombre", "cvegeo"])
+        out = cast_all_columns_to_numeric(
+            out, ignore=["nombre", "cvegeo"], prefer_integer=True
+        )
         return pd.DataFrame(
             out[["cvegeo"] + [col for col in out.columns if col != "cvegeo"]],
         )
@@ -165,7 +175,8 @@ def census_1990_ageb(path_resource: PathResource) -> pd.DataFrame:
                 df.append(df_temp)
 
     out = pd.concat(df).replace(["*", "N.D.", "N/D"], np.nan).sort_index()
-    out = cast_all_columns_to_numeric(out)
+    out = cast_all_columns_to_numeric(out, prefer_integer=True)
+    out.columns = out.columns.astype(str).str.lower()
     return out.reset_index(names="cvegeo")
 
 
@@ -195,7 +206,7 @@ def geometry_1990_ageb(path_resource: PathResource) -> gpd.GeoDataFrame:
 
 
 @dg.graph_asset(
-    key=["staging", "1990", "ageb"],
+    key=["staging", "1990", "census", "ageb"],
     ins={
         "demography": dg.AssetIn(
             key=["input", "1990", "demography"], dagster_type=dg.Nothing
@@ -205,7 +216,7 @@ def geometry_1990_ageb(path_resource: PathResource) -> gpd.GeoDataFrame:
         ),
     },
     metadata={"schema": "staging", "table": "census_1990_ageb_prepared"},
-    group_name="staging_1990",
+    group_name="staging_census_1990",
 )
 def census_graph_1990(demography: None, geometry: None) -> gpd.GeoDataFrame:
     census = census_1990_ageb(demography)

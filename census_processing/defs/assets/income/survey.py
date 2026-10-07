@@ -96,7 +96,11 @@ def process_income_df(df_income: pd.DataFrame) -> pd.DataFrame:
     return (
         df_income[["folioviv", "foliohog", "numren", "ing_tri"]]
         .assign(folioviv=lambda df: df["folioviv"].transform(fix_folioviv))
-        .pipe(cast_all_columns_to_numeric, ignore=["folioviv"], errors="raise")
+        .pipe(
+            lambda df: cast_all_columns_to_numeric(
+                df, ignore=["folioviv"], prefer_integer=True
+            )
+        )
         .groupby(["folioviv", "foliohog", "numren"])
         .agg(sum)
         .reset_index()
@@ -109,7 +113,11 @@ def process_home_df(df_home: pd.DataFrame) -> pd.DataFrame:
     return (
         df_home[["folioviv", "foliohog", "conex_inte"]]
         .assign(folioviv=lambda df: df["folioviv"].transform(fix_folioviv))
-        .pipe(cast_all_columns_to_numeric, ignore=["folioviv"], errors="raise")
+        .pipe(
+            lambda df: cast_all_columns_to_numeric(
+                df, prefer_integer=True, ignore=["folioviv"]
+            )
+        )
         .rename(columns={"conex_inte": "ConexionInt"}, errors="raise")
         .assign(
             ConexionInt=lambda df: (
@@ -140,7 +148,11 @@ def process_pop_df(df_pop: pd.DataFrame) -> pd.DataFrame:
         .replace(" ", pd.NA)
         .fillna(0)
         .assign(folioviv=lambda df: df["folioviv"].transform(fix_folioviv))
-        .pipe(cast_all_columns_to_numeric, ignore=["folioviv"], errors="raise")
+        .pipe(
+            lambda df: cast_all_columns_to_numeric(
+                df, prefer_integer=True, ignore=["folioviv"]
+            )
+        )
         .query("edad >= 15")
         .rename(
             columns={

@@ -7,13 +7,25 @@ import geopandas as gpd
 import pandas as pd
 
 import dagster as dg
-from census_processing.defs.assets.census_data.common import (
-    add_derived_columns_op_map,
-    add_one_higher_level_cvegeo,
+from census_processing.defs.assets.census_data.common.census_2010_2020 import (
     census_2010_2020_factory,
+)
+from census_processing.defs.assets.census_data.common.cvegeo import (
+    add_one_higher_level_cvegeo,
+)
+from census_processing.defs.assets.census_data.common.derived import (
+    add_derived_columns_op_map,
+)
+from census_processing.defs.assets.census_data.common.extract import (
     extract_op_map,
+)
+from census_processing.defs.assets.census_data.common.geometry import (
     merge_census_and_geometry,
+)
+from census_processing.defs.assets.census_data.common.remove_unused import (
     remove_unused_op_map,
+)
+from census_processing.defs.assets.census_data.common.rename import (
     rename_columns_op_map,
 )
 from census_processing.defs.resources import PathResource
@@ -88,9 +100,9 @@ def geometry_2010_factory(
 
 
 census_2010 = census_2010_2020_factory(
-    key=["staging", "2010", "census"],  # ty: ignore[invalid-argument-type]
+    key=["staging", "2010", "census", "demographics"],  # ty: ignore[invalid-argument-type]
     io_manager_key="dataframe_file_manager",  # ty: ignore[invalid-argument-type]
-    group_name="staging_2010",  # ty: ignore[invalid-argument-type]
+    group_name="staging_census_2010",  # ty: ignore[invalid-argument-type]
     year=2010,
     zip_template="resageburb_{i:02d}_2010_csv.zip",
     inner_dir_template="resultados_ageb_urbana_{i:02d}_cpv2010",
@@ -106,15 +118,15 @@ def full_2010_factory(
     level: Literal["ent", "mun", "loc", "ageb"],
 ) -> dg.AssetsDefinition:
     @dg.graph_asset(
-        key=["staging", "2010", level],
+        key=["staging", "2010", "census", level],
         ins={
-            "census": dg.AssetIn(key=["staging", "2010", "census"]),
+            "census": dg.AssetIn(key=["staging", "2010", "census", "demographics"]),
             "geometry_dep": dg.AssetIn(
                 key=["input", "2010", "geometry"], dagster_type=dg.Nothing
             ),
         },
         metadata={"schema": "staging", "table": f"census_2010_{level}_prepared"},
-        group_name="staging_2010",
+        group_name="staging_census_2010",
     )
     def _asset(census: pd.DataFrame, geometry_dep: None) -> dict[str, gpd.GeoDataFrame]:
         census = rename_columns_op_map[2010](census)

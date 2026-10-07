@@ -114,7 +114,11 @@ def load_census(postgres_resource: PostgresResource, met_zone: str) -> pd.DataFr
                 conn,
                 params={"zone": met_zone},
             )
-            .pipe(cast_all_columns_to_numeric, ignore=["cvegeo"])
+            .pipe(
+                lambda df: cast_all_columns_to_numeric(
+                    df, prefer_integer=True, ignore=["cvegeo"]
+                )
+            )
             .dropna()
             .loc[lambda df: df["p_15ymas"] > 20]
             .pipe(add_internet_cols)
@@ -141,7 +145,11 @@ def load_census(postgres_resource: PostgresResource, met_zone: str) -> pd.DataFr
                     "pobtot",
                 ]
             )
-            .pipe(cast_all_columns_to_numeric, ignore=["cvegeo"], make_valid_int=True)
+            .pipe(
+                lambda df: cast_all_columns_to_numeric(
+                    df, ignore=["cvegeo"], prefer_integer=True
+                )
+            )
         )
 
     cols = sorted(df_censo.columns.drop(["p_15ymas", "cvegeo"]))
@@ -158,7 +166,7 @@ def load_census(postgres_resource: PostgresResource, met_zone: str) -> pd.DataFr
             raise ValueError(err)
 
     return df_censo.set_index("cvegeo").pipe(
-        cast_all_columns_to_numeric, make_valid_int=True
+        lambda df: cast_all_columns_to_numeric(df, prefer_integer=True)
     )
 
 

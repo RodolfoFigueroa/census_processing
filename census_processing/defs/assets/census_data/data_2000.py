@@ -11,11 +11,19 @@ import rarfile
 from cfc_dagster_utils.utils import cast_all_columns_to_numeric
 
 import dagster as dg
-from census_processing.defs.assets.census_data.common import (
-    add_derived_columns_op_map,
+from census_processing.defs.assets.census_data.common.cvegeo import (
     add_higher_levels_cvegeo,
+)
+from census_processing.defs.assets.census_data.common.derived import (
+    add_derived_columns_op_map,
+)
+from census_processing.defs.assets.census_data.common.geometry import (
     merge_census_and_geometry,
+)
+from census_processing.defs.assets.census_data.common.remove_unused import (
     remove_unused_op_map,
+)
+from census_processing.defs.assets.census_data.common.rename import (
     rename_columns_op_map,
 )
 from census_processing.defs.resources import PathResource
@@ -215,15 +223,17 @@ def census_2000_ageb(path_resource: PathResource) -> pd.DataFrame:
 
             df_census_list.append(extract_from_archive(arc))
 
-    df_census = pd.concat(df_census_list)
-    return (
-        df_census.sort_index()
+    out = (
+        pd.concat(df_census_list)
+        .sort_index()
         .assign(ageb_id=lambda df: df.index.str.slice(9, 13))
         .query("ageb_id != '0000'")
         .drop(columns=["ageb_id"])
-        .pipe(cast_all_columns_to_numeric)
+        .pipe(lambda df: cast_all_columns_to_numeric(df, prefer_integer=True))
         .reset_index(names="cvegeo")
     )
+    out.columns = out.columns.astype(str).str.lower()
+    return out
 
 
 @dg.op(name="geometry_2000_ageb", ins={"geometry": dg.In(dagster_type=dg.Nothing)})
@@ -250,7 +260,7 @@ def geometry_2000_ageb(path_resource: PathResource) -> gpd.GeoDataFrame:
 
 
 @dg.graph_asset(
-    key=["staging", "2000", "ageb"],
+    key=["staging", "2000", "census", "ageb"],
     ins={
         "demography": dg.AssetIn(
             key=["input", "2000", "demography"], dagster_type=dg.Nothing
@@ -260,7 +270,7 @@ def geometry_2000_ageb(path_resource: PathResource) -> gpd.GeoDataFrame:
         ),
     },
     metadata={"schema": "staging", "table": "census_2000_ageb_prepared"},
-    group_name="staging_2000",
+    group_name="staging_census_2000",
 )
 def census_graph_2000(demography: None, geometry: None) -> gpd.GeoDataFrame:
     census = census_2000_ageb(demography)

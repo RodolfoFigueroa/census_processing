@@ -6,6 +6,7 @@ concurrency:
 storage:
   postgres:
     postgres_db:
+      scheme: postgresql+psycopg2
       username:
         env: POSTGRES_DAGSTER_USER
       password:

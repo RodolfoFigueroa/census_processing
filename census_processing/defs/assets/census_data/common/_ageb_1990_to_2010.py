@@ -3,17 +3,19 @@ from typing import Literal
 import geopandas as gpd
 
 import dagster as dg
-from census_processing.defs.assets.census_data.common._derived import (
+from census_processing.defs.assets.census_data.common.cvegeo import (
+    add_higher_levels_cvegeo,
+)
+from census_processing.defs.assets.census_data.common.derived import (
     add_derived_columns_op_map,
 )
-from census_processing.defs.assets.census_data.common._other import (
-    add_higher_levels_cvegeo,
+from census_processing.defs.assets.census_data.common.geometry import (
     merge_census_and_geometry,
 )
-from census_processing.defs.assets.census_data.common._remove_unused import (
+from census_processing.defs.assets.census_data.common.remove_unused import (
     remove_unused_op_map,
 )
-from census_processing.defs.assets.census_data.common._rename import (
+from census_processing.defs.assets.census_data.common.rename import (
     rename_columns_op_map,
 )
 
@@ -24,7 +26,7 @@ def census_ageb_factory(
     geometry_op: dg.OpDefinition,
 ) -> dg.AssetsDefinition:
     @dg.graph_asset(
-        key=["staging", str(year), "ageb"],
+        key=["staging", str(year), "census", "ageb"],
         ins={
             "demography": dg.AssetIn(
                 key=["input", str(year), "demography"], dagster_type=dg.Nothing
@@ -34,7 +36,7 @@ def census_ageb_factory(
             ),
         },
         metadata={"table": f"census_{year}_ageb_prepared", "schema": "staging"},
-        group_name=f"staging_{year}",
+        group_name=f"staging_census_{year}",
     )
     def _asset(demography: None, geometry: None) -> gpd.GeoDataFrame:
         census = census_op(demography)

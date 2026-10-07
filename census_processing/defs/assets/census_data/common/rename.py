@@ -7,7 +7,7 @@ import dagster as dg
 from census_processing.defs.resources import PathResource
 
 
-def rename_columns_factory(year: int) -> dg.OpDefinition:
+def rename_columns_factory(year: int, prefix: str | None = None) -> dg.OpDefinition:
     @dg.op(
         name=f"rename_columns_{year}",
     )
@@ -26,14 +26,15 @@ def rename_columns_factory(year: int) -> dg.OpDefinition:
                 f"No column map found for year {year} at {name_map_path}, "
                 "skipping renaming."
             )
-            context.log.warning(msg)
+            context.log.info(msg)
             return df
 
         with name_map_path.open(encoding="latin1") as f:
             column_map: dict = json.load(f)
 
         column_name_map = {
-            i + 1: list(column_map.values())[i] for i in range(len(column_map))
+            f"{prefix or ''}{i + 1}": list(column_map.values())[i]
+            for i in range(len(column_map))
         }
         wanted_cols = ["cvegeo"] + [
             key for key, value in column_name_map.items() if value is not None
@@ -45,5 +46,8 @@ def rename_columns_factory(year: int) -> dg.OpDefinition:
 
 
 rename_columns_op_map = {
-    year: rename_columns_factory(year) for year in (1990, 2000, 2010, 2020)
+    1990: rename_columns_factory(1990, prefix=None),
+    2000: rename_columns_factory(2000, prefix=None),
+    2010: rename_columns_factory(2010, prefix=None),
+    2020: rename_columns_factory(2020, prefix=None),
 }

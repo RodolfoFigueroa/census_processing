@@ -10,12 +10,22 @@ import pandas as pd
 
 import dagster as dg
 from census_processing.constants import LEVEL_ORDER
-from census_processing.defs.assets.census_data.common import (
-    add_derived_columns_op_map,
+from census_processing.defs.assets.census_data.common.cvegeo import (
     add_higher_levels_cvegeo,
+)
+from census_processing.defs.assets.census_data.common.derived import (
+    add_derived_columns_op_map,
+)
+from census_processing.defs.assets.census_data.common.extract import (
     extract_op_map,
+)
+from census_processing.defs.assets.census_data.common.geometry import (
     merge_census_and_geometry,
+)
+from census_processing.defs.assets.census_data.common.remove_unused import (
     remove_unused_op_map,
+)
+from census_processing.defs.assets.census_data.common.rename import (
     rename_columns_op_map,
 )
 from census_processing.defs.assets.metropoli import load_metropoli_df
