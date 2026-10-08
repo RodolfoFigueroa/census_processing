@@ -1,31 +1,32 @@
-[1990]
+[input]
+"metropolis_2020.zip" = "https://datos.gob.mx/dataset/metropolis_mexico_2020/resource/4d6f570f-f2fc-45e5-af32-08f42a46265b" # Definición de zonas metropolitanas de 2020
+"denue" = "https://www.inegi.org.mx/app/descarga/default.html"
+"889463868842_gpk.zip" = "https://www.inegi.org.mx/infraestructura/malla/#descargas" # Malla geoestadística
+
+[input.1990]
 "AGEBs 90_TecMonty_aj.zip" = false # Geometrías AGEBs
 "SCINCE1990.rar" = false # Censo nivel AGEB
 "00_nacional_1990_iter_txt.zip" = "https://www.inegi.org.mx/programas/ccpv/1990/#microdatos" # Censo hasta nivel localidad
 
-[2000]
+[input.2000]
 "702825292843_s.zip" = "https://www.inegi.org.mx/app/biblioteca/ficha.html?upc=702825292843" # Geometrías de estados, municipios y AGEBs
 "censo2000_scince.zip" = false # Censo nivel AGEB
 "cgpv2000_iter_00_csv.zip" = "https://www.inegi.org.mx/programas/ccpv/2000/#datos_abiertos" # Censo hasta nivel localidad
 
-[2010]
+[input.2010]
 "census" = "https://www.inegi.org.mx/programas/ccpv/2010/#datos_abiertos"
+"scince" = "https://en.www.inegi.org.mx/app/descarga/?ti=13&ag=00"
 "702825292812_s.zip" = "https://www.inegi.org.mx/app/biblioteca/ficha.html?upc=702825292812"
 
-[2020]
+[input.2020]
 "census" = "https://www.inegi.org.mx/programas/ccpv/2020/#datos_abiertos"
 "geom" = "https://www.inegi.org.mx/app/biblioteca/ficha.html?upc=889463807469"
 "scince" = "https://gaia.inegi.org.mx/scince2020/"
 
-[enigh]
+[input.enigh]
 "conjunto_de_datos_enigh_2018_ns_csv.zip" = "https://www.inegi.org.mx/programas/enigh/nc/2018/"
 "conjunto_de_datos_enigh_ns_2020_csv.zip" = "https://www.inegi.org.mx/programas/enigh/nc/2020/"
 "conjunto_de_datos_enigh_ns_2022_csv.zip" = "https://www.inegi.org.mx/programas/enigh/nc/2022/"
 
-[INE]
+[input.INE]
 "PRESIDENCIA_2024.zip" = "https://ine.mx/transparencia/datos-abiertos/#/archivo/bases-de-datos-de-los-resultados-electorales-federales-del-proceso-electoral-federal-2023-2024"
-
-[other]
-"metropolis_2020.zip" = "https://datos.gob.mx/dataset/metropolis_mexico_2020/resource/4d6f570f-f2fc-45e5-af32-08f42a46265b" # Definición de metrópolis
-"denue" = "https://www.inegi.org.mx/app/descarga/default.html"
-"889463868842_gpk.zip" = "https://www.inegi.org.mx/infraestructura/malla/#descargas"
