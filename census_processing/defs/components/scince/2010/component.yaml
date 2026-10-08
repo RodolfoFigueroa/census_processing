@@ -1,0 +1,8 @@
+type: cfc_dagster_utils.components.dvc.DvcInputComponent
+attributes:
+  key: input/2010/scince
+  dvc_file: data/input/2010/scince.dvc
+post_processing:
+  assets:
+    - attributes:
+        group_name: "input_scince_2010"
