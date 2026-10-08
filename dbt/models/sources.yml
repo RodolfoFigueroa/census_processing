@@ -100,6 +100,12 @@ sources:
             dagster:
               asset_key: ["staging", "mesh", "level_9"]
 
+      - name: scince_2010_ageb_prepared
+        config:
+          meta:
+            dagster:
+              asset_key: ["staging", "2010", "scince", "ageb"]
+
       - name: scince_2020_ageb_prepared
         config:
           meta:
