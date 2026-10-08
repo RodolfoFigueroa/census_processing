@@ -12,7 +12,7 @@ from cfc_dagster_utils.utils import cast_all_columns_to_numeric
 
 import dagster as dg
 from census_processing.defs.assets.census_data.common.cvegeo import (
-    add_higher_levels_cvegeo,
+    add_one_higher_level_cvegeo,
 )
 from census_processing.defs.assets.census_data.common.derived import (
     add_derived_columns_op_map,
@@ -277,7 +277,7 @@ def census_graph_2000(demography: None, geometry: None) -> gpd.GeoDataFrame:
     census = rename_columns_op_map[2000](census)
     census = add_derived_columns_op_map[2000](census)
     census = remove_unused_op_map["ageb"](census)
-    census = add_higher_levels_cvegeo(census)
+    census = add_one_higher_level_cvegeo(census)
 
     geometry = geometry_2000_ageb(geometry)
 

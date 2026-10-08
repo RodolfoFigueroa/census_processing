@@ -11,14 +11,12 @@ from cfc_dagster_utils.utils import cast_all_columns_to_numeric
 
 import dagster as dg
 from census_processing.defs.assets.census_data.common.cvegeo import (
-    add_higher_levels_cvegeo,
+    add_one_higher_level_cvegeo,
 )
 from census_processing.defs.assets.census_data.common.derived import (
     add_derived_columns_op_map,
 )
 from census_processing.defs.assets.census_data.common.geometry import (
-    add_dummy_geometry,
-    get_loc_geometry_from_agebs,
     merge_census_and_geometry,
 )
 from census_processing.defs.assets.census_data.common.remove_unused import (
@@ -69,50 +67,6 @@ def extract_census_level_factory(
 extract_loc = extract_census_level_factory(level="loc")
 extract_mun = extract_census_level_factory(level="mun")
 extract_ent = extract_census_level_factory(level="ent")
-
-
-def multi_merged_factory(*, year: int, df_op: dg.OpDefinition) -> dg.AssetsDefinition:
-    @dg.graph_multi_asset(
-        ins={
-            "agebs": dg.AssetIn(key=["census", str(year), "ageb"]),
-        },
-        outs={
-            "loc": dg.AssetOut(
-                key=["census", str(year), "loc"],
-                group_name=f"census_{year}",
-                is_required=True,
-                metadata={"table_name": f"census_{year}_loc"},
-            ),
-            "mun": dg.AssetOut(
-                key=["census", str(year), "mun"],
-                group_name=f"census_{year}",
-                is_required=True,
-                metadata={"table_name": f"census_{year}_mun"},
-            ),
-            "ent": dg.AssetOut(
-                key=["census", str(year), "ent"],
-                group_name=f"census_{year}",
-                is_required=True,
-                metadata={"table_name": f"census_{year}_ent"},
-            ),
-        },
-        can_subset=False,
-        group_name=f"census_{year}",
-    )
-    def _asset(
-        agebs: gpd.GeoDataFrame,
-    ) -> tuple[gpd.GeoDataFrame, gpd.GeoDataFrame, gpd.GeoDataFrame]:
-        census_df = df_op()
-        loc_geometries = get_loc_geometry_from_agebs(agebs)
-        loc_census = extract_loc(census_df)
-
-        return (
-            merge_census_and_geometry(loc_census, loc_geometries),
-            add_dummy_geometry(extract_mun(census_df)),
-            add_dummy_geometry(extract_ent(census_df)),
-        )
-
-    return _asset
 
 
 def row_to_frame(row: str) -> pd.DataFrame:
@@ -222,10 +176,9 @@ def census_graph_1990(demography: None, geometry: None) -> gpd.GeoDataFrame:
     census = census_1990_ageb(demography)
     census = rename_columns_op_map[1990](census)
     census = add_derived_columns_op_map[1990](census)
+    census = remove_unused_op_map["ageb"](census)
+    census = add_one_higher_level_cvegeo(census)
 
     geometry = geometry_1990_ageb(geometry)
-
-    census = remove_unused_op_map["ageb"](census)
-    census = add_higher_levels_cvegeo(census)
 
     return merge_census_and_geometry(census, geometry)
