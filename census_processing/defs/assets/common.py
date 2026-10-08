@@ -1,3 +1,5 @@
+from collections.abc import Iterator
+
 import geopandas as gpd
 import pandas as pd
 
@@ -39,3 +41,13 @@ def concat_geodataframes(
     context.log.info(out.columns)
 
     return out
+
+
+@dg.op(out=dg.DynamicOut(str))
+def get_state_codes() -> Iterator[dg.DynamicOutput[str]]:
+    for state_code in range(1, 33):
+        code_str = str(state_code).zfill(2)
+        yield dg.DynamicOutput(
+            code_str,
+            mapping_key=code_str,
+        )

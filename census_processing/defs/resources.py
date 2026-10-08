@@ -17,3 +17,10 @@ class PathResource(dg.ConfigurableResource):
             err = f"Path {path} does not exist"
             raise FileNotFoundError(err)
         return path
+
+
+class ScinceColumnsToKeepResource(dg.ConfigurableResource):
+    columns_1990: list[str] | None = None
+    columns_2000: list[str] | None = None
+    columns_2010: list[str] | None = None
+    columns_2020: list[str] | None = None
