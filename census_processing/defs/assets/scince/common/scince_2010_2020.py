@@ -9,7 +9,7 @@ from census_processing.defs.resources import ScinceColumnsToKeepResource
 
 
 def cleanup_scince_columns_factory(year: Literal[2010, 2020]) -> dg.OpDefinition:
-    @dg.op
+    @dg.op(name=f"cleanup_scince_columns_{year}")
     def _op(
         scince_columns_to_keep_resource: ScinceColumnsToKeepResource, df: pd.DataFrame
     ) -> pd.DataFrame:

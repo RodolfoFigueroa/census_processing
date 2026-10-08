@@ -19,7 +19,9 @@ from census_processing.defs.resources import PathResource
         "scince_file_dep": dg.In(dagster_type=dg.Nothing),
     }
 )
-def process_state_code(path_resource: PathResource, state_code: str) -> pd.DataFrame:
+def process_state_code_scince_2020(
+    path_resource: PathResource, state_code: str
+) -> pd.DataFrame:
     in_path = Path(path_resource.in_path)
     fpath = in_path / "2020" / "scince" / f"SCINCE2020_DATOS_{state_code}.zip"
 
@@ -43,5 +45,5 @@ def process_state_code(path_resource: PathResource, state_code: str) -> pd.DataF
 
 
 scince_2020 = scince_2010_2020_factory(
-    year=2020, process_state_code_op=process_state_code
+    year=2020, process_state_code_op=process_state_code_scince_2020
 )
