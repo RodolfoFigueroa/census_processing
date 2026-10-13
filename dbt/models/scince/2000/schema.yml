@@ -1,0 +1,1011 @@
+version: 2
+
+models:
+  - name: scince_2000_ageb
+    description: 2000 census statistics obtained from the SCINCE dataset, aggregated by AGEB.
+
+    config:
+      contract:
+        enforced: true
+
+      meta:
+        spatial: true
+        dagster:
+          asset_key: ["scince", "2000", "ageb"]
+          group: scince_2000
+
+    constraints:
+      - type: primary_key
+        columns: [cvegeo]
+
+    columns:
+      - name: cvegeo
+        data_type: text
+        description: Unique identifier for the AGEB.
+        config:
+          meta:
+            description_es: null
+      - name: pob1
+        data_type: int
+        description: Total population
+        config:
+          meta:
+            description_es: Población total
+      - name: pob2
+        data_type: int
+        description: Male population
+        config:
+          meta:
+            description_es: Población masculina
+      - name: pob3
+        data_type: int
+        description: Female population
+        config:
+          meta:
+            description_es: Población femenina
+      - name: pob4
+        data_type: int
+        description: Population aged 0 to 4 years
+        config:
+          meta:
+            description_es: Población de 0 a 4 años
+      - name: pob5
+        data_type: int
+        description: Male population aged 0 to 4 years
+        config:
+          meta:
+            description_es: Población masculina de 0 a 4 años
+      - name: pob6
+        data_type: int
+        description: Female population aged 0 to 4 years
+        config:
+          meta:
+            description_es: Población femenina de 0 a 4 años
+      - name: pob7
+        data_type: int
+        description: Population aged 5 years and older
+        config:
+          meta:
+            description_es: Población de 5 años y más
+      - name: pob8
+        data_type: int
+        description: Male population aged 5 years and older
+        config:
+          meta:
+            description_es: Población masculina de 5 años y más
+      - name: pob9
+        data_type: int
+        description: Female population aged 5 years and older
+        config:
+          meta:
+            description_es: Población femenina de 5 años y más
+      - name: pob10
+        data_type: int
+        description: Population aged 6 years and older
+        config:
+          meta:
+            description_es: Población de 6 años y más
+      - name: pob11
+        data_type: int
+        description: Male population aged 6 years and older
+        config:
+          meta:
+            description_es: Población masculina de 6 años y más
+      - name: pob12
+        data_type: int
+        description: Female population aged 6 years and older
+        config:
+          meta:
+            description_es: Población femenina de 6 años y más
+      - name: pob13
+        data_type: int
+        description: Population aged 6 to 14 years
+        config:
+          meta:
+            description_es: Población de 6 a 14 años
+      - name: pob14
+        data_type: int
+        description: Male population aged 6 to 14 years
+        config:
+          meta:
+            description_es: Población masculina de 6 a 14 años
+      - name: pob15
+        data_type: int
+        description: Female population aged 6 to 14 years
+        config:
+          meta:
+            description_es: Población femenina de 6 a 14 años
+      - name: pob16
+        data_type: int
+        description: Population aged 15 years and older
+        config:
+          meta:
+            description_es: Población de 15 años y más
+      - name: pob17
+        data_type: int
+        description: Male population aged 15 years and older
+        config:
+          meta:
+            description_es: Población masculina de 15 años y más
+      - name: pob18
+        data_type: int
+        description: Female population aged 15 years and older
+        config:
+          meta:
+            description_es: Población femenina de 15 años y más
+      - name: pob19
+        data_type: int
+        description: Female population aged 15 to 49 years
+        config:
+          meta:
+            description_es: Población femenina de 15 a 49 años
+      - name: pob20
+        data_type: int
+        description: Population aged 15 to 64 years
+        config:
+          meta:
+            description_es: Población de 15 a 64 años
+      - name: pob21
+        data_type: int
+        description: Male population aged 15 to 64 years
+        config:
+          meta:
+            description_es: Población masculina de 15 a 64 años
+      - name: pob22
+        data_type: int
+        description: Female population aged 15 to 64 years
+        config:
+          meta:
+            description_es: Población femenina de 15 a 64 años
+      - name: pob23
+        data_type: int
+        description: Population aged 15 to 19 years
+        config:
+          meta:
+            description_es: Población de 15 a 19 años
+      - name: pob24
+        data_type: int
+        description: Male population aged 15 to 19 years
+        config:
+          meta:
+            description_es: Población masculina de 15 a 19 años
+      - name: pob25
+        data_type: int
+        description: Female population aged 15 to 19 years
+        config:
+          meta:
+            description_es: Población femenina de 15 a 19 años
+      - name: pob26
+        data_type: int
+        description: Population aged 18 years and older
+        config:
+          meta:
+            description_es: Población de 18 años y más
+      - name: pob27
+        data_type: int
+        description: Male population aged 18 years and older
+        config:
+          meta:
+            description_es: Población masculina de 18 años y más
+      - name: pob28
+        data_type: int
+        description: Female population aged 18 years and older
+        config:
+          meta:
+            description_es: Población femenina de 18 años y más
+      - name: pob29
+        data_type: int
+        description: Population aged 20 years and older
+        config:
+          meta:
+            description_es: Población de 20 años y más
+      - name: pob30
+        data_type: int
+        description: Male population aged 20 years and older
+        config:
+          meta:
+            description_es: Población masculina de 20 años y más
+      - name: pob31
+        data_type: int
+        description: Female population aged 20 years and older
+        config:
+          meta:
+            description_es: Población femenina de 20 años y más
+      - name: pob32
+        data_type: int
+        description: Population aged 20 to 24 years
+        config:
+          meta:
+            description_es: Población de 20 a 24 años
+      - name: pob33
+        data_type: int
+        description: Male population aged 20 to 24 years
+        config:
+          meta:
+            description_es: Población masculina de 20 a 24 años
+      - name: pob34
+        data_type: int
+        description: Female population aged 20 to 24 years
+        config:
+          meta:
+            description_es: Población femenina de 20 a 24 años
+      - name: pob35
+        data_type: int
+        description: Female population aged 50 years and older
+        config:
+          meta:
+            description_es: Población femenina de 50 años y más
+      - name: pob36
+        data_type: int
+        description: Population aged 60 years and older
+        config:
+          meta:
+            description_es: Población de 60 años y más
+      - name: pob37
+        data_type: int
+        description: Male population aged 60 years and older
+        config:
+          meta:
+            description_es: Población masculina de 60 años y más
+      - name: pob38
+        data_type: int
+        description: Female population aged 60 years and older
+        config:
+          meta:
+            description_es: Población femenina de 60 años y más
+      - name: pob39
+        data_type: int
+        description: Population aged 65 years and older
+        config:
+          meta:
+            description_es: Población de 65 años y más
+      - name: pob40
+        data_type: int
+        description: Male population aged 65 years and older
+        config:
+          meta:
+            description_es: Población masculina de 65 años y más
+      - name: pob41
+        data_type: int
+        description: Female population aged 65 years and older
+        config:
+          meta:
+            description_es: Población femenina de 65 años y más
+      - name: pob42
+        data_type: float
+        description: Dependency ratio
+        config:
+          meta:
+            description_es: Relación de dependencia
+      - name: pob43
+        data_type: float
+        description: Children-woman ratio
+        config:
+          meta:
+            description_es: Relación niños-mujer
+      - name: pob44
+        data_type: int
+        description: Population entitled to health care services
+        config:
+          meta:
+            description_es: Población derechohabiente a servicio de salud
+      - name: pob45
+        data_type: int
+        description: Population not entitled to health care services
+        config:
+          meta:
+            description_es: Población sin derechohabiencia a servicio de salud
+      - name: pob46
+        data_type: int
+        description: Population entitled to IMSS services
+        config:
+          meta:
+            description_es: Población derechohabiente al IMSS
+      - name: pob47
+        data_type: int
+        description: Disabled population
+        config:
+          meta:
+            description_es: Población con discapacidad
+      - name: pob48
+        data_type: int
+        description: Population born in the state
+        config:
+          meta:
+            description_es: Población nacida en la entidad
+      - name: pob49
+        data_type: int
+        description: Population born outside the state
+        config:
+          meta:
+            description_es: Población nacida fuera de la entidad
+      - name: pob50
+        data_type: int
+        description: Population 5 years and older who in 1995 lived in the same state as the current municipality of residence
+        config:
+          meta:
+            description_es: Población de 5 años y más residente en el municipio en 1995
+      - name: pob51
+        data_type: int
+        description: Population 5 years and older who in 1995 lived in the same state as the current state of residence
+        config:
+          meta:
+            description_es: Población de 5 años y más residente en la entidad en 1995
+      - name: pob52
+        data_type: int
+        description: 5 years and older catholic population
+        config:
+          meta:
+            description_es: Población de 5 años y más católica
+      - name: pob53
+        data_type: int
+        description: 5 years and older religious non-catholic population
+        config:
+          meta:
+            description_es: Población de 5 años y más con alguna religión no católica
+      - name: pob54
+        data_type: int
+        description: 5 years and older non-catholic population (includes non-religious)
+        config:
+          meta:
+            description_es: Población de 5 años y más no católica (incluye sin religión)
+      - name: pob55
+        data_type: int
+        description: Poopulation aged 6 to 14 years that knows how to read and write
+        config:
+          meta:
+            description_es: Población de 6 a 14 años que sabe leer y escribir
+      - name: pob56
+        data_type: int
+        description: Male population aged 6 to 14 years that knows how to read and write
+        config:
+          meta:
+            description_es: Población masculina de 6 a 14 años que sabe leer y escribir
+      - name: pob57
+        data_type: int
+        description: Female population aged 6 to 14 years that knows how to read and write
+        config:
+          meta:
+            description_es: Población femenina de 6 a 14 años que sabe leer y
+      - name: pob58
+        data_type: int
+        description: Literate population aged 15 years and older
+        config:
+          meta:
+            description_es: Población de 15 años y más alfabeta
+      - name: pob59
+        data_type: int
+        description: Literate male population aged 15 years and older
+        config:
+          meta:
+            description_es: Población masculina de 15 años y más alfabeta
+      - name: pob60
+        data_type: int
+        description: Literate female population aged 15 years and older
+        config:
+          meta:
+            description_es: Población femenina de 15 años y más alfabeta
+      - name: pob61
+        data_type: int
+        description: Population aged 6 to 14 years that attends school
+        config:
+          meta:
+            description_es: Población de 6 a 14 años que asiste a la escuela
+      - name: pob62
+        data_type: int
+        description: Male population aged 6 to 14 years that attends school
+        config:
+          meta:
+            description_es: Población masculina de 6 a 14 años que asiste a la escuela
+      - name: pob63
+        data_type: int
+        description: Female population aged 6 to 14 years that attends school
+        config:
+          meta:
+            description_es: Población femenina de 6 a 14 años que asiste a la escuela
+      - name: pob64
+        data_type: int
+        description: Population aged 15 years and older with no formal education
+        config:
+          meta:
+            description_es: Población de 15 años y más sin instrucción
+      - name: pob65
+        data_type: int
+        description: Population aged 15 years and older with incomplete primary education
+        config:
+          meta:
+            description_es: Población de 15 años y más con primaria incompleta
+      - name: pob66
+        data_type: int
+        description: Population aged 15 years and older with complete primary education
+        config:
+          meta:
+            description_es: Población de 15 años y más con primaria completa
+      - name: pob67
+        data_type: int
+        description: Population aged 15 years and older with education beyond primary education
+        config:
+          meta:
+            description_es: Población de 15 años y más con instrucción posprimaria
+      - name: pob68
+        data_type: int
+        description: Population aged 15 years and older with no education beyond primary education
+        config:
+          meta:
+            description_es: Población de 15 años y más sin instrucción posprimaria
+      - name: pob69
+        data_type: int
+        description: Population aged 15 years and older with complete primary education, and secondary or technical education
+        config:
+          meta:
+            description_es: Población de 15 años y más con instruc. secundaria o estudios técnicos o comer. con primaria term.
+      - name: pob70
+        data_type: int
+        description: Population aged 15 years and older with complete secondary education
+        config:
+          meta:
+            description_es: Población de 15 años y más con secundaria completa
+      - name: pob71
+        data_type: int
+        description: Population aged 15 years and older with incomplete secondary education
+        config:
+          meta:
+            description_es: Población de 15 años y más con secundaria incompleta
+      - name: pob72
+        data_type: int
+        description: Population aged 15 years and older with education high school or higher education
+        config:
+          meta:
+            description_es: Población de 15 años y más con instrucción media superior o superior
+      - name: pob73
+        data_type: int
+        description: Population aged 15 years and older without high school education
+        config:
+          meta:
+            description_es: Población de 18 años y más sin instrucción media superior
+      - name: pob74
+        data_type: int
+        description: Population aged 15 years and older with high school education
+        config:
+          meta:
+            description_es: Población de 18 años y más con instrucción media superior
+      - name: pob75
+        data_type: int
+        description: Population aged 15 years and older without higher education
+        config:
+          meta:
+            description_es: Población de 18 años y más sin instrucción superior
+      - name: pob76
+        data_type: int
+        description: Population aged 15 years and older with higher education
+        config:
+          meta:
+            description_es: Población de 18 años y más con instrucción superior
+      - name: pob77
+        data_type: float
+        description: Average years of schooling
+        config:
+          meta:
+            description_es: Grado promedio de escolaridad
+      - name: pob78
+        data_type: int
+        description: Single population aged 12 years and older
+        config:
+          meta:
+            description_es: Población soltera de 12 años y más
+      - name: pob79
+        data_type: int
+        description: Single male population aged 12 years and older
+        config:
+          meta:
+            description_es: Población soltera masculina de 12 años y más
+      - name: pob80
+        data_type: int
+        description: Single female population aged 12 years and older
+        config:
+          meta:
+            description_es: Población soltera femenina de 12 años y más
+      - name: pob81
+        data_type: int
+        description: Single population aged 15 to 24 years
+        config:
+          meta:
+            description_es: Población soltera de 15 a 24 años
+      - name: pob82
+        data_type: int
+        description: Single male population aged 15 to 24 years
+        config:
+          meta:
+            description_es: Población soltera masculina de 15 a 24 años
+      - name: pob83
+        data_type: int
+        description: Single female population aged 15 to 24 years
+        config:
+          meta:
+            description_es: Población soltera femenina de 15 a 24 años
+      - name: pob84
+        data_type: int
+        description: Married population aged 12 years and older
+        config:
+          meta:
+            description_es: Población casada de 12 años y más
+      - name: pob85
+        data_type: int
+        description: Married male population aged 12 years and older
+        config:
+          meta:
+            description_es: Población casada masculina de 12 años y más
+      - name: pob86
+        data_type: int
+        description: Married female population aged 12 years and older
+        config:
+          meta:
+            description_es: Población casada femenina de 12 años y más
+      - name: pob87
+        data_type: int
+        description: Population in a common-law marriage aged 12 years and older
+        config:
+          meta:
+            description_es: Población en unión libre de 12 años y más
+      - name: pob88
+        data_type: int
+        description: Total number of children born alive to women aged 15 to 49 years
+        config:
+          meta:
+            description_es: Total de hijos nacidos vivos de mujeres de 15 - 49 años
+      - name: pob89
+        data_type: int
+        description: Total number of children born alive to women aged 50 years and older
+        config:
+          meta:
+            description_es: Total de hijos nacidos vivos de mujeres de 50 años y más
+      - name: pob90
+        data_type: int
+        description: Total number of deceased children born to women aged 15 to 49 years
+        config:
+          meta:
+            description_es: Total de hijos fallecidos de mujeres de 15 - 49 años
+      - name: pob91
+        data_type: int
+        description: Total number of deceased children born to women aged 50 years and older
+        config:
+          meta:
+            description_es: Total de hijos fallecidos de mujeres de 50 años y más
+      - name: pob92
+        data_type: int
+        description: Number of children born alive in 1999
+        config:
+          meta:
+            description_es: Número de hijos nacidos vivos en 1999
+      - name: pob93
+        data_type: int
+        description: Number of children born alive between March 1999 and February 2000
+        config:
+          meta:
+            description_es: Número de hijos nacidos vivos de marzo de 1999 a febrero del 2000
+      - name: pob94
+        data_type: float
+        description: Average number of children born alive to women aged 12 years and older
+        config:
+          meta:
+            description_es: Promedio de hijos nacidos vivos de mujeres de 12 años y más
+      - name: pob95
+        data_type: int
+        description: Economically active population
+        config:
+          meta:
+            description_es: Población económicamente activa
+      - name: pob96
+        data_type: int
+        description: Economically inactive population
+        config:
+          meta:
+            description_es: Población económicamente inactiva
+      - name: pob97
+        data_type: int
+        description: Unemployed population
+        config:
+          meta:
+            description_es: Población desocupada
+      - name: pob98
+        data_type: int
+        description: Economically inactive population aged 12 years and older that is a student
+        config:
+          meta:
+            description_es: Población de 12 años y más económicamente inactiva que es estudiante
+      - name: pob99
+        data_type: int
+        description: Economically inactive population aged 12 years and older that's mainly dedicated to household chores
+        config:
+          meta:
+            description_es: Población de 12 años y más económicamente inactiva que se dedica a los quehaceres del hogar
+      - name: pob100
+        data_type: int
+        description: Population employed in the secondary sector
+        config:
+          meta:
+            description_es: Población ocupada en el sector secundario
+      - name: pob101
+        data_type: int
+        description: Population employed in the tertiary sector
+        config:
+          meta:
+            description_es: Población ocupada en el sector terciario
+      - name: pob102
+        data_type: int
+        description: Population employed as a worker or manual laborer
+        config:
+          meta:
+            description_es: Población ocupada como empleado u obrero
+      - name: pob103
+        data_type: int
+        description: Population employed as a day laborer
+        config:
+          meta:
+            description_es: Población ocupada como jornalero o peón
+      - name: pob104
+        data_type: int
+        description: Self-employed population
+        config:
+          meta:
+            description_es: Población ocupada por cuenta propia
+      - name: pob105
+        data_type: int
+        description: Population that worked up to 32 hours in the week
+        config:
+          meta:
+            description_es: Población ocupada que trabajó hasta 32 horas en la semana de referencia
+      - name: pob106
+        data_type: int
+        description: Population that worked 33 to 40 hours in the week
+        config:
+          meta:
+            description_es: Población ocupada que trabajó de 33 a 40 horas en la semana de referencia
+      - name: pob107
+        data_type: int
+        description: Population that worked 41 to 48 hours in the week
+        config:
+          meta:
+            description_es: Población ocupada que trabajó de 41 a 48 horas en la semana de referencia
+      - name: pob108
+        data_type: int
+        description: Employed population that doesn't receive any income for their work
+        config:
+          meta:
+            description_es: Población ocupada que no recibe ingreso por trabajo
+      - name: pob109
+        data_type: int
+        description: Employed population with income less than one monthly minimum wage
+        config:
+          meta:
+            description_es: Población ocupada que recibe menos de un salario mínimo mensual de ingreso por trabajo
+      - name: pob110
+        data_type: int
+        description: Employed population with income between one and two monthly minimum wages
+        config:
+          meta:
+            description_es: Población ocupada que recibe 1 y hasta 2 salarios mínimos mensuales de ingreso por trabajo
+      - name: pob111
+        data_type: int
+        description: Employed population with income between two and five monthly minimum wages
+        config:
+          meta:
+            description_es: Población ocupada que recibe 2 y hasta 5 salarios mínimos mensuales de ingreso por trabajo
+      - name: pob112
+        data_type: int
+        description: Employed population with income of five or more monthly minimum wages
+        config:
+          meta:
+            description_es: Población ocupada que recibe más de 5 salarios mínimos mensuales de ingreso por trabajo
+      - name: pob113
+        data_type: int
+        description: Total inhabited dwellings
+        config:
+          meta:
+            description_es: Total de viviendas habitadas
+      - name: pob114
+        data_type: int
+        description: Inhabited private dwellings
+        config:
+          meta:
+            description_es: Viviendas particulares habitadas
+      - name: pob115
+        data_type: int
+        description: Private dwellings with roofs made of lightweight, natural or makeshift materials.
+        config:
+          meta:
+            description_es: Viviendas particulares con techos de materiales ligeros, naturales y precarios
+      - name: pob116
+        data_type: int
+        description: Private dwellings with roofs made of concrete, brick, or terraced with beams
+        config:
+          meta:
+            description_es: Viviendas particulares con techos de losa de concreto, tabique, ladrillo o terrado con viguería
+      - name: pob117
+        data_type: int
+        description: Private dwellings walls made of lightweight, natural or makeshift materials
+        config:
+          meta:
+            description_es: Viviendas particulares con paredes de materiales ligeros, naturales y precarios
+      - name: pob118
+        data_type: int
+        description: Private dwellings with walls made of brick, block, concrete, cement or stone
+        config:
+          meta:
+            description_es: Viviendas particulares con paredes de tabique, ladrillo, block, piedra, cantera, cemento o concreto
+      - name: pob119
+        data_type: int
+        description: Private dwellings with floors made of cement, mosaic, wood or other covering
+        config:
+          meta:
+            description_es: Viviendas particulares con piso de cemento, mosaico, madera y otro recubrimiento
+      - name: pob120
+        data_type: int
+        description: Private dwellings with one room (private dwellings with two rooms, one of them is an exclusive kitchen)
+        config:
+          meta:
+            description_es: Viviendas particulares con un cuarto (Viviendas con dos cuartos, uno de ellos es cocina exclusiva)
+      - name: pob121
+        data_type: int
+        description: Private dwellings with two to five rooms (does not include exclusive kitchen)
+        config:
+          meta:
+            description_es: Viviendas particulares con 2 a 5 cuartos (no incluye cocina exclusiva)
+      - name: pob122
+        data_type: int
+        description: Private dwellings with one room (round room)
+        config:
+          meta:
+            description_es: Viviendas particulares con un cuarto (cuarto redondo)
+      - name: pob123
+        data_type: int
+        description: Private dwellings with two to five rooms (includes exclusive kitchen)
+        config:
+          meta:
+            description_es: Viviendas particulares con 2 a 5 cuartos (incluye cocina exclusiva)
+      - name: pob124
+        data_type: int
+        description: Private dwellings with one bedroom
+        config:
+          meta:
+            description_es: Viviendas particulares con un dormitorio
+      - name: pob125
+        data_type: int
+        description: Private dwellings with two to four bedrooms
+        config:
+          meta:
+            description_es: Viviendas particulares con 2 a 4 dormitorios
+      - name: pob126
+        data_type: int
+        description: Private dwellings exclusive kitchen
+        config:
+          meta:
+            description_es: Viviendas particulares con cocina exclusiva
+      - name: pob127
+        data_type: int
+        description: Private dwellings with non-exclusive kitchen
+        config:
+          meta:
+            description_es: Viviendas particulares con cocina no exclusiva
+      - name: pob128
+        data_type: int
+        description: Private dwellings that use gas for cooking
+        config:
+          meta:
+            description_es: Viviendas particulares que utilizan gas para cocinar
+      - name: pob129
+        data_type: int
+        description: Private dwellings with exclusive sanitary service
+        config:
+          meta:
+            description_es: Viviendas particulares con servicio sanitario exclusivo
+      - name: pob130
+        data_type: int
+        description: Private dwellings with drainage connected to the public sewer system
+        config:
+          meta:
+            description_es: Viviendas particulares con drenaje conectado a la red pública
+      - name: pob131
+        data_type: int
+        description: Private dwellings with drainage connected to a septic tank, ravine or crevice, river, lake or sea
+        config:
+          meta:
+            description_es: Viviendas particulares con drenaje conectado a fosa séptica, barranca o grieta, río, lago y mar
+      - name: pob132
+        data_type: int
+        description: Private dwellings without drainage
+        config:
+          meta:
+            description_es: Viviendas particulares sin drenaje
+      - name: pob133
+        data_type: int
+        description: Private dwellings with electricity
+        config:
+          meta:
+            description_es: Viviendas particulares que disponen de energía eléctrica
+      - name: pob134
+        data_type: int
+        description: Private dwellings with piped water running inside the dwelling
+        config:
+          meta:
+            description_es: Viviendas particulares con agua entubada en la vivienda
+      - name: pob135
+        data_type: int
+        description: Private dwellings with piped water running outside the dwelling only
+        config:
+          meta:
+            description_es: Viviendas particulares con agua entubada en el predio
+      - name: pob136
+        data_type: int
+        description: Private dwellings with piped water sourced by hauling from a public tap or another dwelling
+        config:
+          meta:
+            description_es: Viviendas particulares con agua entubada por acarreo (llave pública y de otra vivienda)
+      - name: pob137
+        data_type: int
+        description: Private dwellings with only drainage and piped water
+        config:
+          meta:
+            description_es: Viviendas particulares que sólo disponen de drenaje y agua entubada
+      - name: pob138
+        data_type: int
+        description: Private dwellings with only drainage and electricity
+        config:
+          meta:
+            description_es: Viviendas particulares que sólo disponen de drenaje y energía eléctrica
+      - name: pob139
+        data_type: int
+        description: Private dwellings with only piped water and electricity
+        config:
+          meta:
+            description_es: Viviendas particulares que sólo disponen de agua entubada y energía eléctrica
+      - name: pob140
+        data_type: int
+        description: Private dwellings with piped water, drainage and electricity
+        config:
+          meta:
+            description_es: Viviendas particulares que disponen de agua entubada, drenaje y energía eléctrica
+      - name: pob141
+        data_type: int
+        description: Private dwellings without piped water, drainage and electricity
+        config:
+          meta:
+            description_es: Viviendas particulares que no disponen de agua entubada, drenaje ni energía eléctrica
+      - name: pob142
+        data_type: int
+        description: Owned private dwellings
+        config:
+          meta:
+            description_es: Viviendas particulares propias
+      - name: pob143
+        data_type: int
+        description: Paid-off private dwellings
+        config:
+          meta:
+            description_es: Viviendas particulares pagadas
+      - name: pob144
+        data_type: int
+        description: Rented private dwellings
+        config:
+          meta:
+            description_es: Viviendas particulares rentadas
+      - name: pob145
+        data_type: int
+        description: Private dwellings with radio or tape recorder
+        config:
+          meta:
+            description_es: Viviendas particulares con radio o radiograbadora
+      - name: pob146
+        data_type: int
+        description: Private dwellings with television
+        config:
+          meta:
+            description_es: Viviendas particulares con televisión
+      - name: pob147
+        data_type: int
+        description: Private dwellings with VCR
+        config:
+          meta:
+            description_es: Viviendas particulares con videocasetera
+      - name: pob148
+        data_type: int
+        description: Private dwellings with blender
+        config:
+          meta:
+            description_es: Viviendas particulares con licuadora
+      - name: pob149
+        data_type: int
+        description: Private dwellings with washing fridge
+        config:
+          meta:
+            description_es: Viviendas particulares con refrigerador
+      - name: pob150
+        data_type: int
+        description: Private dwellings with washing machine
+        config:
+          meta:
+            description_es: Viviendas particulares con lavadora
+      - name: pob151
+        data_type: int
+        description: Private dwellings with phone
+        config:
+          meta:
+            description_es: Viviendas particulares con teléfono
+      - name: pob152
+        data_type: int
+        description: Private dwellings with water heater
+        config:
+          meta:
+            description_es: Viviendas particulares con calentador de agua (boiler)
+      - name: pob153
+        data_type: int
+        description: Private dwellings with car or truck owned by the household
+        config:
+          meta:
+            description_es: Viviendas particulares con automóvil o camioneta propia
+      - name: pob154
+        data_type: int
+        description: Private dwellings with computer
+        config:
+          meta:
+            description_es: Viviendas particulares con computadora
+      - name: pob155
+        data_type: int
+        description: Private dwellings with all goods
+        config:
+          meta:
+            description_es: Viviendas particulares con todos los bienes
+      - name: pob156
+        data_type: int
+        description: Private dwellings with no goods
+        config:
+          meta:
+            description_es: Viviendas particulares sin bienes (ninguno)
+      - name: pob157
+        data_type: float
+        description: Average number of inhabitants in private dwellings
+        config:
+          meta:
+            description_es: Promedio de ocupantes en viviendas particulares
+      - name: pob158
+        data_type: float
+        description: Average number of inhabitants per room in private dwellings
+        config:
+          meta:
+            description_es: Promedio de ocupantes por cuarto en viviendas particulares
+      - name: pob159
+        data_type: int
+        description: Total households
+        config:
+          meta:
+            description_es: Total de hogares
+      - name: pob160
+        data_type: int
+        description: Households with a male head of household
+        config:
+          meta:
+            description_es: Hogares con jefatura masculina
+      - name: pob161
+        data_type: int
+        description: Households with a female head of household
+        config:
+          meta:
+            description_es: Hogares con jefatura femenina
+      - name: pob162
+        data_type: int
+        description: Household population
+        config:
+          meta:
+            description_es: Población en hogares
+      - name: pob163
+        data_type: int
+        description: Household population in households with a male head of household
+        config:
+          meta:
+            description_es: Población en hogares con jefatura masculina
+      - name: pob164
+        data_type: int
+        description: Household population in households with a female head of household
+        config:
+          meta:
+            description_es: Población en hogares con jefatura femenina

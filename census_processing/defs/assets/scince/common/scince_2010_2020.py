@@ -13,7 +13,6 @@ def cleanup_scince_columns_factory(year: Literal[2010, 2020]) -> dg.OpDefinition
     def _op(
         scince_columns_to_keep_resource: ScinceColumnsToKeepResource, df: pd.DataFrame
     ) -> pd.DataFrame:
-
         df.columns = df.columns.astype(str).str.lower()
 
         ratio_cols = df.columns[df.columns.str.endswith("_r")]

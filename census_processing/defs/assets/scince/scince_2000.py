@@ -14,17 +14,11 @@ import dagster as dg
 from census_processing.defs.assets.census_data.common.cvegeo import (
     add_one_higher_level_cvegeo,
 )
-from census_processing.defs.assets.census_data.common.derived import (
-    add_derived_columns_op_map,
-)
 from census_processing.defs.assets.census_data.common.geometry import (
     merge_census_and_geometry,
 )
 from census_processing.defs.assets.census_data.common.remove_unused import (
     remove_unused_op_map,
-)
-from census_processing.defs.assets.census_data.common.rename import (
-    rename_columns_op_map,
 )
 from census_processing.defs.resources import PathResource
 
@@ -260,7 +254,7 @@ def geometry_2000_ageb(path_resource: PathResource) -> gpd.GeoDataFrame:
 
 
 @dg.graph_asset(
-    key=["staging", "2000", "census", "ageb"],
+    key=["staging", "2000", "scince", "ageb"],
     ins={
         "demography": dg.AssetIn(
             key=["input", "2000", "demography"], dagster_type=dg.Nothing
@@ -269,13 +263,11 @@ def geometry_2000_ageb(path_resource: PathResource) -> gpd.GeoDataFrame:
             key=["input", "2000", "geometry", "ageb"], dagster_type=dg.Nothing
         ),
     },
-    metadata={"schema": "staging", "table": "census_2000_ageb_prepared"},
-    group_name="staging_census_2000",
+    metadata={"schema": "staging", "table": "scince_2000_ageb_prepared"},
+    group_name="staging_scince_2000",
 )
 def census_graph_2000(demography: None, geometry: None) -> gpd.GeoDataFrame:
     census = census_2000_ageb(demography)
-    census = rename_columns_op_map[2000](census)
-    census = add_derived_columns_op_map[2000](census)
     census = remove_unused_op_map["ageb"](census)
     census = add_one_higher_level_cvegeo(census)
 

@@ -13,9 +13,6 @@ from census_processing.defs.assets.census_data.common.census_2010_2020 import (
 from census_processing.defs.assets.census_data.common.cvegeo import (
     add_one_higher_level_cvegeo,
 )
-from census_processing.defs.assets.census_data.common.derived import (
-    add_derived_columns_op_map,
-)
 from census_processing.defs.assets.census_data.common.extract import (
     extract_op_map,
 )
@@ -24,9 +21,6 @@ from census_processing.defs.assets.census_data.common.geometry import (
 )
 from census_processing.defs.assets.census_data.common.remove_unused import (
     remove_unused_op_map,
-)
-from census_processing.defs.assets.census_data.common.rename import (
-    rename_columns_op_map,
 )
 from census_processing.defs.resources import PathResource
 
@@ -129,8 +123,6 @@ def full_2010_factory(
         group_name="staging_census_2010",
     )
     def _asset(census: pd.DataFrame, geometry_dep: None) -> dict[str, gpd.GeoDataFrame]:
-        census = rename_columns_op_map[2010](census)
-        census = add_derived_columns_op_map[2010](census)
         census = extract_op_map[level](census)
         census = remove_unused_op_map[level](census)
 

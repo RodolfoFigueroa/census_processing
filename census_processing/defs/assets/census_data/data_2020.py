@@ -13,9 +13,6 @@ from census_processing.defs.assets.census_data.common.census_2010_2020 import (
 from census_processing.defs.assets.census_data.common.cvegeo import (
     add_one_higher_level_cvegeo,
 )
-from census_processing.defs.assets.census_data.common.derived import (
-    add_derived_columns_op_map,
-)
 from census_processing.defs.assets.census_data.common.extract import (
     extract_op_map,
 )
@@ -24,9 +21,6 @@ from census_processing.defs.assets.census_data.common.geometry import (
 )
 from census_processing.defs.assets.census_data.common.remove_unused import (
     remove_unused_op_map,
-)
-from census_processing.defs.assets.census_data.common.rename import (
-    rename_columns_op_map,
 )
 from census_processing.defs.assets.metropoli import load_metropoli_df
 from census_processing.defs.resources import PathResource
@@ -130,8 +124,6 @@ def mun_2020(
     metropoli_input: None,
     metropoli_dep: None,
 ) -> dict[str, gpd.GeoDataFrame]:
-    census = rename_columns_op_map[2020](census)
-    census = add_derived_columns_op_map[2020](census)
     census = extract_op_map["mun"](census)
     census = remove_unused_op_map["mun"](census)
     census = add_one_higher_level_cvegeo(census)
@@ -159,8 +151,6 @@ def full_2020_factory(level: Literal["ent", "loc", "ageb"]) -> dg.AssetsDefiniti
     def _asset(
         census: pd.DataFrame, geometry_input: None
     ) -> dict[str, gpd.GeoDataFrame]:
-        census = rename_columns_op_map[2020](census)
-        census = add_derived_columns_op_map[2020](census)
         census = extract_op_map[level](census)
         census = remove_unused_op_map[level](census)
 

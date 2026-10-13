@@ -13,9 +13,6 @@ from census_processing.constants import LEVEL_ORDER
 from census_processing.defs.assets.census_data.common.cvegeo import (
     add_higher_levels_cvegeo,
 )
-from census_processing.defs.assets.census_data.common.derived import (
-    add_derived_columns_op_map,
-)
 from census_processing.defs.assets.census_data.common.extract import (
     extract_op_map,
 )
@@ -24,9 +21,6 @@ from census_processing.defs.assets.census_data.common.geometry import (
 )
 from census_processing.defs.assets.census_data.common.remove_unused import (
     remove_unused_op_map,
-)
-from census_processing.defs.assets.census_data.common.rename import (
-    rename_columns_op_map,
 )
 from census_processing.defs.assets.metropoli import load_metropoli_df
 from census_processing.defs.resources import PathResource
@@ -226,8 +220,6 @@ def merged_factory(
         df_metropoli = load_metropoli_df()
 
         census_orig = census_op(**kwargs)
-        census_orig = rename_columns_op_map[year](census_orig)
-        census_orig = add_derived_columns_op_map[year](census_orig)
 
         out = {}
         for level in reversed(LEVEL_ORDER):
