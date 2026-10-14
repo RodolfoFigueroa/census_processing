@@ -12,7 +12,7 @@ models:
         spatial: true
         dagster:
           asset_key: ["census", "2020", "ent"]
-          group: census_2020
+          group: census/2020
 
     constraints:
       - type: primary_key
@@ -21,8 +21,6 @@ models:
     columns:
       - name: cvegeo
         data_type: text
-      - name: geometry
-        data_type: geometry
       - name: graproes
         data_type: float
       - name: graproes_f
@@ -469,3 +467,5 @@ models:
         data_type: int
       - name: vph_tv
         data_type: int
+      - name: geometry
+        data_type: geometry

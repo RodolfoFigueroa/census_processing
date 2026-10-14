@@ -1,0 +1,8 @@
+type: cfc_dagster_utils.components.dvc.DvcInputComponent
+attributes:
+  key: input/2000/scince
+  dvc_file: data/input/2000/censo2000_scince.zip.dvc
+post_processing:
+  assets:
+    - attributes:
+        group_name: "input/2000"

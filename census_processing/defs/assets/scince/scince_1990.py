@@ -2,21 +2,13 @@ import tempfile
 from pathlib import Path
 from typing import Literal
 
-import geopandas as gpd
-import numpy as np
 import pandas as pd
 import rarfile
 from cfc_dagster_utils.utils import cast_all_columns_to_numeric
 
 import dagster as dg
-from census_processing.defs.assets.census_data.common.cvegeo import (
-    add_one_higher_level_cvegeo,
-)
-from census_processing.defs.assets.census_data.common.geometry import (
-    merge_census_and_geometry,
-)
-from census_processing.defs.assets.census_data.common.remove_unused import (
-    remove_unused_op_map,
+from census_processing.defs.assets.scince.common.common_1990_2000 import (
+    scince_1990_2000_factory,
 )
 from census_processing.defs.resources import PathResource
 
@@ -86,11 +78,14 @@ def row_to_frame(row: str) -> pd.DataFrame:
     )
 
 
-@dg.op(
-    name="census_1990_ageb",
-    ins={"scince_1990": dg.In(dagster_type=dg.Nothing)},
-)
-def census_1990_ageb(path_resource: PathResource) -> pd.DataFrame:
+def get_state_code(digit: str) -> str:
+    if not digit.isdigit():
+        return str(ord(digit) - 55).zfill(2)
+    return digit.zfill(2)
+
+
+@dg.op(ins={"scince_file_dep": dg.In(dagster_type=dg.Nothing)})
+def load_scince_1990(path_resource: PathResource) -> list[pd.DataFrame]:
     raw_path = Path(path_resource.in_path)
 
     with (
@@ -107,42 +102,26 @@ def census_1990_ageb(path_resource: PathResource) -> pd.DataFrame:
                 continue
 
             for fpath in dir_path.glob("*.PNF"):
+                state_code = get_state_code(fpath.stem[0])
+
                 with fpath.open() as f:
                     line = f.readline()
 
-                state_code = fpath.stem[0]
-                if not state_code.isdigit():
-                    state_code = str(ord(state_code) - 55)
-                state_code = state_code.zfill(2)
+                df_processed = row_to_frame(line)
 
-                df_temp = row_to_frame(line)
-                df_temp.index = (
-                    state_code + fpath.stem[1:] + df_temp.index.str.replace("-", "")
-                )
-                df.append(df_temp)
+                if len(fpath.stem) == 1:  # Whole-state database file
+                    df_processed.index = df_processed.index.str.replace(
+                        "-", ""
+                    ).str.ljust(13, "0")
+                else:
+                    df_processed.index = (
+                        state_code
+                        + fpath.stem[1:]
+                        + df_processed.index.str.replace("-", "")
+                    )
+                df.append(df_processed)
 
-    out = pd.concat(df).replace(["*", "N.D.", "N/D"], np.nan).sort_index()
-    out = cast_all_columns_to_numeric(out, prefer_integer=True)
-    out.columns = out.columns.astype(str).str.lower()
-    return out.reset_index(names="cvegeo")
+    return df
 
 
-@dg.graph_asset(
-    key=["staging", "1990", "scince", "ageb"],
-    ins={
-        "demography": dg.AssetIn(
-            key=["input", "1990", "demography"], dagster_type=dg.Nothing
-        ),
-        "geometry": dg.AssetIn(
-            key=["input", "1990", "geometry", "ageb"], dagster_type=dg.Nothing
-        ),
-    },
-    metadata={"schema": "staging", "table": "scince_1990_ageb_prepared"},
-    group_name="staging_scince_1990",
-)
-def census_graph_1990(demography: None, geometry: None) -> gpd.GeoDataFrame:
-    census = census_1990_ageb(demography)
-    census = remove_unused_op_map["ageb"](census)
-    census = add_one_higher_level_cvegeo(census)
-
-    return merge_census_and_geometry(census, geometry)
+scince_1990 = scince_1990_2000_factory(year=1990, load_scince_op=load_scince_1990)

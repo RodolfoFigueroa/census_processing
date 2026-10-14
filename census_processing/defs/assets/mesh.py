@@ -13,7 +13,7 @@ def mesh_factory(level: int) -> dg.AssetsDefinition:
         key=["staging", "mesh", f"level_{level}"],
         deps=[["input", "mesh"]],
         io_manager_key="postgres_manager",
-        group_name="staging_mesh",
+        group_name="staging/mesh",
         metadata={"table": f"mesh_level_{level}_prepared", "schema": "staging"},
     )
     def _asset(path_resource: PathResource) -> gpd.GeoDataFrame:

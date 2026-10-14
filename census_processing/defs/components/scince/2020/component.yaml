@@ -5,4 +5,4 @@ attributes:
 post_processing:
   assets:
     - attributes:
-        group_name: "input_scince_2020"
+        group_name: "input/2020"

@@ -11,11 +11,11 @@ from census_processing.defs.resources import PathResource
 @dg.asset(
     key=["staging", "1990", "census", "ageb"],
     deps=[["input", "1990", "geometry", "ageb"]],
-    io_manager_key="postgres_manager",
     metadata={"schema": "staging", "table": "census_1990_ageb_prepared"},
-    group_name="staging_census_1990",
+    io_manager_key="postgres_manager",
+    group_name="staging/census/1990",
 )
-def geometry_1990_ageb(path_resource: PathResource) -> gpd.GeoDataFrame:
+def census_1990_ageb(path_resource: PathResource) -> gpd.GeoDataFrame:
     raw_path = Path(path_resource.in_path)
     with (
         zipfile.ZipFile(raw_path / "1990" / "AGEBs 90_TecMonty_aj.zip") as zf,

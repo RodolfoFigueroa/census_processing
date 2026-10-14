@@ -1,24 +1,15 @@
-import io
 import tempfile
 import zipfile
 from pathlib import Path
 
 import cabarchive
-import geopandas as gpd
 import numpy as np
 import pandas as pd
 import rarfile
-from cfc_dagster_utils.utils import cast_all_columns_to_numeric
 
 import dagster as dg
-from census_processing.defs.assets.census_data.common.cvegeo import (
-    add_one_higher_level_cvegeo,
-)
-from census_processing.defs.assets.census_data.common.geometry import (
-    merge_census_and_geometry,
-)
-from census_processing.defs.assets.census_data.common.remove_unused import (
-    remove_unused_op_map,
+from census_processing.defs.assets.scince.common.common_1990_2000 import (
+    scince_1990_2000_factory,
 )
 from census_processing.defs.resources import PathResource
 
@@ -192,8 +183,8 @@ def extract_from_archive(arc: cabarchive.CabArchive) -> pd.DataFrame:
     return pd.concat(df_census)
 
 
-@dg.op(name="census_2000_ageb", ins={"demography": dg.In(dagster_type=dg.Nothing)})
-def census_2000_ageb(path_resource: PathResource) -> pd.DataFrame:
+@dg.op(ins={"scince_file_dep": dg.In(dagster_type=dg.Nothing)})
+def load_scince_2000(path_resource: PathResource) -> list[pd.DataFrame]:
     raw_path = Path(path_resource.in_path)
 
     df_census_list: list[pd.DataFrame] = []
@@ -217,73 +208,7 @@ def census_2000_ageb(path_resource: PathResource) -> pd.DataFrame:
 
             df_census_list.append(extract_from_archive(arc))
 
-    out = (
-        pd.concat(df_census_list)
-        .sort_index()
-        .assign(ageb_id=lambda df: df.index.str.slice(9, 13))
-        .query("ageb_id != '0000'")
-        .drop(columns=["ageb_id"])
-        .pipe(lambda df: cast_all_columns_to_numeric(df, prefer_integer=True))
-        .reset_index(names="cvegeo")
-    )
-    out.columns = out.columns.astype(str).str.lower()
-    return out
+    return df_census_list
 
 
-@dg.op(name="geometry_2000_ageb", ins={"geometry": dg.In(dagster_type=dg.Nothing)})
-def geometry_2000_ageb(path_resource: PathResource) -> gpd.GeoDataFrame:
-    raw_path = Path(path_resource.in_path)
-
-    with (
-        zipfile.ZipFile(raw_path / "2000" / "702825292843_s.zip") as f,
-        f.open("mgau2000.zip") as subzip,
-    ):
-        subzip_data = io.BytesIO(subzip.read())
-        with (
-            zipfile.ZipFile(subzip_data) as f_nested,
-            tempfile.TemporaryDirectory() as tmpdir,
-        ):
-            f_nested.extractall(tmpdir)
-            df_geom = gpd.read_file(tmpdir)
-
-    df_geom.columns = df_geom.columns.str.lower()
-
-    return df_geom.assign(cvegeo=lambda df: df["clvagb"].str.replace("-", ""))[
-        ["cvegeo", "geometry"]
-    ].to_crs("EPSG:6372")
-
-
-@dg.graph_asset(
-    key=["staging", "2000", "scince", "ageb"],
-    ins={
-        "demography": dg.AssetIn(
-            key=["input", "2000", "demography"], dagster_type=dg.Nothing
-        ),
-        "geometry": dg.AssetIn(
-            key=["input", "2000", "geometry", "ageb"], dagster_type=dg.Nothing
-        ),
-    },
-    metadata={"schema": "staging", "table": "scince_2000_ageb_prepared"},
-    group_name="staging_scince_2000",
-)
-def census_graph_2000(demography: None, geometry: None) -> gpd.GeoDataFrame:
-    census = census_2000_ageb(demography)
-    census = remove_unused_op_map["ageb"](census)
-    census = add_one_higher_level_cvegeo(census)
-
-    geometry = geometry_2000_ageb(geometry)
-
-    return merge_census_and_geometry(census, geometry)
-
-
-# census_2000_non_agebs = census_1990_2000_factory(
-#     compressed_path=Path("2000", "cgpv2000_iter_00_csv.zip"),
-#     extracted_path=Path(
-#         "cgpv2000_iter_00",
-#         "conjunto_de_datos",
-#         "cgpv2000_iter_00.csv",
-#     ),
-#     year=2000,
-#     encoding="utf-8",
-#     sep=",",
-# )
+scince_2000 = scince_1990_2000_factory(year=2000, load_scince_op=load_scince_2000)

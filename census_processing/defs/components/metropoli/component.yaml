@@ -5,4 +5,4 @@ attributes:
 post_processing:
   assets:
     - attributes:
-        group_name: "input_metropoli"
+        group_name: "input/metropoli"

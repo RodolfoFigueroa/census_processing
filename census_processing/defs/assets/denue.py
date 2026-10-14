@@ -103,7 +103,7 @@ def denue_factory(date: DenueYearsT) -> dg.AssetsDefinition:
         key=["staging", "denue", date],
         ins={"denue_dir_dep": dg.AssetIn(key=["input", "denue", date])},
         metadata={"schema": "staging", "table": f"denue_{date}_prepared"},
-        group_name="staging_denue",
+        group_name="staging/denue",
     )
     def _asset(denue_dir_dep: None) -> gpd.GeoDataFrame:
         denue_paths = get_denue_paths_op_map[date](denue_dir_dep=denue_dir_dep)

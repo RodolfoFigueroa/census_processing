@@ -5,7 +5,7 @@ attributes:
 post_processing:
   assets:
     - attributes:
-        group_name: "input_2020"
+        group_name: "input/2020"
 
 ---
 type: cfc_dagster_utils.components.dvc.DvcInputComponent
@@ -15,4 +15,4 @@ attributes:
 post_processing:
   assets:
     - attributes:
-        group_name: "input_2020"
+        group_name: "input/2020"

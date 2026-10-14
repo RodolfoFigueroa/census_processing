@@ -6,6 +6,9 @@
     )
 }}
 
-select *
-
-from {{ source("census_staging", "census_2020_mun_prepared") }}
+{{
+    add_parent_cvegeo(
+        source("census_staging", "census_2020_mun_prepared"),
+        "mun",
+    )
+}}

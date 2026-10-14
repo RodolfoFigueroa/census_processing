@@ -6,7 +6,7 @@ import geopandas as gpd
 import pandas as pd
 
 import dagster as dg
-from census_processing.defs.assets.scince.common.scince_2010_2020 import (
+from census_processing.defs.assets.scince.common.common_2010_2020 import (
     scince_2010_2020_factory,
 )
 from census_processing.defs.resources import PathResource

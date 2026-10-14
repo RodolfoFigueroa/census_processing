@@ -7,8 +7,7 @@ model-paths: ["models"]
 
 models:
   census_processing:
-    census:
-      +materialized: table
+    +materialized: table
 
 flags:
   send_anonymous_usage_stats: false

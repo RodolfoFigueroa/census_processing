@@ -62,7 +62,7 @@ def merge_metropoli_by_cve_met(df: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
             key=["input", "metropolis_2020"], dagster_type=dg.Nothing
         )
     },
-    group_name="staging_metropoli",
+    group_name="staging/metropoli",
     metadata={"table": "metropoli_2020_prepared", "schema": "staging"},
 )
 def metropoli(metropolis_2020_input: None) -> gpd.GeoDataFrame:

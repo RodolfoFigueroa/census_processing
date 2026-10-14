@@ -4,23 +4,11 @@ from pathlib import Path
 from typing import Literal
 
 import geopandas as gpd
-import pandas as pd
 
 import dagster as dg
-from census_processing.defs.assets.census_data.common.census_2010_2020 import (
+from census_processing.defs.assets.census_data.factories import (
     census_2010_2020_factory,
-)
-from census_processing.defs.assets.census_data.common.cvegeo import (
-    add_one_higher_level_cvegeo,
-)
-from census_processing.defs.assets.census_data.common.extract import (
-    extract_op_map,
-)
-from census_processing.defs.assets.census_data.common.geometry import (
-    merge_census_and_geometry,
-)
-from census_processing.defs.assets.census_data.common.remove_unused import (
-    remove_unused_op_map,
+    full_2010_2020_factory,
 )
 from census_processing.defs.resources import PathResource
 
@@ -94,9 +82,6 @@ def geometry_2010_factory(
 
 
 census_2010 = census_2010_2020_factory(
-    key=["staging", "2010", "census", "demographics"],  # ty: ignore[invalid-argument-type]
-    io_manager_key="dataframe_file_manager",  # ty: ignore[invalid-argument-type]
-    group_name="staging_census_2010",  # ty: ignore[invalid-argument-type]
     year=2010,
     zip_template="resageburb_{i:02d}_2010_csv.zip",
     inner_dir_template="resultados_ageb_urbana_{i:02d}_cpv2010",
@@ -107,33 +92,7 @@ geometry_2010_map: dict[str, dg.OpDefinition] = {
     level: geometry_2010_factory(level) for level in LEVELS_2010
 }
 
-
-def full_2010_factory(
-    level: Literal["ent", "mun", "loc", "ageb"],
-) -> dg.AssetsDefinition:
-    @dg.graph_asset(
-        key=["staging", "2010", "census", level],
-        ins={
-            "census": dg.AssetIn(key=["staging", "2010", "census", "demographics"]),
-            "geometry_dep": dg.AssetIn(
-                key=["input", "2010", "geometry"], dagster_type=dg.Nothing
-            ),
-        },
-        metadata={"schema": "staging", "table": f"census_2010_{level}_prepared"},
-        group_name="staging_census_2010",
-    )
-    def _asset(census: pd.DataFrame, geometry_dep: None) -> dict[str, gpd.GeoDataFrame]:
-        census = extract_op_map[level](census)
-        census = remove_unused_op_map[level](census)
-
-        if level != "ent":
-            census = add_one_higher_level_cvegeo(census)
-
-        geometry = geometry_2010_map[level](geometry_dep)
-
-        return merge_census_and_geometry(census, geometry)
-
-    return _asset
-
-
-dassets = [full_2010_factory(level) for level in LEVELS_2010]
+dassets = [
+    full_2010_2020_factory(level=level, year=2010, geometry_op_map=geometry_2010_map)
+    for level in LEVELS_2010
+]

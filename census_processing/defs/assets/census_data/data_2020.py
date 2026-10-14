@@ -7,22 +7,16 @@ import geopandas as gpd
 import pandas as pd
 
 import dagster as dg
-from census_processing.defs.assets.census_data.common.census_2010_2020 import (
+from census_processing.defs.assets.census_data.factories import (
     census_2010_2020_factory,
-)
-from census_processing.defs.assets.census_data.common.cvegeo import (
-    add_one_higher_level_cvegeo,
-)
-from census_processing.defs.assets.census_data.common.extract import (
-    extract_op_map,
-)
-from census_processing.defs.assets.census_data.common.geometry import (
-    merge_census_and_geometry,
-)
-from census_processing.defs.assets.census_data.common.remove_unused import (
-    remove_unused_op_map,
+    full_2010_2020_factory,
 )
 from census_processing.defs.assets.metropoli import load_metropoli_df
+from census_processing.defs.ops.extract import (
+    extract_op_map,
+)
+from census_processing.defs.ops.geometry import merge_census_and_geometry
+from census_processing.defs.ops.remove_unused import remove_unused_op_map
 from census_processing.defs.resources import PathResource
 
 SUFFIX_MAP = {
@@ -85,9 +79,6 @@ geometry_2020_op_map = {
 }
 
 census_2020 = census_2010_2020_factory(
-    key=["staging", "2020", "census", "demographics"],  # ty: ignore[invalid-argument-type]
-    io_manager_key="dataframe_file_manager",  # ty: ignore[invalid-argument-type]
-    group_name="staging_census_2020",  # ty: ignore[invalid-argument-type]
     year=2020,
     zip_template="ageb_mza_urbana_{i:02d}_cpv2020_csv.zip",
     inner_dir_template="ageb_mza_urbana_{i:02d}_cpv2020",
@@ -116,7 +107,7 @@ def add_cve_met_column(
         "metropoli_dep": dg.AssetIn(key=["metropoli", "2020"], dagster_type=dg.Nothing),
     },
     metadata={"table": "census_2020_mun_prepared", "schema": "staging"},
-    group_name="staging_census_2020",
+    group_name="staging/census/2020",
 )
 def mun_2020(
     census: pd.DataFrame,
@@ -126,7 +117,6 @@ def mun_2020(
 ) -> dict[str, gpd.GeoDataFrame]:
     census = extract_op_map["mun"](census)
     census = remove_unused_op_map["mun"](census)
-    census = add_one_higher_level_cvegeo(census)
 
     geometry = geometry_2020_op_map["mun"](geometry_input)
 
@@ -136,32 +126,7 @@ def mun_2020(
     return merge_census_and_geometry(census, geometry_with_met, met_dep=metropoli_dep)
 
 
-def full_2020_factory(level: Literal["ent", "loc", "ageb"]) -> dg.AssetsDefinition:
-    @dg.graph_asset(
-        key=["staging", "2020", "census", level],
-        ins={
-            "census": dg.AssetIn(key=["staging", "2020", "census", "demographics"]),
-            "geometry_input": dg.AssetIn(
-                key=["input", "2020", "geometry"], dagster_type=dg.Nothing
-            ),
-        },
-        metadata={"table": f"census_2020_{level}_prepared", "schema": "staging"},
-        group_name="staging_census_2020",
-    )
-    def _asset(
-        census: pd.DataFrame, geometry_input: None
-    ) -> dict[str, gpd.GeoDataFrame]:
-        census = extract_op_map[level](census)
-        census = remove_unused_op_map[level](census)
-
-        if level != "ent":
-            census = add_one_higher_level_cvegeo(census)
-
-        geometry = geometry_2020_op_map[level](geometry_input)
-
-        return merge_census_and_geometry(census, geometry)
-
-    return _asset
-
-
-dassets = [full_2020_factory(level) for level in ("ent", "loc", "ageb")]
+dassets = [
+    full_2010_2020_factory(level=level, year=2020, geometry_op_map=geometry_2020_op_map)
+    for level in ("ent", "loc", "ageb")
+]

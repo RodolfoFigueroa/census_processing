@@ -12,7 +12,7 @@ models:
         spatial: true
         dagster:
           asset_key: ["census", "2010", "loc"]
-          group: census_2010
+          group: census/2010
 
     constraints:
       - type: primary_key
@@ -26,10 +26,6 @@ models:
     columns:
       - name: cvegeo
         data_type: text
-      - name: cve_mun
-        data_type: text
-      - name: geometry
-        data_type: geometry
       - name: graproes
         data_type: float
       - name: graproes_f
@@ -412,3 +408,7 @@ models:
         data_type: int
       - name: vph_tv
         data_type: int
+      - name: cve_mun
+        data_type: text
+      - name: geometry
+        data_type: geometry

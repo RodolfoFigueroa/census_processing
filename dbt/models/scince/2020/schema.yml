@@ -12,11 +12,16 @@ models:
         spatial: true
         dagster:
           asset_key: ["scince", "2020", "ageb"]
-          group: scince_2020
+          group: scince/2020
 
     constraints:
       - type: primary_key
         columns: [cvegeo]
+
+      - type: foreign_key
+        columns: [cvegeo]
+        to: ref("census_2020_ageb")
+        to_columns: [cvegeo]
 
     columns:
       - name: cvegeo

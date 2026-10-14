@@ -52,7 +52,7 @@ def scince_2010_2020_factory(
         key=["staging", str(year), "scince", "ageb"],
         ins={"scince_file_dep": dg.AssetIn(key=["input", str(year), "scince"])},
         metadata={"schema": "staging", "table": f"scince_{year}_ageb_prepared"},
-        group_name=f"staging_scince_{year}",
+        group_name=f"staging/scince/{year}",
     )
     def _asset(scince_file_dep: None) -> pd.DataFrame:
         state_codes = get_state_codes()

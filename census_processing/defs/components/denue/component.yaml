@@ -5,7 +5,7 @@ attributes:
 post_processing:
   assets:
     - attributes:
-        group_name: "input_denue"
+        group_name: "input/denue"
 
 ---
 type: cfc_dagster_utils.components.dvc.DvcInputComponent
@@ -15,7 +15,7 @@ attributes:
 post_processing:
   assets:
     - attributes:
-        group_name: "input_denue"
+        group_name: "input/denue"
 
 ---
 type: cfc_dagster_utils.components.dvc.DvcInputComponent
@@ -25,7 +25,7 @@ attributes:
 post_processing:
   assets:
     - attributes:
-        group_name: "input_denue"
+        group_name: "input/denue"
 
 ---
 type: cfc_dagster_utils.components.dvc.DvcInputComponent
@@ -35,7 +35,7 @@ attributes:
 post_processing:
   assets:
     - attributes:
-        group_name: "input_denue"
+        group_name: "input/denue"
 
 ---
 type: cfc_dagster_utils.components.dvc.DvcInputComponent
@@ -45,7 +45,7 @@ attributes:
 post_processing:
   assets:
     - attributes:
-        group_name: "input_denue"
+        group_name: "input/denue"
 
 ---
 type: cfc_dagster_utils.components.dvc.DvcInputComponent
@@ -55,4 +55,4 @@ attributes:
 post_processing:
   assets:
     - attributes:
-        group_name: "input_denue"
+        group_name: "input/denue"
