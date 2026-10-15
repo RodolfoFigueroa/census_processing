@@ -444,7 +444,6 @@ models:
         enforced: true
 
       meta:
-        spatial: true
         dagster:
           asset_key: ["scince", "1990", "ageb"]
           group: scince/1990

@@ -7,11 +7,6 @@ import dagster as dg
 
 
 @dg.op(out=dg.Out(io_manager_key="postgres_manager"))
-def concat_dataframes(chunks: list[pd.DataFrame]) -> pd.DataFrame:
-    return pd.concat(chunks, ignore_index=True)
-
-
-@dg.op(out=dg.Out(io_manager_key="postgres_manager"))
 def concat_geodataframes(
     context: dg.OpExecutionContext, gdfs: list[gpd.GeoDataFrame]
 ) -> gpd.GeoDataFrame:

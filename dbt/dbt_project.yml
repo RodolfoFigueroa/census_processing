@@ -8,6 +8,9 @@ model-paths: ["models"]
 models:
   census_processing:
     +materialized: table
+    +config:
+      contract:
+        enforced: true
 
 flags:
   send_anonymous_usage_stats: false
