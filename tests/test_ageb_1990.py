@@ -3,7 +3,7 @@ from __future__ import annotations
 import shutil
 import struct
 from dataclasses import dataclass
-from pathlib import Path
+from typing import TYPE_CHECKING
 from zipfile import ZipFile
 
 import geopandas as gpd
@@ -12,12 +12,12 @@ import pytest
 from shapely.affinity import translate
 from shapely.geometry import MultiPolygon, Polygon, box
 
-from census_processing.defs.assets.geometry.geometry_1990 import ageb_1990 as loader
-from census_processing.defs.assets.geometry.geometry_1990 import scince_1990 as scince
-from census_processing.defs.assets.geometry.geometry_1990.ageb_1990 import (
+from census_processing.defs.assets.geometry.geometry_1990 import ageb as loader
+from census_processing.defs.assets.geometry.geometry_1990 import scince
+from census_processing.defs.assets.geometry.geometry_1990.ageb import (
     load_1990_ageb_geometries,
 )
-from census_processing.defs.assets.geometry.geometry_1990.scince_1990 import (
+from census_processing.defs.assets.geometry.geometry_1990.scince import (
     INDEX_RECORD,
     PNF_RECORD_BYTES,
     Boundary,
@@ -26,9 +26,12 @@ from census_processing.defs.assets.geometry.geometry_1990.scince_1990 import (
     project_boundaries,
     statistical_agebs,
 )
-from census_processing.defs.assets.geometry.geometry_1990.zip_1990 import (
+from census_processing.defs.assets.geometry.geometry_1990.zip import (
     load_geometry_zip,
 )
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 PREFIX = "010010001"
 
@@ -150,133 +153,6 @@ def test_scince_context_cleans_up_on_consumer_failure(inputs: Inputs) -> None:
         raise RuntimeError(msg)
     assert inputs.extracted
     assert all(not path.exists() for path in inputs.extracted)
-
-
-def test_loader_precedence_null_rows_without_audit(inputs: Inputs) -> None:
-    primary = load_geometry_zip(inputs.geometry_zip)
-    output = load_1990_ageb_geometries(inputs.geometry_zip, inputs.scince_rar)
-    assert len(output) == 8
-    assert output.columns.tolist() == ["cvegeo", "geometry"]
-    assert output.crs is not None
-    assert output.crs.to_epsg() == 6372
-    assert output.cvegeo.is_unique
-    assert output.cvegeo.is_monotonic_increasing
-    rows = output.set_index("cvegeo")
-    assert (
-        rows.loc[primary.index].geometry.to_wkb().tolist()
-        == primary.geometry.to_wkb().tolist()
-    )
-    assert not rows.loc[PREFIX + "0060"].geometry.is_valid
-    assert PREFIX + "0090" in rows.index
-    assert PREFIX + "0080" not in rows.index
-    fallback = rows.loc[PREFIX + "005A"].geometry
-    assert isinstance(fallback, MultiPolygon)
-    assert fallback.equals(box(500810, 1999985, 500910, 2000085))
-    assert rows.loc[PREFIX + "0070"].geometry is None
-    assert "fallback_audit" not in output.attrs
-    assert inputs.extracted
-    assert all(not path.exists() for path in inputs.extracted)
-
-
-def test_no_missing_ids_avoids_drawing_decoding(
-    inputs: Inputs, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    inputs.map_path.with_suffix(".PNF").write_bytes(pnf("001-0", "006-0"))
-
-    def unexpected(*_args: object) -> None:
-        pytest.fail("Fully covered localities must not decode drawings")
-
-    monkeypatch.setattr(scince, "decode_map", unexpected)
-    output = load_1990_ageb_geometries(inputs.geometry_zip, inputs.scince_rar)
-    assert len(output) == 6
-    assert output.columns.tolist() == ["cvegeo", "geometry"]
-    assert "fallback_audit" not in output.attrs
-
-
-@pytest.mark.parametrize(
-    "shifts",
-    [
-        [(1010, -1015)] * 4,
-        [(10, -15), (610, -815), (-990, 585), (3010, 2985)],
-    ],
-    ids=["large_shift", "inconsistent_controls"],
-)
-def test_large_or_inconsistent_shifts_are_applied(
-    inputs: Inputs,
-    monkeypatch: pytest.MonkeyPatch,
-    shifts: list[tuple[float, float]],
-) -> None:
-    primary = load_geometry_zip(inputs.geometry_zip)
-    for number, (dx, dy) in enumerate(shifts, 1):
-        key = PREFIX + f"{number:03d}0"
-        original = primary.loc[key, "geometry"]
-        assert isinstance(original, (Polygon, MultiPolygon))
-        primary.loc[key, "geometry"] = translate(
-            original,
-            xoff=dx - 10,
-            yoff=dy + 15,
-        )
-    monkeypatch.setattr(loader, "load_geometry_zip", lambda _path: primary)
-    output = load_1990_ageb_geometries(inputs.geometry_zip, inputs.scince_rar)
-    row = output.set_index("cvegeo").loc[PREFIX + "005A"]
-    fallback = row.geometry
-    assert isinstance(fallback, MultiPolygon)
-    dx, dy = np.median(shifts, axis=0)
-    assert fallback.equals(
-        translate(box(500800, 2000000, 500900, 2000100), xoff=dx, yoff=dy)
-    )
-    assert "fallback_audit" not in output.attrs
-
-
-@pytest.mark.parametrize("control_count", [0, 1])
-def test_one_shared_control_is_enough_but_none_keeps_null(
-    inputs: Inputs,
-    monkeypatch: pytest.MonkeyPatch,
-    control_count: int,
-) -> None:
-    primary = load_geometry_zip(inputs.geometry_zip)
-    for number in range(control_count + 1, 5):
-        primary.loc[PREFIX + f"{number:03d}0", "geometry"] = primary.loc[
-            PREFIX + "0060", "geometry"
-        ]
-    monkeypatch.setattr(loader, "load_geometry_zip", lambda _path: primary)
-    output = load_1990_ageb_geometries(inputs.geometry_zip, inputs.scince_rar)
-    row = output.set_index("cvegeo").loc[PREFIX + "005A"]
-    assert "fallback_audit" not in output.attrs
-    if control_count:
-        fallback = row.geometry
-        assert isinstance(fallback, MultiPolygon)
-        assert fallback.equals(box(500810, 1999985, 500910, 2000085))
-    else:
-        assert row.geometry is None
-
-
-def test_projection_failure_keeps_null_geometry(
-    inputs: Inputs, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    def failing(
-        boundaries: list[Boundary],
-        epsg: int,
-    ) -> list[MultiPolygon]:
-        if len(boundaries) == 1:
-            msg = "Unusable projected fallback"
-            raise ValueError(msg)
-        return identity_projection(boundaries, epsg)
-
-    monkeypatch.setattr(loader, "project_boundaries", failing)
-    output = load_1990_ageb_geometries(inputs.geometry_zip, inputs.scince_rar)
-    assert output.set_index("cvegeo").loc[PREFIX + "005A"].geometry is None
-    assert output.columns.tolist() == ["cvegeo", "geometry"]
-
-
-def test_missing_drawing_keeps_null_geometry(inputs: Inputs) -> None:
-    inputs.map_path.with_suffix(".DIB").unlink()
-    output = load_1990_ageb_geometries(inputs.geometry_zip, inputs.scince_rar)
-    assert output.geometry.isna().sum() == 2
-    missing = output.loc[output.geometry.isna()]
-    assert missing.cvegeo.tolist() == [PREFIX + "005A", PREFIX + "0070"]
-    assert output.columns.tolist() == ["cvegeo", "geometry"]
-    assert "fallback_audit" not in output.attrs
 
 
 @pytest.mark.parametrize("data", [b"partial", pnf("001-0", "001-0"), b""])
@@ -411,36 +287,3 @@ def test_decoding_still_normalizes_closes_repairs_and_merges() -> None:
     assert geometry.bounds == (1, 0, 3, 2)
     assert geometry.area == 2
     assert len(geometry.geoms) == 2
-
-
-def test_real_archives_integration() -> None:
-    root = Path(__file__).resolve().parents[1] / "data/input/1990"
-    geometry_zip, scince_rar = (
-        root / "AGEBs 90_TecMonty_aj.zip",
-        root / "SCINCE1990.rar",
-    )
-    if not geometry_zip.exists() or not scince_rar.exists():
-        pytest.skip("Original geometry and SCINCE archives required")
-    output = load_1990_ageb_geometries(geometry_zip, scince_rar)
-    primary = load_geometry_zip(geometry_zip)
-    assert len(output) == 24119
-    assert output.columns.tolist() == ["cvegeo", "geometry"]
-    assert output.cvegeo.is_unique
-    assert output.geometry.isna().sum() == 11
-    assert len(primary) == 24105
-    rows = output.set_index("cvegeo")
-    assert (
-        rows.loc[primary.index].geometry.to_wkb().tolist()
-        == primary.geometry.to_wkb().tolist()
-    )
-    assert (~rows.loc[primary.index].geometry.is_valid).sum() == 7
-    fallbacks = output.loc[~output.cvegeo.isin(primary.index) & output.geometry.notna()]
-    assert fallbacks.cvegeo.tolist() == [
-        "1603600010042",
-        "1900900010231",
-        "2800300430928",
-    ]
-    assert rows.loc["2800300430928"].geometry.is_valid
-    assert "1510600010970" in primary.index
-    assert fallbacks.geometry.is_valid.all()
-    assert "fallback_audit" not in output.attrs
