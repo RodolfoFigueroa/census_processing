@@ -440,9 +440,6 @@ models:
     description: 1990 census statistics obtained from the SCINCE dataset, aggregated by AGEB (Área Geoestadística Básica).
 
     config:
-      contract:
-        enforced: true
-
       meta:
         dagster:
           asset_key: ["scince", "1990", "ageb"]
@@ -454,7 +451,7 @@ models:
 
       - type: foreign_key
         columns: [cvegeo]
-        to: ref("census_1990_ageb")
+        to: ref("geo_unit_1990_ageb")
         to_columns: [cvegeo]
 
     columns: *scince_columns

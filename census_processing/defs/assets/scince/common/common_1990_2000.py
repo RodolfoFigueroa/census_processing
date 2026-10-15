@@ -31,7 +31,7 @@ def scince_1990_2000_factory(
             )
         },
         metadata={"schema": "staging", "table": f"scince_{year}_prepared"},
-        group_name=f"staging/scince/{year}",
+        group_name=f"staging/{year}",
     )
     def _asset(scince_file_dep: None) -> pd.DataFrame:
         return concat_and_clean_scince_dataframes(load_scince_op(scince_file_dep))

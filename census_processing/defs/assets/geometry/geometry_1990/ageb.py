@@ -16,14 +16,14 @@ from shapely.errors import GEOSException
 from shapely.geometry import MultiPolygon, Polygon
 
 import dagster as dg
-from census_processing.defs.assets.geometry.geometry_1990.scince_1990 import (
+from census_processing.defs.assets.geometry.geometry_1990.scince import (
     TARGET_EPSG,
     Boundary,
     load_locality_boundaries,
     open_scince_maps,
     project_boundaries,
 )
-from census_processing.defs.assets.geometry.geometry_1990.zip_1990 import (
+from census_processing.defs.assets.geometry.geometry_1990.zip import (
     load_geometry_zip,
 )
 from census_processing.defs.resources import PathResource  # noqa: TC001
@@ -136,11 +136,11 @@ def _locality_fallbacks(
 
 
 @dg.asset(
-    key=["geometry", "1990", "ageb"],
+    key=["staging", "geometry", "1990", "ageb"],
     deps=[["input", "1990", "geometry", "ageb"], ["input", "1990", "scince"]],
     io_manager_key="postgres_manager",
     metadata={"schema": "staging", "table": "geometry_1990_ageb_prepared"},
-    group_name="geometry/1990",
+    group_name="staging/1990/geometry",
 )
 def load_1990_ageb_geometries(path_resource: PathResource) -> gpd.GeoDataFrame:
     """Load ZIP geometries, aligned fallbacks, and unresolved statistical IDs.

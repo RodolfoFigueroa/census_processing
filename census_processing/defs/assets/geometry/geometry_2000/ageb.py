@@ -10,13 +10,13 @@ from census_processing.defs.resources import PathResource
 
 
 @dg.asset(
-    name="geometry_2000_ageb",
+    key=["staging", "geometry", "2000", "ageb"],
     deps=[["input", "2000", "geometry", "ageb"]],
     io_manager_key="postgres_manager",
-    metadata={"schema": "staging", "table": "census_2000_ageb_prepared"},
-    group_name="staging/census/2000",
+    metadata={"schema": "staging", "table": "geometry_2000_ageb_prepared"},
+    group_name="staging/2000/geometry",
 )
-def census_2000_ageb(path_resource: PathResource) -> gpd.GeoDataFrame:
+def geometry_2000_ageb(path_resource: PathResource) -> gpd.GeoDataFrame:
     raw_path = Path(path_resource.in_path)
 
     with (

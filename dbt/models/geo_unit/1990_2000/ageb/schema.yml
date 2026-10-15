@@ -1,0 +1,45 @@
+version: 2
+
+anchors:
+  - &geo_unit_ageb_constraints
+    - type: primary_key
+      columns: [cvegeo]
+    - type: foreign_key
+      columns: [cve_met]
+      to: ref("metropoli_2020")
+      to_columns: [cve_met]
+
+  - &geo_unit_ageb_columns
+    - name: cvegeo
+      data_type: text
+    - name: cve_loc
+      data_type: text
+      description: Parent locality identifier derived from the first nine characters of cvegeo.
+    - name: cve_met
+      data_type: text
+      description: Metropolitan zone under the 2020 boundaries, selected by greatest positive overlap area, breaking ties by cve_met. Null when no assignment can be made, including missing geometry or no positive overlap.
+
+models:
+  - name: geo_unit_1990_ageb
+    description: 1990 geographic units at the AGEB level, with parent locality identifiers and metropolitan assignments under the 2020 boundaries.
+
+    config:
+      meta:
+        dagster:
+          asset_key: ["geo_unit", "1990", "ageb"]
+          group: geo_unit/1990
+
+    constraints: *geo_unit_ageb_constraints
+    columns: *geo_unit_ageb_columns
+
+  - name: geo_unit_2000_ageb
+    description: 2000 geographic units at the AGEB level, with parent locality identifiers and metropolitan assignments under the 2020 boundaries.
+
+    config:
+      meta:
+        dagster:
+          asset_key: ["geo_unit", "2000", "ageb"]
+          group: geo_unit/2000
+
+    constraints: *geo_unit_ageb_constraints
+    columns: *geo_unit_ageb_columns

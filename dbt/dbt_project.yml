@@ -8,9 +8,14 @@ model-paths: ["models"]
 models:
   census_processing:
     +materialized: table
-    +config:
-      contract:
-        enforced: true
+    +contract:
+      enforced: true
+    geo_unit:
+      +indexes:
+        - columns: [cve_loc]
+          type: btree
+        - columns: [cve_met]
+          type: btree
 
 flags:
   send_anonymous_usage_stats: false

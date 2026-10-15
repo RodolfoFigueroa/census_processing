@@ -145,10 +145,13 @@ def chunk_to_dataframe(rows: list[str]) -> pd.DataFrame:
             row_idx=lambda df: df.index // 171,
             col_idx=lambda df: df.index % 171,
         )
-        .pivot_table(index="row_idx", columns="col_idx", values=0, aggfunc="first")
-        .set_index(
-            0,
+        .pivot_table(
+            index="row_idx", columns="col_idx", values=0, aggfunc="first", dropna=False
         )
+        .set_index(0)
+        .astype(
+            {98: "Int32", 99: "Int32"}
+        )  # Fix for all-null columns at the AGEB level
     )
 
 

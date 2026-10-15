@@ -4,11 +4,6 @@ sources:
   - name: census_staging
     schema: staging
     tables:
-      - name: census_1990_ageb_prepared
-        config:
-          meta:
-            dagster:
-              asset_key: ["staging", "1990", "census", "ageb"]
       - name: census_2000_ageb_prepared
         config:
           meta:
@@ -110,6 +105,18 @@ sources:
           meta:
             dagster:
               asset_key: ["staging", "mesh", "level_9"]
+
+      - name: geometry_1990_ageb_prepared
+        config:
+          meta:
+            dagster:
+              asset_key: ["staging", "geometry", "1990", "ageb"]
+
+      - name: geometry_2000_ageb_prepared
+        config:
+          meta:
+            dagster:
+              asset_key: ["staging", "geometry", "2000", "ageb"]
 
       - name: scince_1990_prepared
         config:
