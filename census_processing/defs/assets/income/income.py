@@ -107,29 +107,15 @@ def concat_results(results_list: list[dict]) -> tuple[pd.DataFrame, pd.DataFrame
         "income": dg.AssetOut(
             key="income",
             metadata={
-                "primary_key": "cvegeo",
-                "table_name": "income_2020",
-                "foreign_keys": [
-                    {
-                        "column": "cvegeo",
-                        "ref_table": "census_2020_ageb",
-                        "ref_column": "cvegeo",
-                    }
-                ],
+                "schema": "staging",
+                "table": "income_2020_prepared",
             },
         ),
         "H": dg.AssetOut(
             key="H",
             metadata={
-                "primary_key": "cve_met",
-                "table_name": "segregation_met_zone",
-                "foreign_keys": [
-                    {
-                        "column": "cve_met",
-                        "ref_table": "metropoli_2020",
-                        "ref_column": "cve_met",
-                    }
-                ],
+                "schema": "staging",
+                "table": "segregation_met_zone_prepared",
             },
         ),
     },
