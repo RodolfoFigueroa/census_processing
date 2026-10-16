@@ -5,9 +5,6 @@ models:
     description: Metropolitan zones using 2020 definitions.
 
     config:
-      contract:
-        enforced: true
-
       meta:
         spatial: true
         dagster:

@@ -1,7 +1,5 @@
 {{
     config(
-        materialized="table",
-        alias="metropoli_2020",
         indexes=spatial_index(),
     )
 }}

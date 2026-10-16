@@ -1,0 +1,27 @@
+version: 2
+
+models:
+  - name: geometry_2000_ageb
+    description: 2000 AGEB geometries.
+
+    config:
+      meta:
+        spatial: true
+        dagster:
+          asset_key: ["geometry", "2000", "ageb"]
+          group: geometry/2000
+
+    constraints:
+      - type: primary_key
+        columns: [cvegeo]
+
+      - type: foreign_key
+        columns: [cvegeo]
+        to: ref("geo_unit_2000_ageb")
+        to_columns: [cvegeo]
+
+    columns:
+      - name: cvegeo
+        data_type: text
+      - name: geometry
+        data_type: geometry
