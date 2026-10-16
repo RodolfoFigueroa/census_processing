@@ -107,8 +107,10 @@ def load_census(postgres_resource: PostgresResource, met_zone: str) -> pd.DataFr
                 census_2020_ageb.vph_inter,
                 census_2020_ageb.prom_ocup
             FROM census_2020_ageb
+            INNER JOIN census_2020_loc
+                ON census_2020_ageb.cve_loc = census_2020_loc.cvegeo
             INNER JOIN census_2020_mun
-                ON census_2020_ageb.cve_mun = census_2020_mun.cvegeo
+                ON census_2020_loc.cve_mun = census_2020_mun.cvegeo
             WHERE census_2020_mun.cve_met = %(zone)s
             """,
                 conn,
@@ -179,8 +181,10 @@ def load_census_geometries(
             """
             SELECT census_2020_ageb.cvegeo, census_2020_ageb.geometry
                 FROM census_2020_ageb
+            INNER JOIN census_2020_loc
+                ON census_2020_ageb.cve_loc = census_2020_loc.cvegeo
             INNER JOIN census_2020_mun
-                ON census_2020_ageb.cve_mun = census_2020_mun.cvegeo
+                ON census_2020_loc.cve_mun = census_2020_mun.cvegeo
             WHERE census_2020_mun.cve_met = %(zone)s
             """,
             conn,
