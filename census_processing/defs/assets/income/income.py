@@ -119,7 +119,7 @@ def concat_results(results_list: list[dict]) -> tuple[pd.DataFrame, pd.DataFrame
             },
         ),
     },
-    group_name="income",
+    group_name="staging/income",
 )
 def income(
     agebs_2020: None, muns_2020: None, metropoli_2020: None
