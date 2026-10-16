@@ -1,0 +1,27 @@
+version: 2
+
+models:
+  - name: centroids_historical
+    description: Historical centroids data.
+
+    config:
+      meta:
+        spatial: true
+        dagster:
+          asset_key: ["centroids", "historical"]
+          group: centroids
+
+    constraints:
+      - type: primary_key
+        columns: [cve_met]
+
+      - type: foreign_key
+        columns: [cve_met]
+        to: ref("metropoli_2020")
+        to_columns: [cve_met]
+
+    columns:
+      - name: cve_met
+        data_type: text
+      - name: geometry
+        data_type: geometry
