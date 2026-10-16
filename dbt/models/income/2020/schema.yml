@@ -1,0 +1,30 @@
+version: 2
+
+models:
+  - name: income_2020
+    description: 2020 income data estimated at the AGEB level.
+
+    config:
+      meta:
+        dagster:
+          asset_key: ["income", "2020"]
+          group: income
+
+    constraints:
+      - type: primary_key
+        columns: [cvegeo]
+
+      - type: foreign_key
+        columns: [cvegeo]
+        to: ref("census_2020_ageb")
+        to_columns: [cvegeo]
+
+    columns:
+      - name: cvegeo
+        data_type: text
+      - name: income
+        data_type: float
+      - name: income_pc
+        data_type: float
+      - name: gini
+        data_type: float
