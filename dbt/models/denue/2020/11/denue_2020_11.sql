@@ -1,7 +1,5 @@
 {{
     config(
-        materialized="table",
-        alias="denue_2020_11",
         indexes=spatial_index(),
     )
 }}

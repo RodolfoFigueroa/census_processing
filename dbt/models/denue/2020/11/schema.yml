@@ -5,9 +5,6 @@ models:
     description: DENUE statistics for November 2020.
 
     config:
-      contract:
-        enforced: true
-
       meta:
         spatial: true
         dagster:
