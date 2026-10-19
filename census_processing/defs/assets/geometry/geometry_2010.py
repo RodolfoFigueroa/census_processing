@@ -6,13 +6,7 @@ from typing import Literal
 import geopandas as gpd
 
 import dagster as dg
-from census_processing.defs.assets.census.factories import (
-    census_2010_2020_factory,
-    full_2010_2020_factory,
-)
 from census_processing.defs.resources import PathResource
-
-LEVELS_2010 = ("ent", "mun", "loc", "ageb")
 
 SUFFIX_MAP = {
     "ent": ["e", "Entidades"],
@@ -24,10 +18,13 @@ SUFFIX_MAP = {
 
 def geometry_2010_factory(
     level: Literal["ageb", "mun", "ent", "loc"],
-) -> dg.OpDefinition:
-    @dg.op(
-        name=f"geometry_2010_{level}",
-        ins={"demography": dg.In(dagster_type=dg.Nothing)},
+) -> dg.AssetsDefinition:
+    @dg.asset(
+        key=["staging", "geometry", "2010", level],
+        deps=[["input", "2010", "geometry"]],
+        io_manager_key="postgres_manager",
+        metadata={"schema": "staging", "table": f"geometry_2010_{level}_prepared"},
+        group_name="staging/geometry/2010",
     )
     def _op(path_resource: PathResource) -> gpd.GeoDataFrame:
         raw_path = Path(path_resource.in_path)
@@ -81,18 +78,6 @@ def geometry_2010_factory(
     return _op
 
 
-census_2010 = census_2010_2020_factory(
-    year=2010,
-    zip_template="resageburb_{i:02d}_2010_csv.zip",
-    inner_dir_template="resultados_ageb_urbana_{i:02d}_cpv2010",
-    csv_template="resultados_ageb_urbana_{i:02d}_cpv2010.csv",
-)
-
-geometry_2010_map: dict[str, dg.OpDefinition] = {
-    level: geometry_2010_factory(level) for level in LEVELS_2010
-}
-
-dassets = [
-    full_2010_2020_factory(level=level, year=2010, geometry_op_map=geometry_2010_map)
-    for level in LEVELS_2010
+geometry_2020_assets = [
+    geometry_2010_factory(level) for level in ("ent", "mun", "loc", "ageb")
 ]

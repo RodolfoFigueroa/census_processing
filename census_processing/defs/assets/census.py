@@ -1,15 +1,11 @@
 import tempfile
 import zipfile
 from pathlib import Path
-from typing import Literal
 
 import geopandas as gpd
 import pandas as pd
 
 import dagster as dg
-from census_processing.defs.ops.extract import extract_op_map
-from census_processing.defs.ops.geometry import merge_census_and_geometry
-from census_processing.defs.ops.remove_unused import remove_unused_op_map
 from census_processing.defs.resources import PathResource
 
 
@@ -21,13 +17,9 @@ def census_2010_2020_factory(
     csv_template: str,
 ) -> dg.AssetsDefinition:
     @dg.asset(
-        key=["staging", str(year), "census", "demographics"],
-        ins={
-            "demography_dep": dg.AssetIn(
-                key=["input", str(year), "demography"], dagster_type=dg.Nothing
-            )
-        },
-        io_manager_key="dataframe_file_manager",
+        key=["staging", str(year), "census"],
+        deps=[["input", str(year), "demography"]],
+        io_manager_key="postgres_manager",
         group_name=f"staging/census/{year}",
     )
     def _asset(path_resource: PathResource) -> pd.DataFrame:
@@ -91,31 +83,24 @@ def census_2010_2020_factory(
     return _asset
 
 
-def full_2010_2020_factory(
-    level: Literal["ent", "mun", "loc", "ageb"],
-    year: Literal[2010, 2020],
-    *,
-    geometry_op_map: dict[str, dg.OpDefinition],
-) -> dg.AssetsDefinition:
-    @dg.graph_asset(
-        key=["staging", str(year), "census", level],
-        ins={
-            "census": dg.AssetIn(key=["staging", str(year), "census", "demographics"]),
-            "geometry_input": dg.AssetIn(
-                key=["input", str(year), "geometry"], dagster_type=dg.Nothing
-            ),
-        },
-        metadata={"table": f"census_{year}_{level}_prepared", "schema": "staging"},
-        group_name=f"staging/census/{year}",
-    )
-    def _asset(
-        census: pd.DataFrame, geometry_input: None
-    ) -> dict[str, gpd.GeoDataFrame]:
-        census = extract_op_map[level](census)
-        census = remove_unused_op_map[level](census)
+census_2010 = census_2010_2020_factory(
+    year=2010,
+    zip_template="resageburb_{i:02d}_2010_csv.zip",
+    inner_dir_template="resultados_ageb_urbana_{i:02d}_cpv2010",
+    csv_template="resultados_ageb_urbana_{i:02d}_cpv2010.csv",
+)
 
-        geometry = geometry_op_map[level](geometry_input)
+census_2020 = census_2010_2020_factory(
+    year=2020,
+    zip_template="ageb_mza_urbana_{i:02d}_cpv2020_csv.zip",
+    inner_dir_template="ageb_mza_urbana_{i:02d}_cpv2020",
+    csv_template="conjunto_de_datos_ageb_urbana_{i:02d}_cpv2020.csv",
+)
 
-        return merge_census_and_geometry(census, geometry)
 
-    return _asset
+@dg.op
+def add_cve_met_column(
+    df: gpd.GeoDataFrame, df_metropoli: gpd.GeoDataFrame
+) -> gpd.GeoDataFrame:
+    mun_to_met_map = df_metropoli.set_index("cvegeo")["cve_met"].to_dict()
+    return df.assign(cve_met=df["cvegeo"].map(mun_to_met_map))
