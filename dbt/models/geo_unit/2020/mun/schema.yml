@@ -1,0 +1,53 @@
+version: 2
+
+models:
+  - name: geo_unit_2020_mun
+    description: 2020 geographic units at the mun level, including all source units and implied ancestors.
+    config:
+      meta:
+        dagster:
+          asset_key: ["geo_unit", "2020", "mun"]
+          group: geo_unit/2020
+      indexes:
+        - columns: [cve_ent]
+          type: btree
+        - columns: [cve_met]
+          type: btree
+    constraints:
+      - type: primary_key
+        columns: [cvegeo]
+      - type: check
+        expression: "char_length(cvegeo) = 5"
+      - type: foreign_key
+        columns: [cve_ent]
+        to: ref("geo_unit_2020_ent")
+        to_columns: [cvegeo]
+      - type: check
+        expression: "cve_ent = left(cvegeo, 2)"
+      - type: foreign_key
+        columns: [cve_met]
+        to: ref("metropoli_2020")
+        to_columns: [cve_met]
+    columns:
+      - name: cvegeo
+        data_type: text
+        data_tests: [unique, not_null]
+      - name: cve_ent
+        data_type: text
+        description: Parent ent identifier derived from cvegeo.
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref("geo_unit_2020_ent")
+                field: cvegeo
+      - name: cve_met
+        data_type: text
+        description: 2020 metropolitan zone from the municipality mapping; null for municipalities outside the mapping.
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref("metropoli_2020")
+                field: cve_met

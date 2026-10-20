@@ -3,14 +3,29 @@ import tempfile
 import zipfile
 from pathlib import Path
 
-import geopandas as gpd
 import pandas as pd
 
 import dagster as dg
 from census_processing.defs.assets.scince.common.common_2010_2020 import (
+    read_extracted_tables,
     scince_2010_2020_factory,
 )
 from census_processing.defs.resources import PathResource
+
+SUPPLEMENTARY_TABLES_LABEL_MAP = {
+    "disc": "discapacidad",
+    "eco": "caracteristicas_economicas",
+    "edu": "educacion",
+    "fec": "fecundidad",
+    "hogar": "hogares_censales",
+    "indi": "etnicidad",
+    "mig": "migracion",
+    "mor": "mortalidad",
+    "relig": "religion",
+    "salud": "servicios_de_salud",
+    "scony": "situacion_conyugal",
+    "viv": "vivienda",
+}
 
 
 @dg.op(
@@ -21,7 +36,7 @@ from census_processing.defs.resources import PathResource
 )
 def process_state_code_scince_2020(
     path_resource: PathResource, state_code: str
-) -> pd.DataFrame:
+) -> dict[str, pd.DataFrame]:
     in_path = Path(path_resource.in_path)
     fpath = in_path / "2020" / "scince" / f"SCINCE2020_DATOS_{state_code}.zip"
 
@@ -39,11 +54,18 @@ def process_state_code_scince_2020(
         )
 
         data_path = next((Path(tmpdir_2) / "app").glob(f"{state_code}*"))
-        main_path = data_path / "cartografia" / "ageb_urb.shp"
 
-        return gpd.read_file(main_path).drop(columns=["geometry", "OID"])
+        return read_extracted_tables(
+            main_path=data_path / "cartografia" / "ageb_urb.shp",
+            supplementary_table_template=str(
+                data_path / "tablas" / "cpv2020_ageb_urb_{file_suffix}.dbf"
+            ),
+            supplementary_table_labels_map=SUPPLEMENTARY_TABLES_LABEL_MAP,
+        )
 
 
 scince_2020 = scince_2010_2020_factory(
-    year=2020, process_state_code_op=process_state_code_scince_2020
+    year=2020,
+    process_op=process_state_code_scince_2020,
+    table_suffixes=[*list(SUPPLEMENTARY_TABLES_LABEL_MAP.keys()), "pob"],
 )

@@ -1,9 +1,5 @@
-{{
-    config(
-        materialized="table",
-        alias="census_2020_ent",
-        indexes=spatial_index(),
-    )
-}}
-select *
-from {{ source("census_staging", "census_2020_ent_prepared") }}
+{% set staging = source("census_staging", "census_2020_prepared") %}
+
+select {{ census_columns(staging, cvegeo_length=2, keep_name="nom_ent") }}
+from {{ staging }}
+where cvegeo like '%00000000000000'

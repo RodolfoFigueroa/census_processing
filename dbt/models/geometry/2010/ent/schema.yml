@@ -1,0 +1,27 @@
+version: 2
+
+models:
+  - name: geometry_2010_ent
+    description: 2010 state geometries.
+
+    config:
+      meta:
+        spatial: true
+        dagster:
+          asset_key: ["geometry", "2010", "ent"]
+          group: geometry/2010
+
+    constraints:
+      - type: primary_key
+        columns: [cvegeo]
+
+      - type: foreign_key
+        columns: [cvegeo]
+        to: ref("geo_unit_2010_ent")
+        to_columns: [cvegeo]
+
+    columns:
+      - name: cvegeo
+        data_type: text
+      - name: geometry
+        data_type: geometry

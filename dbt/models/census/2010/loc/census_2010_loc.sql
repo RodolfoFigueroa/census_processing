@@ -1,18 +1,8 @@
-{{
-    config(
-        materialized="table",
-        alias="census_2010_loc",
-        indexes=spatial_index(
-            [
-                {"columns": ["cve_mun"], "type": "btree"},
-            ]
-        ),
-    )
-}}
+{% set staging = source("census_staging", "census_2010_prepared") %}
 
-{{
-    add_parent_cvegeo(
-        source("census_staging", "census_2010_loc_prepared"),
-        "loc",
-    )
-}}
+select {{ census_columns(staging, cvegeo_length=9, keep_name="nom_loc") }}
+from {{ staging }}
+where
+    cvegeo like '%0000000'
+    and cvegeo not like '%00000000000'
+    and cvegeo not like '%00000000000000'

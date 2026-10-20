@@ -17,8 +17,12 @@ def make_polygon_solid(
     return poly
 
 
-@dg.op(
-    name="load_metropoli_df", ins={"metropolis_2020": dg.In(dagster_type=dg.Nothing)}
+@dg.asset(
+    key=["staging", "metropoli", "2020"],
+    deps=[["input", "metropoli_2020"]],
+    io_manager_key="postgres_manager",
+    metadata={"schema": "staging", "table": "metropoli_2020_prepared"},
+    group_name="staging/metropoli",
 )
 def load_metropoli_df(path_resource: PathResource) -> gpd.GeoDataFrame:
     raw_path = Path(path_resource.in_path)
@@ -55,15 +59,15 @@ def merge_metropoli_by_cve_met(df: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     )
 
 
-@dg.graph_asset(
-    key=["staging", "metropoli", "2020"],
-    ins={
-        "metropolis_2020_input": dg.AssetIn(
-            key=["input", "metropolis_2020"], dagster_type=dg.Nothing
-        )
-    },
-    group_name="staging/metropoli",
-    metadata={"table": "metropoli_2020_prepared", "schema": "staging"},
-)
-def metropoli(metropolis_2020_input: None) -> gpd.GeoDataFrame:
-    return merge_metropoli_by_cve_met(load_metropoli_df(metropolis_2020_input))
+# @dg.graph_asset(
+#     key=["staging", "metropoli", "2020"],
+#     ins={
+#         "metropolis_2020_input": dg.AssetIn(
+#             key=["input", "metropolis_2020"], dagster_type=dg.Nothing
+#         )
+#     },
+#     group_name="staging/metropoli",
+#     metadata={"table": "metropoli_2020_prepared", "schema": "staging"},
+# )
+# def metropoli(metropolis_2020_input: None) -> gpd.GeoDataFrame:
+#     return merge_metropoli_by_cve_met(load_metropoli_df(metropolis_2020_input))

@@ -1,0 +1,19 @@
+version: 2
+
+models:
+  - name: geo_unit_2020_ent
+    description: 2020 geographic units at the ent level, including all source units and implied ancestors.
+    config:
+      meta:
+        dagster:
+          asset_key: ["geo_unit", "2020", "ent"]
+          group: geo_unit/2020
+    constraints:
+      - type: primary_key
+        columns: [cvegeo]
+      - type: check
+        expression: "char_length(cvegeo) = 2"
+    columns:
+      - name: cvegeo
+        data_type: text
+        data_tests: [unique, not_null]

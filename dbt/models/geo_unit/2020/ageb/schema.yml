@@ -1,0 +1,39 @@
+version: 2
+
+models:
+  - name: geo_unit_2020_ageb
+    description: 2020 geographic units at the ageb level, including all source units and implied ancestors.
+    config:
+      meta:
+        dagster:
+          asset_key: ["geo_unit", "2020", "ageb"]
+          group: geo_unit/2020
+      indexes:
+        - columns: [cve_loc]
+          type: btree
+    constraints:
+      - type: primary_key
+        columns: [cvegeo]
+      - type: check
+        expression: "char_length(cvegeo) = 13"
+      - type: foreign_key
+        columns: [cve_loc]
+        to: ref("geo_unit_2020_loc")
+        to_columns: [cvegeo]
+      - type: check
+        expression: "cve_loc = left(cvegeo, 9)"
+    columns:
+      - name: cvegeo
+        data_type: text
+        data_tests: [unique, not_null]
+      - name: cve_loc
+        data_type: text
+        description: Parent loc identifier derived from cvegeo.
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref("geo_unit_2020_loc")
+                field: cvegeo

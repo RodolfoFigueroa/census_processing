@@ -1,4 +1,8 @@
 {
+    "fec1_r": "Promedio de hijos nacidos vivos",
+    "fec2_r": "Promedio de hijos nacidos vivos de las mujeres de 15 a 49 años",
+    "fec3_r": "Porcentaje de mujeres de 15 a 19 años con al menos un hijo nacido vivo",
+    "mor1_r": "Porcentaje de hijos fallecidos de las mujeres de 12 años y más",
     "pob27_r": "Razón de dependencia total",
     "pob28_r": "Razón de dependencia infantil",
     "pob29_r": "Razón de dependencia de vejez",

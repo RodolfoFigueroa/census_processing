@@ -24,7 +24,7 @@ def geometry_2010_factory(
         deps=[["input", "2010", "geometry"]],
         io_manager_key="postgres_manager",
         metadata={"schema": "staging", "table": f"geometry_2010_{level}_prepared"},
-        group_name="staging/geometry/2010",
+        group_name="staging/2010/geometry",
     )
     def _op(path_resource: PathResource) -> gpd.GeoDataFrame:
         raw_path = Path(path_resource.in_path)

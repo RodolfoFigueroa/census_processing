@@ -26,7 +26,7 @@ def geometry_2020_factory(
         deps=[["input", "2020", "geometry"]],
         io_manager_key="postgres_manager",
         metadata={"schema": "staging", "table": f"geometry_2020_{level}_prepared"},
-        group_name="staging/geometry/2020",
+        group_name="staging/2020/geometry",
     )
     def _asset(path_resource: PathResource) -> gpd.GeoDataFrame:
         raw_path = Path(path_resource.in_path)

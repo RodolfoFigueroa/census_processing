@@ -1,21 +1,21 @@
 name: census_processing
-version: "1.0.0"
+version: 1.0.0
 config-version: 2
-
 profile: census_processing
-model-paths: ["models"]
-
+model-paths:
+  - models
 models:
   census_processing:
     +materialized: table
     +contract:
       enforced: true
     geo_unit:
-      +indexes:
-        - columns: [cve_loc]
-          type: btree
-        - columns: [cve_met]
-          type: btree
+      "1990_2000":
+        +indexes:
+          - columns: [cve_loc]
+            type: btree
+          - columns: [cve_met]
+            type: btree
 
 flags:
   send_anonymous_usage_stats: false

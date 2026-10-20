@@ -29,6 +29,7 @@ from census_processing.defs.assets.geometry.geometry_1990.scince import (
 from census_processing.defs.assets.geometry.geometry_1990.zip import (
     load_geometry_zip,
 )
+from census_processing.defs.resources import PathResource
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -56,6 +57,7 @@ def identity_projection(
 
 @dataclass
 class Inputs:
+    path_resource: PathResource
     geometry_zip: Path
     scince_rar: Path
     map_path: Path
@@ -63,7 +65,16 @@ class Inputs:
 
 
 @pytest.fixture
-def inputs(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Inputs:
+def path_resource(tmp_path: Path) -> PathResource:
+    return PathResource(
+        in_path=str(tmp_path), out_path=str(tmp_path), config_path=str(tmp_path)
+    )
+
+
+@pytest.fixture
+def inputs(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, path_resource: PathResource
+) -> Inputs:
     labels = ["001-0", "002-0", "003-0", "004-0", "005-A", "006-0", "008-0"]
     polygons = [
         box(500000 + i * 200, 2000000, 500100 + i * 200, 2000100)
@@ -98,11 +109,13 @@ def inputs(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Inputs:
     shp_dir = tmp_path / "shapefile"
     shp_dir.mkdir()
     primary.to_file(shp_dir / "agebs.shp", index=False)
-    geometry_zip = tmp_path / "geometry.zip"
+    year_path = tmp_path / "1990"
+    year_path.mkdir()
+    geometry_zip = year_path / "AGEBs 90_TecMonty_aj.zip"
     with ZipFile(geometry_zip, "w") as archive:
         for path in shp_dir.iterdir():
             archive.write(path, f"nested/{path.name}")
-    scince_rar = tmp_path / "scince.rar"
+    scince_rar = year_path / "SCINCE1990.rar"
     scince_rar.touch()
     extracted: list[Path] = []
 
@@ -112,7 +125,7 @@ def inputs(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Inputs:
 
     monkeypatch.setattr(scince, "extract_geometry_archive", extract)
     monkeypatch.setattr(loader, "project_boundaries", identity_projection)
-    return Inputs(geometry_zip, scince_rar, map_path, extracted)
+    return Inputs(path_resource, geometry_zip, scince_rar, map_path, extracted)
 
 
 def test_zip_loader_is_independent_of_scince(inputs: Inputs) -> None:
@@ -159,7 +172,7 @@ def test_scince_context_cleans_up_on_consumer_failure(inputs: Inputs) -> None:
 def test_bad_statistics_fail_and_clean_up(inputs: Inputs, data: bytes) -> None:
     inputs.map_path.with_suffix(".PNF").write_bytes(data)
     with pytest.raises(ValueError, match=r"Truncated|Duplicate|Empty"):
-        load_1990_ageb_geometries(inputs.geometry_zip, inputs.scince_rar)
+        load_1990_ageb_geometries(path_resource=inputs.path_resource)
     assert inputs.extracted
     assert all(not path.exists() for path in inputs.extracted)
 
@@ -169,7 +182,7 @@ def test_duplicate_locality_fails(inputs: Inputs) -> None:
     duplicate.mkdir()
     shutil.copyfile(inputs.map_path.with_suffix(".PNF"), duplicate / "10010001.PNF")
     with pytest.raises(ValueError, match="Duplicate SCINCE locality"):
-        load_1990_ageb_geometries(inputs.geometry_zip, inputs.scince_rar)
+        load_1990_ageb_geometries(path_resource=inputs.path_resource)
 
 
 def test_duplicate_zip_ids_fail(
@@ -187,12 +200,12 @@ def test_duplicate_zip_ids_fail(
     )
     monkeypatch.setattr(gpd, "read_file", lambda *_args: frame)
     with pytest.raises(ValueError, match="Duplicate AGEB identifiers"):
-        load_1990_ageb_geometries(inputs.geometry_zip, inputs.scince_rar)
+        load_1990_ageb_geometries(path_resource=inputs.path_resource)
 
 
-def test_missing_archive_fails(tmp_path: Path) -> None:
+def test_missing_archive_fails(path_resource: PathResource) -> None:
     with pytest.raises(FileNotFoundError):
-        load_1990_ageb_geometries(tmp_path / "absent.zip", tmp_path / "absent.rar")
+        load_1990_ageb_geometries(path_resource=path_resource)
 
 
 def test_candidate_selection_and_unavailable_transformations(

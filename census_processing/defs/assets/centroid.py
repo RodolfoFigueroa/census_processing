@@ -9,12 +9,13 @@ from census_processing.defs.resources import PathResource
 
 @dg.asset(
     key=["staging", "centroids", "historical"],
+    deps=[["input", "centroids", "historical"]],
     metadata={
         "schema": "staging",
         "table": "centroids_historical_prepared",
     },
     io_manager_key="postgres_manager",
-    group_name="staging",
+    group_name="staging/centroids",
 )
 def centroids(path_resource: PathResource) -> gpd.GeoDataFrame:
     centroid_dir = Path(path_resource.in_path) / "centroids" / "historical"

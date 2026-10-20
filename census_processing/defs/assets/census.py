@@ -4,6 +4,7 @@ from pathlib import Path
 
 import geopandas as gpd
 import pandas as pd
+from cfc_dagster_utils.utils import cast_all_columns_to_numeric
 
 import dagster as dg
 from census_processing.defs.resources import PathResource
@@ -20,7 +21,8 @@ def census_2010_2020_factory(
         key=["staging", str(year), "census"],
         deps=[["input", str(year), "demography"]],
         io_manager_key="postgres_manager",
-        group_name=f"staging/census/{year}",
+        metadata={"schema": "staging", "table": f"census_{year}_prepared"},
+        group_name=f"staging/{year}",
     )
     def _asset(path_resource: PathResource) -> pd.DataFrame:
         raw_path = Path(path_resource.in_path)
@@ -61,23 +63,33 @@ def census_2010_2020_factory(
         out = pd.concat(df_census, ignore_index=True)
         out.columns = out.columns.str.lower()
 
-        return out.assign(
-            cvegeo=lambda df: (
-                df["entidad"].astype(int).astype(str).str.zfill(2)
-                + df["mun"].astype(int).astype(str).str.zfill(3)
-                + df["loc"].astype(int).astype(str).str.zfill(4)
-                + df["ageb"].astype(str).str.zfill(4)
-                + df["mza"].astype(str).str.zfill(3)
-            ),
-        ).drop(
-            columns=[
-                "entidad",
-                "mun",
-                "loc",
-                "ageb",
-                "mza",
-            ],
-            errors="ignore",
+        return (
+            out.assign(
+                cvegeo=lambda df: (
+                    df["entidad"].astype(int).astype(str).str.zfill(2)
+                    + df["mun"].astype(int).astype(str).str.zfill(3)
+                    + df["loc"].astype(int).astype(str).str.zfill(4)
+                    + df["ageb"].astype(str).str.zfill(4)
+                    + df["mza"].astype(str).str.zfill(3)
+                ),
+            )
+            .drop(
+                columns=[
+                    "entidad",
+                    "mun",
+                    "loc",
+                    "ageb",
+                    "mza",
+                ],
+                errors="ignore",
+            )
+            .pipe(
+                lambda df: cast_all_columns_to_numeric(
+                    df,
+                    ignore=["nom_ent", "nom_mun", "nom_loc", "cvegeo"],
+                    prefer_integer=True,
+                )
+            )
         )
 
     return _asset

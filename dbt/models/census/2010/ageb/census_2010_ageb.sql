@@ -1,28 +1,9 @@
-{{
-    config(
-        materialized="table",
-        alias="census_2010_ageb",
-        indexes=spatial_index(
-            [
-                {"columns": ["cve_loc"], "type": "btree"},
-                {"columns": ["cve_met"], "type": "btree"},
-            ]
-        ),
-    )
-}}
+{% set staging = source("census_staging", "census_2010_prepared") %}
 
-with parent_geographies as (
-    {{
-        add_parent_cvegeo(
-            source("census_staging", "census_2010_ageb_prepared"),
-            "ageb",
-        )
-    }}
-)
-
-{{
-    assign_metropolitan_zone(
-        "parent_geographies",
-        ref("metropoli_2020"),
-    )
-}}
+select {{ census_columns(staging, cvegeo_length=13) }}
+from {{ staging }}
+where
+    cvegeo like '%000'
+    and cvegeo not like '%0000000'
+    and cvegeo not like '%00000000000'
+    and cvegeo not like '%00000000000000'

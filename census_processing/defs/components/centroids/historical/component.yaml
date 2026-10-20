@@ -1,0 +1,8 @@
+type: cfc_dagster_utils.components.dvc.DvcInputComponent
+attributes:
+  key: input/centroids/historical
+  dvc_file: data/input/centroids/historical.dvc
+post_processing:
+  assets:
+    - attributes:
+        group_name: "input/centroids"
