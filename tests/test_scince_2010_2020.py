@@ -7,8 +7,13 @@ import pytest
 import dagster as dg
 from census_processing.defs.assets.scince.common import common_2010_2020
 from census_processing.defs.assets.scince.scince_2010 import (
-    SUPPLEMENTARY_TABLES_LABEL_MAP,
+    SUPPLEMENTARY_TABLES_LABEL_MAP as TABLES_2010,
+)
+from census_processing.defs.assets.scince.scince_2010 import (
     scince_2010_ageb_pop,
+)
+from census_processing.defs.assets.scince.scince_2020 import (
+    SUPPLEMENTARY_TABLES_LABEL_MAP as TABLES_2020,
 )
 from census_processing.defs.assets.scince.scince_2020 import scince_2020
 from census_processing.defs.resources import ScinceColumnsToKeepResource
@@ -38,6 +43,7 @@ def process_op_factory(
     return process
 
 
+@pytest.mark.parametrize("population_only_2020", [False, True])
 @pytest.mark.parametrize(
     "selection",
     [
@@ -52,7 +58,10 @@ def process_op_factory(
     ids=["all", "population_2010", "supplementary_2010", "population_2020"],
 )
 def test_scince_graphs_materialize_selected_tables(
-    monkeypatch: pytest.MonkeyPatch, selection: list[dg.AssetKey] | None
+    monkeypatch: pytest.MonkeyPatch,
+    selection: list[dg.AssetKey] | None,
+    *,
+    population_only_2020: bool,
 ) -> None:
     @dg.op(out=dg.DynamicOut(str))
     def state_codes() -> Iterator[dg.DynamicOutput[str]]:
@@ -61,18 +70,14 @@ def test_scince_graphs_materialize_selected_tables(
 
     monkeypatch.setattr(common_2010_2020, "get_state_codes", state_codes)
     suffixes_by_year: dict[Literal[2010, 2020], list[str]] = {
-        2010: [*SUPPLEMENTARY_TABLES_LABEL_MAP.values(), "pob"],
-        2020: ["pob"],
-    }
-    asset_key_suffixes = {
-        label: suffix for suffix, label in SUPPLEMENTARY_TABLES_LABEL_MAP.items()
+        2010: [*TABLES_2010, "pob"],
+        2020: ["pob"] if population_only_2020 else [*TABLES_2020, "pob"],
     }
     assets = [
         common_2010_2020.scince_2010_2020_factory(
             year=year,
             process_op=process_op_factory(year, suffixes),
             table_suffixes=suffixes,
-            asset_key_suffixes=asset_key_suffixes,
         )
         for year, suffixes in suffixes_by_year.items()
     ]
@@ -89,17 +94,22 @@ def test_scince_graphs_materialize_selected_tables(
     )
 
     assert result.success
-    expected_keys = {
+    production_keys = {
         dg.AssetKey(["staging", str(year), "scince", suffix])
         for year, suffixes in {
-            2010: [*SUPPLEMENTARY_TABLES_LABEL_MAP, "pob"],
-            2020: ["pob"],
+            2010: [*TABLES_2010, "pob"],
+            2020: [*TABLES_2020, "pob"],
         }.items()
         for suffix in suffixes
     }
-    assert scince_2010_ageb_pop.keys | scince_2020.keys == expected_keys
+    assert scince_2010_ageb_pop.keys | scince_2020.keys == production_keys
     assert scince_2010_ageb_pop.can_subset
     assert scince_2020.can_subset
+    expected_keys = {
+        dg.AssetKey(["staging", str(year), "scince", suffix])
+        for year, suffixes in suffixes_by_year.items()
+        for suffix in suffixes
+    }
     if selection is not None:
         expected_keys = set(selection)
     assert {
@@ -108,9 +118,7 @@ def test_scince_graphs_materialize_selected_tables(
 
     for asset, (year, suffixes) in zip(assets, suffixes_by_year.items(), strict=True):
         for index, suffix in enumerate(suffixes):
-            key = dg.AssetKey(
-                ["staging", str(year), "scince", asset_key_suffixes.get(suffix, suffix)]
-            )
+            key = dg.AssetKey(["staging", str(year), "scince", suffix])
             if key not in expected_keys:
                 continue
             assert asset.get_io_manager_key_for_asset_key(key) == "postgres_manager"
