@@ -107,11 +107,13 @@ def load_census(postgres_resource: PostgresResource, met_zone: str) -> pd.DataFr
                 census_2020_ageb.vph_inter,
                 census_2020_ageb.prom_ocup
             FROM census_2020_ageb
-            INNER JOIN census_2020_loc
-                ON census_2020_ageb.cve_loc = census_2020_loc.cvegeo
-            INNER JOIN census_2020_mun
-                ON census_2020_loc.cve_mun = census_2020_mun.cvegeo
-            WHERE census_2020_mun.cve_met = %(zone)s
+            INNER JOIN geo_unit_2020_ageb
+                USING (cvegeo)
+            INNER JOIN geo_unit_2020_loc
+                ON geo_unit_2020_ageb.cve_loc = geo_unit_2020_loc.cvegeo
+            INNER JOIN geo_unit_2020_mun
+                ON geo_unit_2020_loc.cve_mun = geo_unit_2020_mun.cvegeo
+            WHERE cve_met = %(zone)s
             """,
                 conn,
                 params={"zone": met_zone},
@@ -179,13 +181,15 @@ def load_census_geometries(
     with postgres_resource.connect() as conn:
         return gpd.read_postgis(
             """
-            SELECT census_2020_ageb.cvegeo, census_2020_ageb.geometry
-                FROM census_2020_ageb
-            INNER JOIN census_2020_loc
-                ON census_2020_ageb.cve_loc = census_2020_loc.cvegeo
-            INNER JOIN census_2020_mun
-                ON census_2020_loc.cve_mun = census_2020_mun.cvegeo
-            WHERE census_2020_mun.cve_met = %(zone)s
+            SELECT *
+                FROM geometry_2020_ageb
+            INNER JOIN geo_unit_2020_ageb
+                USING (cvegeo)
+            INNER JOIN geo_unit_2020_loc
+                ON geo_unit_2020_ageb.cve_loc = geo_unit_2020_loc.cvegeo
+            INNER JOIN geo_unit_2020_mun
+                ON geo_unit_2020_loc.cve_mun = geo_unit_2020_mun.cvegeo
+            WHERE cve_met = %(zone)s
             """,
             conn,
             geom_col="geometry",
