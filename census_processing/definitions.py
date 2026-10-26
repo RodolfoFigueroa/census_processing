@@ -16,7 +16,6 @@ def defs() -> dg.Definitions:
 
     path_resource = PathResource(
         in_path=str(data_path / "input"),
-        out_path=str(data_path / "output"),
         config_path=str(root_path / "config"),
     )
 
