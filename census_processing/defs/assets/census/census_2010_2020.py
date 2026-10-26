@@ -2,7 +2,6 @@ import tempfile
 import zipfile
 from pathlib import Path
 
-import geopandas as gpd
 import pandas as pd
 from cfc_dagster_utils.utils import cast_all_columns_to_numeric
 
@@ -108,11 +107,3 @@ census_2020 = census_2010_2020_factory(
     inner_dir_template="ageb_mza_urbana_{i:02d}_cpv2020",
     csv_template="conjunto_de_datos_ageb_urbana_{i:02d}_cpv2020.csv",
 )
-
-
-@dg.op
-def add_cve_met_column(
-    df: gpd.GeoDataFrame, df_metropoli: gpd.GeoDataFrame
-) -> gpd.GeoDataFrame:
-    mun_to_met_map = df_metropoli.set_index("cvegeo")["cve_met"].to_dict()
-    return df.assign(cve_met=df["cvegeo"].map(mun_to_met_map))
