@@ -1,0 +1,18 @@
+version: 2
+
+sources:
+  - name: census_ingest
+    schema: ingest
+    tables:
+      - name: census_2010
+        description: Source records from all 32 state census archives for 2010.
+        config:
+          meta:
+            dagster:
+              asset_key: ["ingest", "census", "2010"]
+      - name: census_2020
+        description: Source records from all 32 state census archives for 2020.
+        config:
+          meta:
+            dagster:
+              asset_key: ["ingest", "census", "2020"]

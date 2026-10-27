@@ -1,0 +1,40 @@
+version: 2
+
+models:
+  - name: stg_census__2010
+    description: Typed 2010 census records at every source geographic level.
+    config:
+      schema: staging
+      materialized: table
+      contract:
+        enforced: true
+      meta:
+        dagster:
+          asset_key: ["staging", "census", "2010"]
+          group: staging/census
+    columns: "{{ var('census_2010_columns') + [
+      {'name': 'nom_ent', 'data_type': 'text'},
+      {'name': 'nom_mun', 'data_type': 'text'},
+      {'name': 'nom_loc', 'data_type': 'text'},
+      {'name': '_source_file', 'data_type': 'text'},
+      {'name': 'census_level', 'data_type': 'text'}
+    ] }}"
+
+  - name: stg_census__2020
+    description: Typed 2020 census records at every source geographic level.
+    config:
+      schema: staging
+      materialized: table
+      contract:
+        enforced: true
+      meta:
+        dagster:
+          asset_key: ["staging", "census", "2020"]
+          group: staging/census
+    columns: "{{ var('census_2020_columns') + [
+      {'name': 'nom_ent', 'data_type': 'text'},
+      {'name': 'nom_mun', 'data_type': 'text'},
+      {'name': 'nom_loc', 'data_type': 'text'},
+      {'name': '_source_file', 'data_type': 'text'},
+      {'name': 'census_level', 'data_type': 'text'}
+    ] }}"

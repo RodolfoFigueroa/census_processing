@@ -1,4 +1,27 @@
 vars:
+  # Previous pandas read_csv defaults plus explicit census suppression markers.
+  census_null_tokens:
+    - ""
+    - "#N/A"
+    - "#N/A N/A"
+    - "#NA"
+    - "-1.#IND"
+    - "-1.#QNAN"
+    - "-NaN"
+    - "-nan"
+    - "1.#IND"
+    - "1.#QNAN"
+    - "<NA>"
+    - "N/A"
+    - "NA"
+    - "NULL"
+    - "NaN"
+    - "None"
+    - "n/a"
+    - "nan"
+    - "null"
+    - "*"
+    - "N/D"
   census_2010_columns:
     - name: cvegeo
       data_type: text

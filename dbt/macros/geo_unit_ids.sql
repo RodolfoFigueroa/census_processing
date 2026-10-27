@@ -41,7 +41,7 @@
         {% do scince.append(source("census_staging", "scince_" ~ year ~ "_ageb_" ~ theme ~ "_prepared")) %}
     {% endfor %}
     {{ geo_unit_ids_from_sources(
-        level, geometries, source("census_staging", "census_" ~ year ~ "_prepared"),
+        level, geometries, ref("stg_census__" ~ year),
         scince, source("census_staging", "metropoli_2020_prepared") if year == 2020 else none
     ) }}
 {% endmacro %}
