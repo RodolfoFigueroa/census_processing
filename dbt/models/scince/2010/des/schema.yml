@@ -21,16 +21,4 @@ models:
         to: ref("geo_unit_2010_ageb")
         to_columns: [cvegeo]
 
-    columns:
-      - name: cvegeo
-        data_type: text
-        description: Unique identifier for the AGEB.
-        config:
-          meta:
-            description_es:
-      - name: grado_marg
-        data_type: text
-        description: CONAPO marginalization level
-        config:
-          meta:
-            description_es: Grado de marginación CONAPO
+    columns: "{{ var('scince_columns')['2010']['des'] }}"

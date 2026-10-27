@@ -34,11 +34,11 @@
     {% for source_level in ["ent", "mun", "loc", "ageb"] %}
         {% do geometries.update({source_level: source("census_staging", "geometry_" ~ year ~ "_" ~ source_level ~ "_prepared")}) %}
     {% endfor %}
-    {% set themes = ["disc", "eco", "edu", "fec", "hogar", "indi", "mig", "pob", "relig", "salud", "scony", "viv"] %}
-    {% do themes.append("des" if year == 2010 else "mor") %}
+    {% set themes = ["disc", "eco", "edu", "fec", "hogar", "indi", "mig", "mor", "pob", "relig", "salud", "scony", "viv"] %}
+    {% if year == 2010 %}{% do themes.append("des") %}{% endif %}
     {% set scince = [] %}
     {% for theme in themes %}
-        {% do scince.append(source("census_staging", "scince_" ~ year ~ "_ageb_" ~ theme ~ "_prepared")) %}
+        {% do scince.append(ref("scince_" ~ year ~ "_" ~ theme)) %}
     {% endfor %}
     {{ geo_unit_ids_from_sources(
         level, geometries, ref("census_" ~ year),

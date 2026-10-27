@@ -1,1 +1,2 @@
-select * from {{ source("census_staging", "scince_2020_ageb_mor_prepared") }}
+select {{ scince_columns(2020, "mor") }}
+from {{ ref("scince_2020_mor") }}

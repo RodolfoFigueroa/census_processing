@@ -1,5 +1,6 @@
 import ast
 import re
+from functools import cache
 from pathlib import Path
 from types import SimpleNamespace
 from typing import NoReturn
@@ -34,18 +35,29 @@ class CompilerErrors:
 
 
 def source_relation(source_name: str, table: str) -> str:
-    schema = {"census_ingest": "ingest", "census_staging": "staging"}[source_name]
+    schema = {
+        "census_ingest": "ingest",
+        "scince_ingest": "ingest",
+        "census_staging": "staging",
+    }[source_name]
     return f'"{schema}"."{table}"'
 
 
-def render_sql(template: str, target_schema: str = "public") -> str:
+@cache
+def dbt_variables() -> dict:
+    return yaml.safe_load((DBT / "vars.yml").read_text())["vars"]
+
+
+def render_sql(
+    template: str, target_schema: str = "public", *, compact: bool = True
+) -> str:
     """Render SQL text only; no dbt runtime, asset execution, or connections."""
     environment = Environment(
         undefined=StrictUndefined,
         extensions=["jinja2.ext.do"],
         autoescape=select_autoescape(enabled_extensions=(), default_for_string=False),
     )
-    variables = yaml.safe_load((DBT / "vars.yml").read_text())["vars"]
+    variables = dbt_variables()
     macros = "\n".join(
         path.read_text() for path in sorted((DBT / "macros").glob("*.sql"))
     )
@@ -57,7 +69,7 @@ def render_sql(template: str, target_schema: str = "public") -> str:
         source=source_relation,
         target=SimpleNamespace(schema=target_schema),
     )
-    return " ".join(result.split())
+    return " ".join(result.split()) if compact else result.strip()
 
 
 @pytest.mark.parametrize(("year", "count"), [(2010, 191), (2020, 223)])
