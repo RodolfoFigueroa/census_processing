@@ -998,7 +998,8 @@ anchors:
   - &disc10
     name: disc10
     data_type: int
-    description: Population with a disability affecting hearing, even when using a hearing
+    description:
+      Population with a disability affecting hearing, even when using a hearing
       aid
     config:
       meta:
@@ -1125,16 +1126,19 @@ anchors:
   - &eco10
     name: eco10
     data_type: int
-    description: Employed population aged 12 years and older with at least one completed grade
+    description:
+      Employed population aged 12 years and older with at least one completed grade
       of primary education
     config:
       meta:
-        description_es: Población de 12 años y más ocupada con al menos un grado aprobado
+        description_es:
+          Población de 12 años y más ocupada con al menos un grado aprobado
           en primaria
   - &eco13
     name: eco13
     data_type: int
-    description: Employed population aged 12 years and older with incomplete secondary education
+    description:
+      Employed population aged 12 years and older with incomplete secondary education
       or equivalent
     config:
       meta:
@@ -1142,7 +1146,8 @@ anchors:
   - &eco16
     name: eco16
     data_type: int
-    description: Employed population aged 12 years and older with complete secondary education
+    description:
+      Employed population aged 12 years and older with complete secondary education
       or equivalent
     config:
       meta:
@@ -1150,20 +1155,24 @@ anchors:
   - &eco19
     name: eco19
     data_type: int
-    description: Employed population aged 12 years and older with at least one completed grade
+    description:
+      Employed population aged 12 years and older with at least one completed grade
       of upper secondary education
     config:
       meta:
-        description_es: Población de 12 años y más ocupada con al menos un grado aprobado
+        description_es:
+          Población de 12 años y más ocupada con al menos un grado aprobado
           en educación media superior
   - &eco22
     name: eco22
     data_type: int
-    description: Employed population aged 12 years and older with at least one completed year
+    description:
+      Employed population aged 12 years and older with at least one completed year
       of higher or postgraduate education
     config:
       meta:
-        description_es: Población de 12 años y más ocupada con al menos un grado aprobado
+        description_es:
+          Población de 12 años y más ocupada con al menos un grado aprobado
           en educación superior o posgrado
   - &eco25
     name: eco25
@@ -1210,7 +1219,8 @@ anchors:
   - &eco31
     name: eco31
     data_type: int
-    description: Economically inactive population aged 12 years and older who are pensioners
+    description:
+      Economically inactive population aged 12 years and older who are pensioners
       or retired
     config:
       meta:
@@ -1221,35 +1231,42 @@ anchors:
     description: Economically inactive population aged 12 years and older who are students
     config:
       meta:
-        description_es: Población de 12 años y más no económicamente activa que se dedica
+        description_es:
+          Población de 12 años y más no económicamente activa que se dedica
           a estudiar
   - &eco37
     name: eco37
     data_type: int
-    description: Economically inactive population aged 12 years and older dedicated to household
+    description:
+      Economically inactive population aged 12 years and older dedicated to household
       chores
     config:
       meta:
-        description_es: Población de 12 años y más no económicamente activa que se dedica
+        description_es:
+          Población de 12 años y más no económicamente activa que se dedica
           a los quehaceres del hogar
   - &eco40
     name: eco40
     data_type: int
-    description: Economically inactive population aged 12 years and older with a permanent
+    description:
+      Economically inactive population aged 12 years and older with a permanent
       disability, limitation, mental problem, or mental condition that prevents them from
       working
     config:
       meta:
-        description_es: Población de 12 años y más no económicamente activa que tiene alguna
+        description_es:
+          Población de 12 años y más no económicamente activa que tiene alguna
           discapacidad, limitación, problema o situación mental permanente que le impide trabajar
   - &eco43
     name: eco43
     data_type: int
-    description: Economically inactive population aged 12 years and older with another reason
+    description:
+      Economically inactive population aged 12 years and older with another reason
       that prevents them from working
     config:
       meta:
-        description_es: Población de 12 años y más no económicamente activa que tiene otra
+        description_es:
+          Población de 12 años y más no económicamente activa que tiene otra
           razón que le impide trabajar
   - &edu1
     name: edu1
@@ -1352,20 +1369,24 @@ anchors:
   - &edu43
     name: edu43
     data_type: int
-    description: Population aged 18 years and older with at least one completed grade of upper
+    description:
+      Population aged 18 years and older with at least one completed grade of upper
       secondary education
     config:
       meta:
-        description_es: Población de 18 años y más con al menos un grado aprobado en educación
+        description_es:
+          Población de 18 años y más con al menos un grado aprobado en educación
           media superior
   - &edu46
     name: edu46
     data_type: int
-    description: Population aged 25 years and older with at least one completed year of higher
+    description:
+      Population aged 25 years and older with at least one completed year of higher
       education
     config:
       meta:
-        description_es: Población de 25 años y más con al menos un grado aprobado en educación
+        description_es:
+          Población de 25 años y más con al menos un grado aprobado en educación
           superior
   - &edu49_r
     name: edu49_r
@@ -1401,7 +1422,8 @@ anchors:
     description: Average number of children born alive to women aged 15 to 49 years
     config:
       meta:
-        description_es: Promedio de hijas e hijos nacidos vivos de la población femenina de
+        description_es:
+          Promedio de hijas e hijos nacidos vivos de la población femenina de
           15 a 49 años
   - &fec3_r
     name: fec3_r
@@ -1409,7 +1431,8 @@ anchors:
     description: Percentage of women aged 15 to 19 years with at least one child born alive
     config:
       meta:
-        description_es: Porcentaje de población femenina de 15 a 19 años con al menos una
+        description_es:
+          Porcentaje de población femenina de 15 a 19 años con al menos una
           hija o hijo nacido vivo
   - &hogar1
     name: hogar1
@@ -1480,25 +1503,30 @@ anchors:
     description: Population in census households with a reference person younger than 30 years
     config:
       meta:
-        description_es: Población en hogares censales con persona de referencia menor de 30
+        description_es:
+          Población en hogares censales con persona de referencia menor de 30
           años
   - &hogar11
     name: hogar11
     data_type: int
-    description: Population in census households with a female reference person younger than
+    description:
+      Population in census households with a female reference person younger than
       30 years
     config:
       meta:
-        description_es: Población en hogares censales con persona de referencia mujer menor
+        description_es:
+          Población en hogares censales con persona de referencia mujer menor
           de 30 años
   - &hogar12
     name: hogar12
     data_type: int
-    description: Population in census households with a male reference person younger than
+    description:
+      Population in census households with a male reference person younger than
       30 years
     config:
       meta:
-        description_es: Población en hogares censales con persona de referencia hombre menor
+        description_es:
+          Población en hogares censales con persona de referencia hombre menor
           de 30 años
   - &hogar13
     name: hogar13
@@ -1527,25 +1555,30 @@ anchors:
     description: Population in census households with a reference person aged 30 to 59 years
     config:
       meta:
-        description_es: Población en hogares censales con persona de referencia de 30 a 59
+        description_es:
+          Población en hogares censales con persona de referencia de 30 a 59
           años
   - &hogar17
     name: hogar17
     data_type: int
-    description: Population in census households with a female reference person aged 30 to
+    description:
+      Population in census households with a female reference person aged 30 to
       59 years
     config:
       meta:
-        description_es: Población en hogares censales con persona de referencia mujer de 30
+        description_es:
+          Población en hogares censales con persona de referencia mujer de 30
           a 59 años
   - &hogar18
     name: hogar18
     data_type: int
-    description: Population in census households with a male reference person aged 30 to 59
+    description:
+      Population in census households with a male reference person aged 30 to 59
       years
     config:
       meta:
-        description_es: Población en hogares censales con persona de referencia hombre de
+        description_es:
+          Población en hogares censales con persona de referencia hombre de
           30 a 59 años
   - &hogar19
     name: hogar19
@@ -1571,47 +1604,57 @@ anchors:
   - &hogar22
     name: hogar22
     data_type: int
-    description: Population in census households with a reference person aged 60 years and
+    description:
+      Population in census households with a reference person aged 60 years and
       older
     config:
       meta:
-        description_es: Población en hogares censales con persona de referencia de 60 años
+        description_es:
+          Población en hogares censales con persona de referencia de 60 años
           y más
   - &hogar23
     name: hogar23
     data_type: int
-    description: Population in census households with a female reference person aged 60 years
+    description:
+      Population in census households with a female reference person aged 60 years
       and older
     config:
       meta:
-        description_es: Población en hogares censales con persona de referencia mujer de 60
+        description_es:
+          Población en hogares censales con persona de referencia mujer de 60
           años y más
   - &hogar24
     name: hogar24
     data_type: int
-    description: Population in census households with a male reference person aged 60 years
+    description:
+      Population in census households with a male reference person aged 60 years
       and older
     config:
       meta:
-        description_es: Población en hogares censales con persona de referencia hombre de
+        description_es:
+          Población en hogares censales con persona de referencia hombre de
           60 años y más
   - &hogar25
     name: hogar25
     data_type: int
-    description: Nuclear census households consisting of a female reference person and her
+    description:
+      Nuclear census households consisting of a female reference person and her
       children younger than 18 years
     config:
       meta:
-        description_es: Hogares censales nucleares conformados por la persona de referencia
+        description_es:
+          Hogares censales nucleares conformados por la persona de referencia
           mujer con hijos menores de 18 años
   - &hogar26
     name: hogar26
     data_type: int
-    description: Population in nuclear census households consisting of a female reference
+    description:
+      Population in nuclear census households consisting of a female reference
       person and her children younger than 18 years
     config:
       meta:
-        description_es: Población en hogares censales nucleares conformados por la persona
+        description_es:
+          Población en hogares censales nucleares conformados por la persona
           de referencia mujer con hijos menores de 18 años
   - &afro1
     name: afro1
@@ -1637,7 +1680,8 @@ anchors:
   - &afro4
     name: afro4
     data_type: int
-    description: Population aged 0 to 14 years that identifies as Afro-Mexican or of African
+    description:
+      Population aged 0 to 14 years that identifies as Afro-Mexican or of African
       descent
     config:
       meta:
@@ -1645,7 +1689,8 @@ anchors:
   - &afro5
     name: afro5
     data_type: int
-    description: Population aged 15 to 59 years that identifies as Afro-Mexican or of African
+    description:
+      Population aged 15 to 59 years that identifies as Afro-Mexican or of African
       descent
     config:
       meta:
@@ -1653,7 +1698,8 @@ anchors:
   - &afro6
     name: afro6
     data_type: int
-    description: Population aged 60 years and older that identifies as Afro-Mexican or of
+    description:
+      Population aged 60 years and older that identifies as Afro-Mexican or of
       African descent
     config:
       meta:
@@ -1682,56 +1728,68 @@ anchors:
   - &indi4
     name: indi4
     data_type: int
-    description: Population aged 3 years and older that speaks an indigenous language and
+    description:
+      Population aged 3 years and older that speaks an indigenous language and
       does not speak Spanish
     config:
       meta:
-        description_es: Población de 3 años y más que habla alguna lengua indígena y no habla
+        description_es:
+          Población de 3 años y más que habla alguna lengua indígena y no habla
           español
   - &indi5
     name: indi5
     data_type: int
-    description: Female population aged 3 years and older that speaks an indigenous language
+    description:
+      Female population aged 3 years and older that speaks an indigenous language
       and does not speak Spanish
     config:
       meta:
-        description_es: Población femenina de 3 años y más que habla alguna lengua indígena
+        description_es:
+          Población femenina de 3 años y más que habla alguna lengua indígena
           y no habla español
   - &indi6
     name: indi6
     data_type: int
-    description: Male population aged 3 years and older that speaks an indigenous language
+    description:
+      Male population aged 3 years and older that speaks an indigenous language
       and does not speak Spanish
     config:
       meta:
-        description_es: Población masculina de 3 años y más que habla alguna lengua indígena
+        description_es:
+          Población masculina de 3 años y más que habla alguna lengua indígena
           y no habla español
   - &indi7
     name: indi7
     data_type: int
-    description: Population aged 3 years and older that speaks an indigenous language and
+    description:
+      Population aged 3 years and older that speaks an indigenous language and
       Spanish
     config:
       meta:
-        description_es: Población de 3 años y más que habla alguna lengua indígena y habla
+        description_es:
+          Población de 3 años y más que habla alguna lengua indígena y habla
           español
   - &indi8
     name: indi8
     data_type: int
-    description: Female population aged 3 years and older that speaks an indigenous language
+    description:
+      Female population aged 3 years and older that speaks an indigenous language
       and Spanish
     config:
       meta:
-        description_es: Población femenina de 3 años y más que habla alguna lengua indígena
+        description_es:
+          Población femenina de 3 años y más que habla alguna lengua indígena
           y habla español
   - &indi9
     name: indi9
     data_type: int
-    description: Male population aged 3 years and older that speaks an indigenous language
+    description:
+      Male population aged 3 years and older that speaks an indigenous language
       and Spanish
     config:
       meta:
-        description_es: Población masculina de 3 años y más que habla alguna lengua indígena
+        description_es:
+          Población masculina de 3 años y más que habla alguna lengua indígena
           y habla español
   - &indi10
     name: indi10
@@ -1757,56 +1815,68 @@ anchors:
   - &indi13
     name: indi13
     data_type: int
-    description: Population aged 5 years and older that speaks an indigenous language and
+    description:
+      Population aged 5 years and older that speaks an indigenous language and
       does not speak Spanish
     config:
       meta:
-        description_es: Población de 5 años y más que habla alguna lengua indígena y no habla
+        description_es:
+          Población de 5 años y más que habla alguna lengua indígena y no habla
           español
   - &indi14
     name: indi14
     data_type: int
-    description: Female population aged 5 years and older that speaks an indigenous language
+    description:
+      Female population aged 5 years and older that speaks an indigenous language
       and does not speak Spanish
     config:
       meta:
-        description_es: Población femenina de 5 años y más que habla alguna lengua indígena
+        description_es:
+          Población femenina de 5 años y más que habla alguna lengua indígena
           y no habla español
   - &indi15
     name: indi15
     data_type: int
-    description: Male population aged 5 years and older that speaks an indigenous language
+    description:
+      Male population aged 5 years and older that speaks an indigenous language
       and does not speak Spanish
     config:
       meta:
-        description_es: Población masculina de 5 años y más que habla alguna lengua indígena
+        description_es:
+          Población masculina de 5 años y más que habla alguna lengua indígena
           y no habla español
   - &indi16
     name: indi16
     data_type: int
-    description: Population aged 5 years and older that speaks an indigenous language and
+    description:
+      Population aged 5 years and older that speaks an indigenous language and
       Spanish
     config:
       meta:
-        description_es: Población de 5 años y más que habla alguna lengua indígena y habla
+        description_es:
+          Población de 5 años y más que habla alguna lengua indígena y habla
           español
   - &indi17
     name: indi17
     data_type: int
-    description: Female population aged 5 years and older that speaks an indigenous language
+    description:
+      Female population aged 5 years and older that speaks an indigenous language
       and Spanish
     config:
       meta:
-        description_es: Población femenina de 5 años y más que habla alguna lengua indígena
+        description_es:
+          Población femenina de 5 años y más que habla alguna lengua indígena
           y habla español
   - &indi18
     name: indi18
     data_type: int
-    description: Male population aged 5 years and older that speaks an indigenous language
+    description:
+      Male population aged 5 years and older that speaks an indigenous language
       and Spanish
     config:
       meta:
-        description_es: Población masculina de 5 años y más que habla alguna lengua indígena
+        description_es:
+          Población masculina de 5 años y más que habla alguna lengua indígena
           y habla español
   - &indi19
     name: indi19
@@ -1881,11 +1951,13 @@ anchors:
   - &mig9
     name: mig9
     data_type: int
-    description: Female population aged 5 years and older that lived in the state in March
+    description:
+      Female population aged 5 years and older that lived in the state in March
       2015
     config:
       meta:
-        description_es: Población femenina de 5 años y más residente en la entidad en marzo
+        description_es:
+          Población femenina de 5 años y más residente en la entidad en marzo
           de 2015
   - &mig10
     name: mig10
@@ -1893,7 +1965,8 @@ anchors:
     description: Male population aged 5 years and older that lived in the state in March 2015
     config:
       meta:
-        description_es: Población masculina de 5 años y más residente en la entidad en marzo
+        description_es:
+          Población masculina de 5 años y más residente en la entidad en marzo
           de 2015
   - &mig11
     name: mig11
@@ -1905,25 +1978,30 @@ anchors:
   - &mig12
     name: mig12
     data_type: int
-    description: Female population aged 5 years and older that lived in another state in March
+    description:
+      Female population aged 5 years and older that lived in another state in March
       2015
     config:
       meta:
-        description_es: Población femenina de 5 años y más residente en otra entidad en marzo
+        description_es:
+          Población femenina de 5 años y más residente en otra entidad en marzo
           de 2015
   - &mig13
     name: mig13
     data_type: int
-    description: Male population aged 5 years and older that lived in another state in March
+    description:
+      Male population aged 5 years and older that lived in another state in March
       2015
     config:
       meta:
-        description_es: Población masculina de 5 años y más residente en otra entidad en marzo
+        description_es:
+          Población masculina de 5 años y más residente en otra entidad en marzo
           de 2015
   - &mig14
     name: mig14
     data_type: int
-    description: Population aged 5 years and older that lived in another country in March
+    description:
+      Population aged 5 years and older that lived in another country in March
       2015
     config:
       meta:
@@ -1931,20 +2009,24 @@ anchors:
   - &mig15
     name: mig15
     data_type: int
-    description: Population aged 5 years and older that lived in the United States of America
+    description:
+      Population aged 5 years and older that lived in the United States of America
       in March 2015
     config:
       meta:
-        description_es: Población de 5 años y más residente en Estados Unidos de América en
+        description_es:
+          Población de 5 años y más residente en Estados Unidos de América en
           marzo de 2015
   - &mor1_r
     name: mor1_r
     data_type: float
-    description: Percentage of deceased children among children born to women aged 12 years
+    description:
+      Percentage of deceased children among children born to women aged 12 years
       and older
     config:
       meta:
-        description_es: Porcentaje de hijas e hijos fallecidos de la población femenina de
+        description_es:
+          Porcentaje de hijas e hijos fallecidos de la población femenina de
           12 años y más
   - &relig1
     name: relig1
@@ -1956,7 +2038,8 @@ anchors:
   - &relig2
     name: relig2
     data_type: int
-    description: Population affiliated with a Protestant or Evangelical Christian religious
+    description:
+      Population affiliated with a Protestant or Evangelical Christian religious
       group
     config:
       meta:
@@ -2006,11 +2089,13 @@ anchors:
   - &salud5
     name: salud5
     data_type: int
-    description: Population affiliated with Instituto de Salud para el Bienestar health care
+    description:
+      Population affiliated with Instituto de Salud para el Bienestar health care
       services
     config:
       meta:
-        description_es: Población afiliada a servicios de salud en el Instituto de Salud para
+        description_es:
+          Población afiliada a servicios de salud en el Instituto de Salud para
           el Bienestar
   - &salud6
     name: salud6
@@ -2050,7 +2135,8 @@ anchors:
   - &scony1
     name: scony1
     data_type: int
-    description: Population aged 12 years and older who are single or have never been in a
+    description:
+      Population aged 12 years and older who are single or have never been in a
       union
     config:
       meta:
@@ -2058,7 +2144,8 @@ anchors:
   - &scony2
     name: scony2
     data_type: int
-    description: Female population aged 12 years and older who are single or have never been
+    description:
+      Female population aged 12 years and older who are single or have never been
       in a union
     config:
       meta:
@@ -2066,7 +2153,8 @@ anchors:
   - &scony3
     name: scony3
     data_type: int
-    description: Male population aged 12 years and older who are single or have never been
+    description:
+      Male population aged 12 years and older who are single or have never been
       in a union
     config:
       meta:
@@ -2102,7 +2190,8 @@ anchors:
   - &scony8
     name: scony8
     data_type: int
-    description: Female population aged 12 years and older who were formerly married or in
+    description:
+      Female population aged 12 years and older who were formerly married or in
       a union
     config:
       meta:
@@ -2110,7 +2199,8 @@ anchors:
   - &scony9
     name: scony9
     data_type: int
-    description: Male population aged 12 years and older who were formerly married or in a
+    description:
+      Male population aged 12 years and older who were formerly married or in a
       union
     config:
       meta:
@@ -2261,7 +2351,8 @@ anchors:
     description: Inhabited private dwellings with piped water on the premises
     config:
       meta:
-        description_es: Viviendas particulares habitadas que disponen de agua entubada en
+        description_es:
+          Viviendas particulares habitadas que disponen de agua entubada en
           el ámbito de la vivienda
   - &viv18
     name: viv18
@@ -2269,7 +2360,8 @@ anchors:
     description: Inhabited private dwellings without piped water on the premises
     config:
       meta:
-        description_es: Viviendas particulares habitadas que no disponen de agua entubada
+        description_es:
+          Viviendas particulares habitadas que no disponen de agua entubada
           en el ámbito de la vivienda
   - &viv19
     name: viv19
@@ -2277,7 +2369,8 @@ anchors:
     description: Inhabitants of private dwellings with access to piped water on the premises
     config:
       meta:
-        description_es: Ocupantes en viviendas particulares con acceso a agua entubada en
+        description_es:
+          Ocupantes en viviendas particulares con acceso a agua entubada en
           el ámbito de la vivienda
   - &viv20
     name: viv20
@@ -2299,7 +2392,8 @@ anchors:
     description: Inhabitants of private dwellings with drainage and a toilet that uses water
     config:
       meta:
-        description_es: Ocupantes en viviendas particulares que disponen de drenaje y sanitario
+        description_es:
+          Ocupantes en viviendas particulares que disponen de drenaje y sanitario
           con admisión de agua
   - &viv23
     name: viv23
@@ -2318,11 +2412,13 @@ anchors:
   - &viv25
     name: viv25
     data_type: int
-    description: Inhabited private dwellings with electricity, piped water from the public
+    description:
+      Inhabited private dwellings with electricity, piped water from the public
       network, and drainage
     config:
       meta:
-        description_es: Viviendas particulares habitadas que disponen de energía eléctrica,
+        description_es:
+          Viviendas particulares habitadas que disponen de energía eléctrica,
           agua entubada de la red pública y drenaje
   - &viv26
     name: viv26
@@ -2330,7 +2426,8 @@ anchors:
     description: Inhabited private dwellings without electricity, piped water, or drainage
     config:
       meta:
-        description_es: Viviendas particulares habitadas que no disponen de energía eléctrica,
+        description_es:
+          Viviendas particulares habitadas que no disponen de energía eléctrica,
           agua entubada, ni drenaje
   - &viv27
     name: viv27
@@ -2359,16 +2456,19 @@ anchors:
     description: Inhabited private dwellings without a refrigerator or washing machine
     config:
       meta:
-        description_es: Viviendas particulares habitadas que no disponen de refrigerador ni
+        description_es:
+          Viviendas particulares habitadas que no disponen de refrigerador ni
           lavadora
   - &viv31
     name: viv31
     data_type: int
-    description: Inhabited private dwellings without a refrigerator, washing machine, or car
+    description:
+      Inhabited private dwellings without a refrigerator, washing machine, or car
       or truck
     config:
       meta:
-        description_es: Viviendas particulares habitadas que no disponen de refrigerador,
+        description_es:
+          Viviendas particulares habitadas que no disponen de refrigerador,
           lavadora ni automóvil o camioneta
   - &viv32
     name: viv32
@@ -2390,7 +2490,8 @@ anchors:
     description: Inhabited private dwellings with a computer, laptop, or tablet
     config:
       meta:
-        description_es: Viviendas particulares habitadas que disponen de computadora, laptop
+        description_es:
+          Viviendas particulares habitadas que disponen de computadora, laptop
           o tablet
   - &viv35
     name: viv35
@@ -2398,7 +2499,8 @@ anchors:
     description: Inhabited private dwellings with a landline telephone
     config:
       meta:
-        description_es: Viviendas particulares habitadas que disponen de línea telefónica
+        description_es:
+          Viviendas particulares habitadas que disponen de línea telefónica
           fija
   - &viv36
     name: viv36
@@ -2427,7 +2529,8 @@ anchors:
     description: Inhabited private dwellings without a landline telephone or cellular phone
     config:
       meta:
-        description_es: Viviendas particulares habitadas sin línea telefónica fija ni teléfono
+        description_es:
+          Viviendas particulares habitadas sin línea telefónica fija ni teléfono
           celular
   - &viv40
     name: viv40
@@ -2439,11 +2542,13 @@ anchors:
   - &viv41
     name: viv41
     data_type: int
-    description: Inhabited private dwellings without information and communication technologies
+    description:
+      Inhabited private dwellings without information and communication technologies
       (ICT)
     config:
       meta:
-        description_es: Viviendas particulares habitadas sin tecnologías de la información
+        description_es:
+          Viviendas particulares habitadas sin tecnologías de la información
           y de la comunicación (TIC)
   - &viv42
     name: viv42
@@ -2458,7 +2563,8 @@ anchors:
     description: Inhabitants of private dwellings without piped water on the premises
     config:
       meta:
-        description_es: Ocupantes en viviendas particulares que no disponen de agua entubada
+        description_es:
+          Ocupantes en viviendas particulares que no disponen de agua entubada
           en el ámbito de la vivienda
   - &viv70
     name: viv70
@@ -2487,16 +2593,19 @@ anchors:
     description: Inhabitants of private dwellings with electricity, piped water, and drainage
     config:
       meta:
-        description_es: Ocupantes en viviendas particulares que disponen de energía eléctrica,
+        description_es:
+          Ocupantes en viviendas particulares que disponen de energía eléctrica,
           agua entubada y drenaje
   - &viv78
     name: viv78
     data_type: int
-    description: Inhabitants of inhabited private dwellings without electricity, piped water,
+    description:
+      Inhabitants of inhabited private dwellings without electricity, piped water,
       or drainage
     config:
       meta:
-        description_es: Ocupantes en viviendas particulares habitadas que no disponen de energía
+        description_es:
+          Ocupantes en viviendas particulares habitadas que no disponen de energía
           eléctrica, ni de agua entubada, ni drenaje
   - &viv79
     name: viv79
@@ -2518,7 +2627,8 @@ anchors:
     description: Inhabited private dwellings with a bicycle used for transportation
     config:
       meta:
-        description_es: Viviendas particulares habitadas que disponen de bicicleta como medio
+        description_es:
+          Viviendas particulares habitadas que disponen de bicicleta como medio
           de transporte
   - &viv82
     name: viv82
@@ -2526,16 +2636,19 @@ anchors:
     description: Inhabited private dwellings with a pay television service
     config:
       meta:
-        description_es: Viviendas particulares habitadas que disponen de servicio de televisión
+        description_es:
+          Viviendas particulares habitadas que disponen de servicio de televisión
           de paga
   - &viv83
     name: viv83
     data_type: int
-    description: Inhabited private dwellings with a paid internet service for movies, music,
+    description:
+      Inhabited private dwellings with a paid internet service for movies, music,
       or videos
     config:
       meta:
-        description_es: Viviendas particulares habitadas que disponen de servicio de películas,
+        description_es:
+          Viviendas particulares habitadas que disponen de servicio de películas,
           música o videos de paga por Internet
   - &viv84
     name: viv84
@@ -2579,17 +2692,1956 @@ anchors:
     config:
       meta:
         description_es: Promedio de ocupantes por cuarto en viviendas particulares habitadas
+  - &_source_file
+    name: _source_file
+    data_type: text
+  - &_source_member_pob
+    name: _source_member_pob
+    data_type: text
+  - &_source_member_disc
+    name: _source_member_disc
+    data_type: text
+  - &_source_member_eco
+    name: _source_member_eco
+    data_type: text
+  - &_source_member_edu
+    name: _source_member_edu
+    data_type: text
+  - &_source_member_fec
+    name: _source_member_fec
+    data_type: text
+  - &_source_member_hogar
+    name: _source_member_hogar
+    data_type: text
+  - &_source_member_indi
+    name: _source_member_indi
+    data_type: text
+  - &_source_member_mig
+    name: _source_member_mig
+    data_type: text
+  - &_source_member_mor
+    name: _source_member_mor
+    data_type: text
+  - &_source_member_relig
+    name: _source_member_relig
+    data_type: text
+  - &_source_member_salud
+    name: _source_member_salud
+    data_type: text
+  - &_source_member_scony
+    name: _source_member_scony
+    data_type: text
+  - &_source_member_viv
+    name: _source_member_viv
+    data_type: text
 
 models:
+  - name: scince_2020_ent_staging
+    description: 2020 SCINCE staging table at the state level
+    config:
+      schema: staging
+      alias: scince_2020_ent
+      materialized: table
+      contract:
+        enforced: true
+      meta:
+        dagster:
+          asset_key:
+            - staging
+            - "2020"
+            - scince
+            - ent
+          group: staging/2020/scince
+    columns:
+      - name: cvegeo
+        data_type: text
+        description: State geographic identifier
+      - *pob1
+      - *pob2
+      - *pob3
+      - *pob4
+      - *pob5
+      - *pob6
+      - *pob7
+      - *pob8
+      - *pob9
+      - *pob10
+      - *pob11
+      - *pob12
+      - *pob13
+      - *pob14
+      - *pob15
+      - *pob16
+      - *pob17
+      - *pob18
+      - *pob19
+      - *pob20
+      - *pob21
+      - *pob22
+      - *pob23
+      - *pob24
+      - *pob25
+      - *pob26
+      - *pob27
+      - *pob28
+      - *pob29
+      - *pob30
+      - *pob31
+      - *pob32
+      - *pob33
+      - *pob34
+      - *pob35
+      - *pob36
+      - *pob37
+      - *pob38
+      - *pob39
+      - *pob40
+      - *pob41
+      - *pob42
+      - *pob43
+      - *pob44
+      - *pob45
+      - *pob46
+      - *pob47
+      - *pob48
+      - *pob49
+      - *pob50
+      - *pob51
+      - *pob52
+      - *pob53
+      - *pob54
+      - *pob55
+      - *pob56
+      - *pob57
+      - *pob58
+      - *pob59
+      - *pob60
+      - *pob61
+      - *pob62
+      - *pob63
+      - *pob64
+      - *pob65
+      - *pob66
+      - *pob67
+      - *pob68
+      - *pob69
+      - *pob70
+      - *pob71
+      - *pob72
+      - *pob73
+      - *pob74
+      - *pob75
+      - *pob76
+      - *pob77
+      - *pob78
+      - *pob79
+      - *pob80
+      - *pob81
+      - *pob82
+      - *pob83
+      - *pob84
+      - *pob85
+      - *pob86
+      - *pob87
+      - *pob88
+      - *pob89
+      - *pob90
+      - *pob91
+      - *pob92
+      - *pob93
+      - *pob94
+      - *pob95
+      - *pob96
+      - *pob97
+      - *pob98
+      - *pob99
+      - *pob100
+      - *pob101
+      - *pob102
+      - *pob103
+      - *pob104
+      - *pob105
+      - *pob106
+      - *pob107
+      - *pob108
+      - *pob109
+      - *pob110
+      - *pob111
+      - *pob112
+      - *pob113
+      - *pob114
+      - *pob115
+      - *pob116
+      - *pob117
+      - *pob118
+      - *pob119
+      - *pob120
+      - *pob121
+      - *pob122
+      - *pob123
+      - *pob124
+      - *pob126_r
+      - *pob127_r
+      - *pob128_r
+      - *pob129_r
+      - *pob130_r
+      - *pob131_r
+      - *pob132_r
+      - *pob133_r
+      - *pob134_r
+      - *disc1
+      - *disc2
+      - *disc3
+      - *disc4
+      - *disc5
+      - *disc6
+      - *disc7
+      - *disc8
+      - *disc9
+      - *disc10
+      - *disc11
+      - *disc12
+      - *disc13
+      - *disc14
+      - *disc15
+      - *disc16
+      - *disc17
+      - *disc18
+      - *disc19
+      - *disc20
+      - *eco1
+      - *eco2
+      - *eco3
+      - *eco4
+      - *eco5
+      - *eco6
+      - *eco7
+      - *eco10
+      - *eco13
+      - *eco16
+      - *eco19
+      - *eco22
+      - *eco25
+      - *eco26
+      - *eco27
+      - *eco28
+      - *eco29
+      - *eco30
+      - *eco31
+      - *eco34
+      - *eco37
+      - *eco40
+      - *eco43
+      - *edu1
+      - *edu4
+      - *edu7
+      - *edu10
+      - *edu13
+      - *edu16
+      - *edu19
+      - *edu22
+      - *edu25
+      - *edu28
+      - *edu31
+      - *edu34
+      - *edu37
+      - *edu40
+      - *edu43
+      - *edu46
+      - *edu49_r
+      - *edu50_r
+      - *edu51_r
+      - *fec1_r
+      - *fec2_r
+      - *fec3_r
+      - *hogar1
+      - *hogar2
+      - *hogar3
+      - *hogar4
+      - *hogar5
+      - *hogar6
+      - *hogar7
+      - *hogar8
+      - *hogar9
+      - *hogar10
+      - *hogar11
+      - *hogar12
+      - *hogar13
+      - *hogar14
+      - *hogar15
+      - *hogar16
+      - *hogar17
+      - *hogar18
+      - *hogar19
+      - *hogar20
+      - *hogar21
+      - *hogar22
+      - *hogar23
+      - *hogar24
+      - *hogar25
+      - *hogar26
+      - *afro1
+      - *afro2
+      - *afro3
+      - *afro4
+      - *afro5
+      - *afro6
+      - *indi1
+      - *indi2
+      - *indi3
+      - *indi4
+      - *indi5
+      - *indi6
+      - *indi7
+      - *indi8
+      - *indi9
+      - *indi10
+      - *indi11
+      - *indi12
+      - *indi13
+      - *indi14
+      - *indi15
+      - *indi16
+      - *indi17
+      - *indi18
+      - *indi19
+      - *indi20
+      - *mig1
+      - *mig2
+      - *mig3
+      - *mig4
+      - *mig5
+      - *mig6
+      - *mig7
+      - *mig8
+      - *mig9
+      - *mig10
+      - *mig11
+      - *mig12
+      - *mig13
+      - *mig14
+      - *mig15
+      - *mor1_r
+      - *relig1
+      - *relig2
+      - *relig3
+      - *relig4
+      - *salud1
+      - *salud2
+      - *salud3
+      - *salud4
+      - *salud5
+      - *salud6
+      - *salud7
+      - *salud8
+      - *salud9
+      - *salud10
+      - *scony1
+      - *scony2
+      - *scony3
+      - *scony4
+      - *scony5
+      - *scony6
+      - *scony7
+      - *scony8
+      - *scony9
+      - *scony10
+      - *scony11
+      - *scony12
+      - *viv0
+      - *viv1
+      - *viv2
+      - *viv3
+      - *viv4
+      - *viv5
+      - *viv6
+      - *viv7
+      - *viv8
+      - *viv9
+      - *viv10
+      - *viv11
+      - *viv12
+      - *viv13
+      - *viv14
+      - *viv15
+      - *viv16
+      - *viv17
+      - *viv18
+      - *viv19
+      - *viv20
+      - *viv21
+      - *viv22
+      - *viv23
+      - *viv24
+      - *viv25
+      - *viv26
+      - *viv27
+      - *viv28
+      - *viv29
+      - *viv30
+      - *viv31
+      - *viv32
+      - *viv33
+      - *viv34
+      - *viv35
+      - *viv36
+      - *viv37
+      - *viv38
+      - *viv39
+      - *viv40
+      - *viv41
+      - *viv42
+      - *viv43
+      - *viv70
+      - *viv75
+      - *viv76
+      - *viv77
+      - *viv78
+      - *viv79
+      - *viv80
+      - *viv81
+      - *viv82
+      - *viv83
+      - *viv84
+      - *viv90
+      - *viv91
+      - *viv94
+      - *viv92_r
+      - *viv93_r
+      - *_source_file
+      - *_source_member_pob
+      - *_source_member_disc
+      - *_source_member_eco
+      - *_source_member_edu
+      - *_source_member_fec
+      - *_source_member_hogar
+      - *_source_member_indi
+      - *_source_member_mig
+      - *_source_member_mor
+      - *_source_member_relig
+      - *_source_member_salud
+      - *_source_member_scony
+      - *_source_member_viv
+  - name: scince_2020_mun_staging
+    description: 2020 SCINCE staging table at the municipality level
+    config:
+      schema: staging
+      alias: scince_2020_mun
+      materialized: table
+      contract:
+        enforced: true
+      meta:
+        dagster:
+          asset_key:
+            - staging
+            - "2020"
+            - scince
+            - mun
+          group: staging/2020/scince
+    columns:
+      - name: cvegeo
+        data_type: text
+        description: Municipality geographic identifier
+      - *pob1
+      - *pob2
+      - *pob3
+      - *pob4
+      - *pob5
+      - *pob6
+      - *pob7
+      - *pob8
+      - *pob9
+      - *pob10
+      - *pob11
+      - *pob12
+      - *pob13
+      - *pob14
+      - *pob15
+      - *pob16
+      - *pob17
+      - *pob18
+      - *pob19
+      - *pob20
+      - *pob21
+      - *pob22
+      - *pob23
+      - *pob24
+      - *pob25
+      - *pob26
+      - *pob27
+      - *pob28
+      - *pob29
+      - *pob30
+      - *pob31
+      - *pob32
+      - *pob33
+      - *pob34
+      - *pob35
+      - *pob36
+      - *pob37
+      - *pob38
+      - *pob39
+      - *pob40
+      - *pob41
+      - *pob42
+      - *pob43
+      - *pob44
+      - *pob45
+      - *pob46
+      - *pob47
+      - *pob48
+      - *pob49
+      - *pob50
+      - *pob51
+      - *pob52
+      - *pob53
+      - *pob54
+      - *pob55
+      - *pob56
+      - *pob57
+      - *pob58
+      - *pob59
+      - *pob60
+      - *pob61
+      - *pob62
+      - *pob63
+      - *pob64
+      - *pob65
+      - *pob66
+      - *pob67
+      - *pob68
+      - *pob69
+      - *pob70
+      - *pob71
+      - *pob72
+      - *pob73
+      - *pob74
+      - *pob75
+      - *pob76
+      - *pob77
+      - *pob78
+      - *pob79
+      - *pob80
+      - *pob81
+      - *pob82
+      - *pob83
+      - *pob84
+      - *pob85
+      - *pob86
+      - *pob87
+      - *pob88
+      - *pob89
+      - *pob90
+      - *pob91
+      - *pob92
+      - *pob93
+      - *pob94
+      - *pob95
+      - *pob96
+      - *pob97
+      - *pob98
+      - *pob99
+      - *pob100
+      - *pob101
+      - *pob102
+      - *pob103
+      - *pob104
+      - *pob105
+      - *pob106
+      - *pob107
+      - *pob108
+      - *pob109
+      - *pob110
+      - *pob111
+      - *pob112
+      - *pob113
+      - *pob114
+      - *pob115
+      - *pob116
+      - *pob117
+      - *pob118
+      - *pob119
+      - *pob120
+      - *pob121
+      - *pob122
+      - *pob123
+      - *pob124
+      - *pob126_r
+      - *pob127_r
+      - *pob128_r
+      - *pob129_r
+      - *pob130_r
+      - *pob131_r
+      - *pob132_r
+      - *pob133_r
+      - *pob134_r
+      - *disc1
+      - *disc2
+      - *disc3
+      - *disc4
+      - *disc5
+      - *disc6
+      - *disc7
+      - *disc8
+      - *disc9
+      - *disc10
+      - *disc11
+      - *disc12
+      - *disc13
+      - *disc14
+      - *disc15
+      - *disc16
+      - *disc17
+      - *disc18
+      - *disc19
+      - *disc20
+      - *eco1
+      - *eco2
+      - *eco3
+      - *eco4
+      - *eco5
+      - *eco6
+      - *eco7
+      - *eco10
+      - *eco13
+      - *eco16
+      - *eco19
+      - *eco22
+      - *eco25
+      - *eco26
+      - *eco27
+      - *eco28
+      - *eco29
+      - *eco30
+      - *eco31
+      - *eco34
+      - *eco37
+      - *eco40
+      - *eco43
+      - *edu1
+      - *edu4
+      - *edu7
+      - *edu10
+      - *edu13
+      - *edu16
+      - *edu19
+      - *edu22
+      - *edu25
+      - *edu28
+      - *edu31
+      - *edu34
+      - *edu37
+      - *edu40
+      - *edu43
+      - *edu46
+      - *edu49_r
+      - *edu50_r
+      - *edu51_r
+      - *fec1_r
+      - *fec2_r
+      - *fec3_r
+      - *hogar1
+      - *hogar2
+      - *hogar3
+      - *hogar4
+      - *hogar5
+      - *hogar6
+      - *hogar7
+      - *hogar8
+      - *hogar9
+      - *hogar10
+      - *hogar11
+      - *hogar12
+      - *hogar13
+      - *hogar14
+      - *hogar15
+      - *hogar16
+      - *hogar17
+      - *hogar18
+      - *hogar19
+      - *hogar20
+      - *hogar21
+      - *hogar22
+      - *hogar23
+      - *hogar24
+      - *hogar25
+      - *hogar26
+      - *afro1
+      - *afro2
+      - *afro3
+      - *afro4
+      - *afro5
+      - *afro6
+      - *indi1
+      - *indi2
+      - *indi3
+      - *indi4
+      - *indi5
+      - *indi6
+      - *indi7
+      - *indi8
+      - *indi9
+      - *indi10
+      - *indi11
+      - *indi12
+      - *indi13
+      - *indi14
+      - *indi15
+      - *indi16
+      - *indi17
+      - *indi18
+      - *indi19
+      - *indi20
+      - *mig1
+      - *mig2
+      - *mig3
+      - *mig4
+      - *mig5
+      - *mig6
+      - *mig7
+      - *mig8
+      - *mig9
+      - *mig10
+      - *mig11
+      - *mig12
+      - *mig13
+      - *mig14
+      - *mig15
+      - *mor1_r
+      - *relig1
+      - *relig2
+      - *relig3
+      - *relig4
+      - *salud1
+      - *salud2
+      - *salud3
+      - *salud4
+      - *salud5
+      - *salud6
+      - *salud7
+      - *salud8
+      - *salud9
+      - *salud10
+      - *scony1
+      - *scony2
+      - *scony3
+      - *scony4
+      - *scony5
+      - *scony6
+      - *scony7
+      - *scony8
+      - *scony9
+      - *scony10
+      - *scony11
+      - *scony12
+      - *viv0
+      - *viv1
+      - *viv2
+      - *viv3
+      - *viv4
+      - *viv5
+      - *viv6
+      - *viv7
+      - *viv8
+      - *viv9
+      - *viv10
+      - *viv11
+      - *viv12
+      - *viv13
+      - *viv14
+      - *viv15
+      - *viv16
+      - *viv17
+      - *viv18
+      - *viv19
+      - *viv20
+      - *viv21
+      - *viv22
+      - *viv23
+      - *viv24
+      - *viv25
+      - *viv26
+      - *viv27
+      - *viv28
+      - *viv29
+      - *viv30
+      - *viv31
+      - *viv32
+      - *viv33
+      - *viv34
+      - *viv35
+      - *viv36
+      - *viv37
+      - *viv38
+      - *viv39
+      - *viv40
+      - *viv41
+      - *viv42
+      - *viv43
+      - *viv70
+      - *viv75
+      - *viv76
+      - *viv77
+      - *viv78
+      - *viv79
+      - *viv80
+      - *viv81
+      - *viv82
+      - *viv83
+      - *viv84
+      - *viv90
+      - *viv91
+      - *viv94
+      - *viv92_r
+      - *viv93_r
+      - *_source_file
+      - *_source_member_pob
+      - *_source_member_disc
+      - *_source_member_eco
+      - *_source_member_edu
+      - *_source_member_fec
+      - *_source_member_hogar
+      - *_source_member_indi
+      - *_source_member_mig
+      - *_source_member_mor
+      - *_source_member_relig
+      - *_source_member_salud
+      - *_source_member_scony
+      - *_source_member_viv
+  - name: scince_2020_loc_staging
+    description: 2020 SCINCE staging table at the locality level
+    config:
+      schema: staging
+      alias: scince_2020_loc
+      materialized: table
+      contract:
+        enforced: true
+      meta:
+        dagster:
+          asset_key:
+            - staging
+            - "2020"
+            - scince
+            - loc
+          group: staging/2020/scince
+    columns:
+      - name: cvegeo
+        data_type: text
+        description: Locality geographic identifier
+      - *pob1
+      - *pob2
+      - *pob3
+      - *pob4
+      - *pob5
+      - *pob6
+      - *pob7
+      - *pob8
+      - *pob9
+      - *pob10
+      - *pob11
+      - *pob12
+      - *pob13
+      - *pob14
+      - *pob15
+      - *pob16
+      - *pob17
+      - *pob18
+      - *pob19
+      - *pob20
+      - *pob21
+      - *pob22
+      - *pob23
+      - *pob24
+      - *pob25
+      - *pob26
+      - *pob27
+      - *pob28
+      - *pob29
+      - *pob30
+      - *pob31
+      - *pob32
+      - *pob33
+      - *pob34
+      - *pob35
+      - *pob36
+      - *pob37
+      - *pob38
+      - *pob39
+      - *pob40
+      - *pob41
+      - *pob42
+      - *pob43
+      - *pob44
+      - *pob45
+      - *pob46
+      - *pob47
+      - *pob48
+      - *pob49
+      - *pob50
+      - *pob51
+      - *pob52
+      - *pob53
+      - *pob54
+      - *pob55
+      - *pob56
+      - *pob57
+      - *pob58
+      - *pob59
+      - *pob60
+      - *pob61
+      - *pob62
+      - *pob63
+      - *pob64
+      - *pob65
+      - *pob66
+      - *pob67
+      - *pob68
+      - *pob69
+      - *pob70
+      - *pob71
+      - *pob72
+      - *pob73
+      - *pob74
+      - *pob75
+      - *pob76
+      - *pob77
+      - *pob78
+      - *pob79
+      - *pob80
+      - *pob81
+      - *pob82
+      - *pob83
+      - *pob84
+      - *pob85
+      - *pob86
+      - *pob87
+      - *pob88
+      - *pob89
+      - *pob90
+      - *pob91
+      - *pob92
+      - *pob93
+      - *pob94
+      - *pob95
+      - *pob96
+      - *pob97
+      - *pob98
+      - *pob99
+      - *pob100
+      - *pob101
+      - *pob102
+      - *pob103
+      - *pob104
+      - *pob105
+      - *pob106
+      - *pob107
+      - *pob108
+      - *pob109
+      - *pob110
+      - *pob111
+      - *pob112
+      - *pob113
+      - *pob114
+      - *pob115
+      - *pob116
+      - *pob117
+      - *pob118
+      - *pob119
+      - *pob120
+      - *pob121
+      - *pob122
+      - *pob123
+      - *pob124
+      - *pob126_r
+      - *pob127_r
+      - *pob128_r
+      - *pob129_r
+      - *pob130_r
+      - *pob131_r
+      - *pob132_r
+      - *pob133_r
+      - *pob134_r
+      - *disc1
+      - *disc2
+      - *disc3
+      - *disc4
+      - *disc5
+      - *disc6
+      - *disc7
+      - *disc8
+      - *disc9
+      - *disc10
+      - *disc11
+      - *disc12
+      - *disc13
+      - *disc14
+      - *disc15
+      - *disc16
+      - *disc17
+      - *disc18
+      - *disc19
+      - *disc20
+      - *eco1
+      - *eco2
+      - *eco3
+      - *eco4
+      - *eco5
+      - *eco6
+      - *eco7
+      - *eco10
+      - *eco13
+      - *eco16
+      - *eco19
+      - *eco22
+      - *eco25
+      - *eco26
+      - *eco27
+      - *eco28
+      - *eco29
+      - *eco30
+      - *eco31
+      - *eco34
+      - *eco37
+      - *eco40
+      - *eco43
+      - *edu1
+      - *edu4
+      - *edu7
+      - *edu10
+      - *edu13
+      - *edu16
+      - *edu19
+      - *edu22
+      - *edu25
+      - *edu28
+      - *edu31
+      - *edu34
+      - *edu37
+      - *edu40
+      - *edu43
+      - *edu46
+      - *edu49_r
+      - *edu50_r
+      - *edu51_r
+      - *fec1_r
+      - *fec2_r
+      - *fec3_r
+      - *hogar1
+      - *hogar2
+      - *hogar3
+      - *hogar4
+      - *hogar5
+      - *hogar6
+      - *hogar7
+      - *hogar8
+      - *hogar9
+      - *hogar10
+      - *hogar11
+      - *hogar12
+      - *hogar13
+      - *hogar14
+      - *hogar15
+      - *hogar16
+      - *hogar17
+      - *hogar18
+      - *hogar19
+      - *hogar20
+      - *hogar21
+      - *hogar22
+      - *hogar23
+      - *hogar24
+      - *hogar25
+      - *hogar26
+      - *afro1
+      - *afro2
+      - *afro3
+      - *afro4
+      - *afro5
+      - *afro6
+      - *indi1
+      - *indi2
+      - *indi3
+      - *indi4
+      - *indi5
+      - *indi6
+      - *indi7
+      - *indi8
+      - *indi9
+      - *indi10
+      - *indi11
+      - *indi12
+      - *indi13
+      - *indi14
+      - *indi15
+      - *indi16
+      - *indi17
+      - *indi18
+      - *indi19
+      - *indi20
+      - *mig1
+      - *mig2
+      - *mig3
+      - *mig4
+      - *mig5
+      - *mig6
+      - *mig7
+      - *mig8
+      - *mig9
+      - *mig10
+      - *mig11
+      - *mig12
+      - *mig13
+      - *mig14
+      - *mig15
+      - *mor1_r
+      - *relig1
+      - *relig2
+      - *relig3
+      - *relig4
+      - *salud1
+      - *salud2
+      - *salud3
+      - *salud4
+      - *salud5
+      - *salud6
+      - *salud7
+      - *salud8
+      - *salud9
+      - *salud10
+      - *scony1
+      - *scony2
+      - *scony3
+      - *scony4
+      - *scony5
+      - *scony6
+      - *scony7
+      - *scony8
+      - *scony9
+      - *scony10
+      - *scony11
+      - *scony12
+      - *viv0
+      - *viv1
+      - *viv2
+      - *viv3
+      - *viv4
+      - *viv5
+      - *viv6
+      - *viv7
+      - *viv8
+      - *viv9
+      - *viv10
+      - *viv11
+      - *viv12
+      - *viv13
+      - *viv14
+      - *viv15
+      - *viv16
+      - *viv17
+      - *viv18
+      - *viv19
+      - *viv20
+      - *viv21
+      - *viv22
+      - *viv23
+      - *viv24
+      - *viv25
+      - *viv26
+      - *viv27
+      - *viv28
+      - *viv29
+      - *viv30
+      - *viv31
+      - *viv32
+      - *viv33
+      - *viv34
+      - *viv35
+      - *viv36
+      - *viv37
+      - *viv38
+      - *viv39
+      - *viv40
+      - *viv41
+      - *viv42
+      - *viv43
+      - *viv70
+      - *viv75
+      - *viv76
+      - *viv77
+      - *viv78
+      - *viv79
+      - *viv80
+      - *viv81
+      - *viv82
+      - *viv83
+      - *viv84
+      - *viv90
+      - *viv91
+      - *viv94
+      - *viv92_r
+      - *viv93_r
+      - *_source_file
+      - *_source_member_pob
+      - *_source_member_disc
+      - *_source_member_eco
+      - *_source_member_edu
+      - *_source_member_fec
+      - *_source_member_hogar
+      - *_source_member_indi
+      - *_source_member_mig
+      - *_source_member_mor
+      - *_source_member_relig
+      - *_source_member_salud
+      - *_source_member_scony
+      - *_source_member_viv
+  - name: scince_2020_ageb_staging
+    description: 2020 SCINCE staging table at the AGEB level
+    config:
+      schema: staging
+      alias: scince_2020_ageb
+      materialized: table
+      contract:
+        enforced: true
+      meta:
+        dagster:
+          asset_key:
+            - staging
+            - "2020"
+            - scince
+            - ageb
+          group: staging/2020/scince
+    columns:
+      - name: cvegeo
+        data_type: text
+        description: AGEB geographic identifier
+      - *pob1
+      - *pob2
+      - *pob3
+      - *pob4
+      - *pob5
+      - *pob6
+      - *pob7
+      - *pob8
+      - *pob9
+      - *pob10
+      - *pob11
+      - *pob12
+      - *pob13
+      - *pob14
+      - *pob15
+      - *pob16
+      - *pob17
+      - *pob18
+      - *pob19
+      - *pob20
+      - *pob21
+      - *pob22
+      - *pob23
+      - *pob24
+      - *pob25
+      - *pob26
+      - *pob27
+      - *pob28
+      - *pob29
+      - *pob30
+      - *pob31
+      - *pob32
+      - *pob33
+      - *pob34
+      - *pob35
+      - *pob36
+      - *pob37
+      - *pob38
+      - *pob39
+      - *pob40
+      - *pob41
+      - *pob42
+      - *pob43
+      - *pob44
+      - *pob45
+      - *pob46
+      - *pob47
+      - *pob48
+      - *pob49
+      - *pob50
+      - *pob51
+      - *pob52
+      - *pob53
+      - *pob54
+      - *pob55
+      - *pob56
+      - *pob57
+      - *pob58
+      - *pob59
+      - *pob60
+      - *pob61
+      - *pob62
+      - *pob63
+      - *pob64
+      - *pob65
+      - *pob66
+      - *pob67
+      - *pob68
+      - *pob69
+      - *pob70
+      - *pob71
+      - *pob72
+      - *pob73
+      - *pob74
+      - *pob75
+      - *pob76
+      - *pob77
+      - *pob78
+      - *pob79
+      - *pob80
+      - *pob81
+      - *pob82
+      - *pob83
+      - *pob84
+      - *pob85
+      - *pob86
+      - *pob87
+      - *pob88
+      - *pob89
+      - *pob90
+      - *pob91
+      - *pob92
+      - *pob93
+      - *pob94
+      - *pob95
+      - *pob96
+      - *pob97
+      - *pob98
+      - *pob99
+      - *pob100
+      - *pob101
+      - *pob102
+      - *pob103
+      - *pob104
+      - *pob105
+      - *pob106
+      - *pob107
+      - *pob108
+      - *pob109
+      - *pob110
+      - *pob111
+      - *pob112
+      - *pob113
+      - *pob114
+      - *pob115
+      - *pob116
+      - *pob117
+      - *pob118
+      - *pob119
+      - *pob120
+      - *pob121
+      - *pob122
+      - *pob123
+      - *pob124
+      - *pob126_r
+      - *pob127_r
+      - *pob128_r
+      - *pob129_r
+      - *pob130_r
+      - *pob131_r
+      - *pob132_r
+      - *pob133_r
+      - *pob134_r
+      - *disc1
+      - *disc2
+      - *disc3
+      - *disc4
+      - *disc5
+      - *disc6
+      - *disc7
+      - *disc8
+      - *disc9
+      - *disc10
+      - *disc11
+      - *disc12
+      - *disc13
+      - *disc14
+      - *disc15
+      - *disc16
+      - *disc17
+      - *disc18
+      - *disc19
+      - *disc20
+      - *eco1
+      - *eco2
+      - *eco3
+      - *eco4
+      - *eco5
+      - *eco6
+      - *eco7
+      - *eco10
+      - *eco13
+      - *eco16
+      - *eco19
+      - *eco22
+      - *eco25
+      - *eco26
+      - *eco27
+      - *eco28
+      - *eco29
+      - *eco30
+      - *eco31
+      - *eco34
+      - *eco37
+      - *eco40
+      - *eco43
+      - *edu1
+      - *edu4
+      - *edu7
+      - *edu10
+      - *edu13
+      - *edu16
+      - *edu19
+      - *edu22
+      - *edu25
+      - *edu28
+      - *edu31
+      - *edu34
+      - *edu37
+      - *edu40
+      - *edu43
+      - *edu46
+      - *edu49_r
+      - *edu50_r
+      - *edu51_r
+      - *fec1_r
+      - *fec2_r
+      - *fec3_r
+      - *hogar1
+      - *hogar2
+      - *hogar3
+      - *hogar4
+      - *hogar5
+      - *hogar6
+      - *hogar7
+      - *hogar8
+      - *hogar9
+      - *hogar10
+      - *hogar11
+      - *hogar12
+      - *hogar13
+      - *hogar14
+      - *hogar15
+      - *hogar16
+      - *hogar17
+      - *hogar18
+      - *hogar19
+      - *hogar20
+      - *hogar21
+      - *hogar22
+      - *hogar23
+      - *hogar24
+      - *hogar25
+      - *hogar26
+      - *afro1
+      - *afro2
+      - *afro3
+      - *afro4
+      - *afro5
+      - *afro6
+      - *indi1
+      - *indi2
+      - *indi3
+      - *indi4
+      - *indi5
+      - *indi6
+      - *indi7
+      - *indi8
+      - *indi9
+      - *indi10
+      - *indi11
+      - *indi12
+      - *indi13
+      - *indi14
+      - *indi15
+      - *indi16
+      - *indi17
+      - *indi18
+      - *indi19
+      - *indi20
+      - *mig1
+      - *mig2
+      - *mig3
+      - *mig4
+      - *mig5
+      - *mig6
+      - *mig7
+      - *mig8
+      - *mig9
+      - *mig10
+      - *mig11
+      - *mig12
+      - *mig13
+      - *mig14
+      - *mig15
+      - *mor1_r
+      - *relig1
+      - *relig2
+      - *relig3
+      - *relig4
+      - *salud1
+      - *salud2
+      - *salud3
+      - *salud4
+      - *salud5
+      - *salud6
+      - *salud7
+      - *salud8
+      - *salud9
+      - *salud10
+      - *scony1
+      - *scony2
+      - *scony3
+      - *scony4
+      - *scony5
+      - *scony6
+      - *scony7
+      - *scony8
+      - *scony9
+      - *scony10
+      - *scony11
+      - *scony12
+      - *viv0
+      - *viv1
+      - *viv2
+      - *viv3
+      - *viv4
+      - *viv5
+      - *viv6
+      - *viv7
+      - *viv8
+      - *viv9
+      - *viv10
+      - *viv11
+      - *viv12
+      - *viv13
+      - *viv14
+      - *viv15
+      - *viv16
+      - *viv17
+      - *viv18
+      - *viv19
+      - *viv20
+      - *viv21
+      - *viv22
+      - *viv23
+      - *viv24
+      - *viv25
+      - *viv26
+      - *viv27
+      - *viv28
+      - *viv29
+      - *viv30
+      - *viv31
+      - *viv32
+      - *viv33
+      - *viv34
+      - *viv35
+      - *viv36
+      - *viv37
+      - *viv38
+      - *viv39
+      - *viv40
+      - *viv41
+      - *viv42
+      - *viv43
+      - *viv70
+      - *viv75
+      - *viv76
+      - *viv77
+      - *viv78
+      - *viv79
+      - *viv80
+      - *viv81
+      - *viv82
+      - *viv83
+      - *viv84
+      - *viv90
+      - *viv91
+      - *viv94
+      - *viv92_r
+      - *viv93_r
+      - *_source_file
+      - *_source_member_pob
+      - *_source_member_disc
+      - *_source_member_eco
+      - *_source_member_edu
+      - *_source_member_fec
+      - *_source_member_hogar
+      - *_source_member_indi
+      - *_source_member_mig
+      - *_source_member_mor
+      - *_source_member_relig
+      - *_source_member_salud
+      - *_source_member_scony
+      - *_source_member_viv
+  - name: scince_2020_mza_staging
+    description: 2020 SCINCE staging table at the block level
+    config:
+      schema: staging
+      alias: scince_2020_mza
+      materialized: table
+      contract:
+        enforced: true
+      meta:
+        dagster:
+          asset_key:
+            - staging
+            - "2020"
+            - scince
+            - mza
+          group: staging/2020/scince
+    columns:
+      - name: cvegeo
+        data_type: text
+        description: Block geographic identifier
+      - *pob1
+      - *pob2
+      - *pob3
+      - *pob4
+      - *pob5
+      - *pob6
+      - *pob7
+      - *pob8
+      - *pob9
+      - *pob10
+      - *pob11
+      - *pob12
+      - *pob13
+      - *pob14
+      - *pob15
+      - *pob16
+      - *pob17
+      - *pob18
+      - *pob19
+      - *pob20
+      - *pob21
+      - *pob22
+      - *pob23
+      - *pob24
+      - *pob25
+      - *pob26
+      - *pob27
+      - *pob28
+      - *pob29
+      - *pob30
+      - *pob31
+      - *pob32
+      - *pob33
+      - *pob34
+      - *pob35
+      - *pob36
+      - *pob37
+      - *pob38
+      - *pob39
+      - *pob40
+      - *pob41
+      - *pob42
+      - *pob43
+      - *pob44
+      - *pob45
+      - *pob46
+      - *pob47
+      - *pob48
+      - *pob49
+      - *pob50
+      - *pob51
+      - *pob52
+      - *pob53
+      - *pob54
+      - *pob55
+      - *pob56
+      - *pob57
+      - *pob58
+      - *pob59
+      - *pob60
+      - *pob61
+      - *pob62
+      - *pob63
+      - *pob64
+      - *pob65
+      - *pob66
+      - *pob67
+      - *pob68
+      - *pob69
+      - *pob70
+      - *pob71
+      - *pob72
+      - *pob73
+      - *pob74
+      - *pob75
+      - *pob76
+      - *pob77
+      - *pob78
+      - *pob79
+      - *pob80
+      - *pob81
+      - *pob82
+      - *pob83
+      - *pob84
+      - *pob85
+      - *pob86
+      - *pob87
+      - *pob88
+      - *pob89
+      - *pob90
+      - *pob91
+      - *pob92
+      - *pob93
+      - *pob94
+      - *pob95
+      - *pob96
+      - *pob97
+      - *pob98
+      - *pob99
+      - *pob100
+      - *pob101
+      - *pob102
+      - *pob103
+      - *pob104
+      - *pob105
+      - *pob106
+      - *pob107
+      - *pob108
+      - *pob109
+      - *pob110
+      - *pob111
+      - *pob112
+      - *pob113
+      - *pob114
+      - *pob115
+      - *pob116
+      - *pob117
+      - *pob118
+      - *pob119
+      - *pob120
+      - *pob121
+      - *pob122
+      - *pob123
+      - *pob124
+      - *pob126_r
+      - *pob127_r
+      - *pob128_r
+      - *pob129_r
+      - *pob130_r
+      - *pob131_r
+      - *pob132_r
+      - *pob133_r
+      - *pob134_r
+      - *disc1
+      - *disc2
+      - *disc3
+      - *disc4
+      - *disc5
+      - *disc6
+      - *disc7
+      - *disc8
+      - *disc9
+      - *disc10
+      - *disc11
+      - *disc12
+      - *disc13
+      - *disc14
+      - *disc15
+      - *disc16
+      - *disc17
+      - *disc18
+      - *disc19
+      - *disc20
+      - *eco1
+      - *eco2
+      - *eco3
+      - *eco4
+      - *eco5
+      - *eco6
+      - *eco7
+      - *eco10
+      - *eco13
+      - *eco16
+      - *eco19
+      - *eco22
+      - *eco25
+      - *eco26
+      - *eco27
+      - *eco28
+      - *eco29
+      - *eco30
+      - *eco31
+      - *eco34
+      - *eco37
+      - *eco40
+      - *eco43
+      - *edu1
+      - *edu4
+      - *edu7
+      - *edu10
+      - *edu13
+      - *edu16
+      - *edu19
+      - *edu22
+      - *edu25
+      - *edu28
+      - *edu31
+      - *edu34
+      - *edu37
+      - *edu40
+      - *edu43
+      - *edu46
+      - *edu49_r
+      - *edu50_r
+      - *edu51_r
+      - *fec1_r
+      - *fec2_r
+      - *fec3_r
+      - *hogar1
+      - *hogar2
+      - *hogar3
+      - *hogar4
+      - *hogar5
+      - *hogar6
+      - *hogar7
+      - *hogar10
+      - *hogar13
+      - *hogar16
+      - *hogar19
+      - *hogar22
+      - *hogar25
+      - *hogar26
+      - *afro1
+      - *afro2
+      - *afro3
+      - *afro4
+      - *afro5
+      - *afro6
+      - *indi1
+      - *indi4
+      - *indi7
+      - *indi10
+      - *indi13
+      - *indi16
+      - *indi19
+      - *indi20
+      - *mig1
+      - *mig2
+      - *mig3
+      - *mig4
+      - *mig5
+      - *mig6
+      - *mig7
+      - *mig8
+      - *mig9
+      - *mig10
+      - *mig11
+      - *mig12
+      - *mig13
+      - *mig14
+      - *mig15
+      - *mor1_r
+      - *relig1
+      - *relig2
+      - *relig3
+      - *relig4
+      - *salud1
+      - *salud2
+      - *salud3
+      - *salud4
+      - *salud5
+      - *salud6
+      - *salud7
+      - *salud8
+      - *salud9
+      - *salud10
+      - *scony1
+      - *scony4
+      - *scony7
+      - *scony10
+      - *viv0
+      - *viv1
+      - *viv2
+      - *viv3
+      - *viv4
+      - *viv5
+      - *viv6
+      - *viv7
+      - *viv8
+      - *viv9
+      - *viv10
+      - *viv11
+      - *viv12
+      - *viv13
+      - *viv14
+      - *viv15
+      - *viv16
+      - *viv17
+      - *viv18
+      - *viv19
+      - *viv20
+      - *viv21
+      - *viv22
+      - *viv23
+      - *viv24
+      - *viv25
+      - *viv26
+      - *viv27
+      - *viv28
+      - *viv29
+      - *viv30
+      - *viv31
+      - *viv32
+      - *viv33
+      - *viv34
+      - *viv35
+      - *viv36
+      - *viv37
+      - *viv38
+      - *viv39
+      - *viv40
+      - *viv41
+      - *viv42
+      - *viv43
+      - *viv70
+      - *viv75
+      - *viv76
+      - *viv77
+      - *viv78
+      - *viv79
+      - *viv80
+      - *viv81
+      - *viv82
+      - *viv83
+      - *viv84
+      - *viv90
+      - *viv91
+      - *viv94
+      - *viv92_r
+      - *viv93_r
+      - *_source_file
+      - *_source_member_pob
+      - *_source_member_disc
+      - *_source_member_eco
+      - *_source_member_edu
+      - *_source_member_fec
+      - *_source_member_hogar
+      - *_source_member_indi
+      - *_source_member_mig
+      - *_source_member_mor
+      - *_source_member_relig
+      - *_source_member_salud
+      - *_source_member_scony
+      - *_source_member_viv
   - name: scince_2020_ent
-    description: Published 2020 SCINCE indicators at ent level, joined across themes without
-      statistical aggregation.
+    description: 2020 SCINCE indicators at the state level
     config:
       meta:
         dagster:
           asset_key:
             - scince
-            - '2020'
+            - "2020"
             - ent
           group: scince/2020
     constraints:
@@ -2605,7 +4657,7 @@ models:
     columns:
       - name: cvegeo
         data_type: text
-        description: Published ent geographic identifier.
+        description: State geographic identifier
       - *pob1
       - *pob2
       - *pob3
@@ -2959,14 +5011,13 @@ models:
       - *viv92_r
       - *viv93_r
   - name: scince_2020_mun
-    description: Published 2020 SCINCE indicators at mun level, joined across themes without
-      statistical aggregation.
+    description: 2020 SCINCE indicators at the municipality level
     config:
       meta:
         dagster:
           asset_key:
             - scince
-            - '2020'
+            - "2020"
             - mun
           group: scince/2020
     constraints:
@@ -2982,7 +5033,7 @@ models:
     columns:
       - name: cvegeo
         data_type: text
-        description: Published mun geographic identifier.
+        description: Municipality geographic identifier
       - *pob1
       - *pob2
       - *pob3
@@ -3336,14 +5387,13 @@ models:
       - *viv92_r
       - *viv93_r
   - name: scince_2020_loc
-    description: Published 2020 SCINCE indicators at loc level, joined across themes without
-      statistical aggregation.
+    description: 2020 SCINCE indicators at the locality level
     config:
       meta:
         dagster:
           asset_key:
             - scince
-            - '2020'
+            - "2020"
             - loc
           group: scince/2020
     constraints:
@@ -3359,7 +5409,7 @@ models:
     columns:
       - name: cvegeo
         data_type: text
-        description: Published loc geographic identifier.
+        description: Locality geographic identifier
       - *pob1
       - *pob2
       - *pob3
@@ -3713,14 +5763,13 @@ models:
       - *viv92_r
       - *viv93_r
   - name: scince_2020_ageb
-    description: Published 2020 SCINCE indicators at ageb level, joined across themes without
-      statistical aggregation.
+    description: 2020 SCINCE indicators at the AGEB level
     config:
       meta:
         dagster:
           asset_key:
             - scince
-            - '2020'
+            - "2020"
             - ageb
           group: scince/2020
     constraints:
@@ -3736,7 +5785,7 @@ models:
     columns:
       - name: cvegeo
         data_type: text
-        description: Published ageb geographic identifier.
+        description: AGEB geographic identifier
       - *pob1
       - *pob2
       - *pob3
@@ -4090,14 +6139,13 @@ models:
       - *viv92_r
       - *viv93_r
   - name: scince_2020_mza
-    description: Published 2020 SCINCE indicators at mza level, joined across themes without
-      statistical aggregation.
+    description: 2020 SCINCE indicators at the block level
     config:
       meta:
         dagster:
           asset_key:
             - scince
-            - '2020'
+            - "2020"
             - mza
           group: scince/2020
     constraints:
@@ -4113,7 +6161,7 @@ models:
     columns:
       - name: cvegeo
         data_type: text
-        description: Published mza geographic identifier.
+        description: Block geographic identifier
       - *pob1
       - *pob2
       - *pob3
