@@ -1,0 +1,8 @@
+type: cfc_dagster_utils.components.dvc.DvcInputComponent
+attributes:
+  key: input/1990/census
+  dvc_file: data/input/1990/ITER_NALTXT90.txt.dvc
+post_processing:
+  assets:
+    - attributes:
+        group_name: "input/1990"
