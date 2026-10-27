@@ -1,0 +1,126 @@
+version: 2
+models:
+  - name: scince_2010_edu
+    description: Typed 2010 SCINCE edu attributes at AGEB level.
+    config:
+      schema: staging
+      materialized: table
+      contract:
+        enforced: true
+      meta:
+        dagster:
+          asset_key:
+            - staging
+            - '2010'
+            - scince
+            - edu
+          group: staging/2010/scince
+    columns:
+      - name: cvegeo
+        data_type: text
+        description: Unique identifier for the AGEB.
+        config:
+          meta:
+            description_es: null
+      - name: edu1
+        data_type: int
+        description: Population aged 3 to 5 years attending school
+        config:
+          meta:
+            description_es: Población de 3 a 5 años que asiste a la escuela
+      - name: edu4
+        data_type: int
+        description: Population aged 3 to 5 years not attending school
+        config:
+          meta:
+            description_es: Población de 3 a 5 años que no asiste a la escuela
+      - name: edu7
+        data_type: int
+        description: Population aged 6 to 11 years attending school
+        config:
+          meta:
+            description_es: Población de 6 a 11 años que asiste a la escuela
+      - name: edu10
+        data_type: int
+        description: Population aged 6 to 11 years not attending school
+        config:
+          meta:
+            description_es: Población de 6 a 11 años que no asiste a la escuela
+      - name: edu13
+        data_type: int
+        description: Population aged 12 to 14 years attending school
+        config:
+          meta:
+            description_es: Población de 12 a 14 años que asiste a la escuela
+      - name: edu16
+        data_type: int
+        description: Population aged 12 to 14 years not attending school
+        config:
+          meta:
+            description_es: Población de 12 a 14 años que no asiste a la escuela
+      - name: edu19
+        data_type: int
+        description: Population aged 8 to 14 years that knows how to read and write
+        config:
+          meta:
+            description_es: Población de 8 a 14 años que sabe leer y escribir
+      - name: edu22
+        data_type: int
+        description: Population aged 8 to 14 years that does not know how to read and write
+        config:
+          meta:
+            description_es: Población de 8 a 14 años que no sabe leer y escribir
+      - name: edu25
+        data_type: int
+        description: Literate population aged 15 years and older
+        config:
+          meta:
+            description_es: Población de 15 años y más alfabeta
+      - name: edu28
+        data_type: int
+        description: Illiterate population aged 15 years and older
+        config:
+          meta:
+            description_es: Población de 15 años y más analfabeta
+      - name: edu31
+        data_type: int
+        description: Population aged 15 years and older with no schooling
+        config:
+          meta:
+            description_es: Población de 15 años y más sin escolaridad
+      - name: edu34
+        data_type: int
+        description: Population aged 15 years and older with incomplete basic education
+        config:
+          meta:
+            description_es: Población de 15 años y más con educación básica incompleta
+      - name: edu37
+        data_type: int
+        description: Population aged 15 years and older with complete basic education
+        config:
+          meta:
+            description_es: Población de 15 años y más con educación básica completa.
+      - name: edu40
+        data_type: int
+        description: Population aged 15 years and older with education beyond basic education
+        config:
+          meta:
+            description_es: Población de 15 años y más con educación pos-básica.
+      - name: edu43
+        data_type: int
+        description: Population aged 18 years and older with at least one completed grade of upper secondary
+          education
+        config:
+          meta:
+            description_es: Población de 18 años y más con al menos un grado aprobado en educación media
+              superior
+      - name: edu46
+        data_type: int
+        description: Population aged 25 years and older with at least one completed year of higher education
+        config:
+          meta:
+            description_es: Población de 25 años y más con al menos un grado aprobado en educación superior
+      - name: _source_file
+        data_type: text
+      - name: _source_member
+        data_type: text

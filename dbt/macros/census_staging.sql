@@ -33,25 +33,3 @@
         else 'mza'
     end
 {% endmacro %}
-
-{% macro census_staging(year) %}
-    with typed as (
-        select
-            lpad(entidad, 2, '0')
-                || lpad(mun, 3, '0')
-                || lpad(loc, 4, '0')
-                || lpad(ageb, 4, '0')
-                || lpad(mza, 3, '0') as cvegeo,
-            {% for name in ["nom_ent", "nom_mun", "nom_loc"] %}
-                {{ census_typed_value(adapter.quote(name), "text") }} as {{ name }},
-            {% endfor %}
-            {% for column in var("census_" ~ year ~ "_columns") if column.name != "cvegeo" %}
-                {{ census_typed_value(adapter.quote(column.name), column.data_type) }}
-                    as {{ adapter.quote(column.name) }},
-            {% endfor %}
-            _source_file
-        from {{ source("census_ingest", "census_" ~ year) }}
-    )
-    select typed.*, {{ census_level("cvegeo") }} as census_level
-    from typed
-{% endmacro %}

@@ -1,4 +1,3 @@
-import ast
 import hashlib
 import json
 import re
@@ -18,12 +17,15 @@ STAGING = DBT / "models" / "staging" / "scince"
 
 
 def public_properties(year: int, theme: str) -> dict:
-    path = DBT / "models" / "scince" / str(year) / theme / "schema.yml"
-    properties = yaml.safe_load(path.read_text())["models"][0]
-    properties["columns"] = ast.literal_eval(
-        render_sql(properties["columns"], compact=False)
+    path = (
+        DBT
+        / "models"
+        / "scince"
+        / str(year)
+        / theme
+        / f"scince_{year}_ageb_{theme}.yml"
     )
-    return properties
+    return yaml.safe_load(path.read_text())["models"][0]
 
 
 @pytest.mark.parametrize(("year", "theme"), THEMES)
@@ -56,9 +58,9 @@ def test_public_contracts_and_explicit_projections(year: int, theme: str) -> Non
 @pytest.mark.parametrize(("year", "theme"), THEMES)
 def test_staging_contracts_casts_and_sources(year: int, theme: str) -> None:
     name = f"scince_{year}_{theme}"
-    models = yaml.safe_load((STAGING / "schema.yml").read_text())["models"]
-    model = next(m for m in models if m["name"] == name)
-    columns = ast.literal_eval(render_sql(model["columns"], compact=False))
+    directory = STAGING / str(year) / theme
+    model = yaml.safe_load((directory / f"{name}.yml").read_text())["models"][0]
+    columns = model["columns"]
     assert columns[:-2] == public_properties(year, theme)["columns"]
     assert columns[-2:] == [
         {"name": "_source_file", "data_type": "text"},
@@ -72,9 +74,10 @@ def test_staging_contracts_casts_and_sources(year: int, theme: str) -> None:
         "asset_key": ["staging", str(year), "scince", theme],
         "group": f"staging/{year}/scince",
     }
-    sql = render_sql((STAGING / f"{name}.sql").read_text())
+    sql = render_sql((directory / f"{name}.sql").read_text())
     assert sql.endswith(f'from "ingest"."{name}"')
     assert "_source_file, _source_member" in sql
+    assert re.findall(r'as "([^"]+)"', sql) == [c["name"] for c in columns[:-2]]
     for column in columns[:-2]:
         expression = f'"{column["name"]}"'
         data_type = column["data_type"]

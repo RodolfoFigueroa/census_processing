@@ -1,2 +1,26 @@
-select {{ scince_columns(2020, "eco") }}
+select
+    "cvegeo",
+    "eco1",
+    "eco2",
+    "eco3",
+    "eco4",
+    "eco5",
+    "eco6",
+    "eco7",
+    "eco10",
+    "eco13",
+    "eco16",
+    "eco19",
+    "eco22",
+    "eco25",
+    "eco26",
+    "eco27",
+    "eco28",
+    "eco29",
+    "eco30",
+    "eco31",
+    "eco34",
+    "eco37",
+    "eco40",
+    "eco43"
 from {{ ref("scince_2020_eco") }}

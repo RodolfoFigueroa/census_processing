@@ -1,0 +1,402 @@
+version: 2
+models:
+  - name: scince_2020_viv
+    description: Typed 2020 SCINCE viv attributes at AGEB level.
+    config:
+      schema: staging
+      materialized: table
+      contract:
+        enforced: true
+      meta:
+        dagster:
+          asset_key:
+            - staging
+            - '2020'
+            - scince
+            - viv
+          group: staging/2020/scince
+    columns:
+      - name: cvegeo
+        data_type: text
+        description: Unique identifier for the AGEB.
+        config:
+          meta:
+            description_es: null
+      - name: viv0
+        data_type: int
+        description: Total dwellings
+        config:
+          meta:
+            description_es: Total de viviendas
+      - name: viv1
+        data_type: int
+        description: Total inhabited dwellings
+        config:
+          meta:
+            description_es: Total de viviendas habitadas
+      - name: viv2
+        data_type: int
+        description: Inhabited private dwellings
+        config:
+          meta:
+            description_es: Viviendas particulares habitadas
+      - name: viv3
+        data_type: int
+        description: Inhabitants of inhabited private dwellings
+        config:
+          meta:
+            description_es: Ocupantes en viviendas particulares habitadas
+      - name: viv4
+        data_type: int
+        description: Uninhabited private dwellings
+        config:
+          meta:
+            description_es: Viviendas particulares deshabitadas
+      - name: viv5
+        data_type: int
+        description: Private dwellings for temporary use
+        config:
+          meta:
+            description_es: Viviendas particulares de uso temporal
+      - name: viv6
+        data_type: int
+        description: Collective dwellings
+        config:
+          meta:
+            description_es: Viviendas colectivas
+      - name: viv7
+        data_type: int
+        description: Inhabited private dwellings with dirt floors
+        config:
+          meta:
+            description_es: Viviendas particulares habitadas con piso de tierra
+      - name: viv8
+        data_type: int
+        description: Inhabited private dwellings with one bedroom
+        config:
+          meta:
+            description_es: Viviendas particulares habitadas con un dormitorio
+      - name: viv9
+        data_type: int
+        description: Inhabited private dwellings with two or more bedrooms
+        config:
+          meta:
+            description_es: Viviendas particulares habitadas con dos dormitorios y más
+      - name: viv10
+        data_type: int
+        description: Inhabited private dwellings with more than 2.5 inhabitants per bedroom
+        config:
+          meta:
+            description_es: Viviendas particulares habitadas con más de 2.5 ocupantes por dormitorio
+      - name: viv11
+        data_type: int
+        description: Inhabited private dwellings with only one room
+        config:
+          meta:
+            description_es: Viviendas particulares habitadas con sólo un cuarto
+      - name: viv12
+        data_type: int
+        description: Inhabited private dwellings with two rooms
+        config:
+          meta:
+            description_es: Viviendas particulares habitadas con dos cuartos
+      - name: viv13
+        data_type: int
+        description: Inhabited private dwellings with three or more rooms
+        config:
+          meta:
+            description_es: Viviendas particulares habitadas con 3 cuartos y más
+      - name: viv14
+        data_type: int
+        description: Private dwellings with more than three inhabitants per room
+        config:
+          meta:
+            description_es: Viviendas particulares con más de 3 ocupantes por cuarto
+      - name: viv15
+        data_type: int
+        description: Inhabited private dwellings with electricity
+        config:
+          meta:
+            description_es: Viviendas particulares habitadas que disponen de energía eléctrica
+      - name: viv16
+        data_type: int
+        description: Inhabited private dwellings without electricity
+        config:
+          meta:
+            description_es: Viviendas particulares habitadas que no disponen de energía eléctrica
+      - name: viv17
+        data_type: int
+        description: Inhabited private dwellings with piped water on the premises
+        config:
+          meta:
+            description_es: Viviendas particulares habitadas que disponen de agua entubada en el ámbito
+              de la vivienda
+      - name: viv18
+        data_type: int
+        description: Inhabited private dwellings without piped water on the premises
+        config:
+          meta:
+            description_es: Viviendas particulares habitadas que no disponen de agua entubada en el ámbito
+              de la vivienda
+      - name: viv19
+        data_type: int
+        description: Inhabitants of private dwellings with access to piped water on the premises
+        config:
+          meta:
+            description_es: Ocupantes en viviendas particulares con acceso a agua entubada en el ámbito
+              de la vivienda
+      - name: viv20
+        data_type: int
+        description: Inhabited private dwellings with a toilet
+        config:
+          meta:
+            description_es: Viviendas particulares habitadas que disponen de excusado o sanitario
+      - name: viv21
+        data_type: int
+        description: Inhabited private dwellings without a toilet
+        config:
+          meta:
+            description_es: Viviendas particulares habitadas que no disponen de excusado o sanitario
+      - name: viv22
+        data_type: int
+        description: Inhabitants of private dwellings with drainage and a toilet that uses water
+        config:
+          meta:
+            description_es: Ocupantes en viviendas particulares que disponen de drenaje y sanitario con
+              admisión de agua
+      - name: viv23
+        data_type: int
+        description: Inhabited private dwellings with drainage
+        config:
+          meta:
+            description_es: Viviendas particulares habitadas que disponen de drenaje
+      - name: viv24
+        data_type: int
+        description: Inhabited private dwellings without drainage
+        config:
+          meta:
+            description_es: Viviendas particulares habitadas que no disponen de drenaje
+      - name: viv25
+        data_type: int
+        description: Inhabited private dwellings with electricity, piped water from the public network,
+          and drainage
+        config:
+          meta:
+            description_es: Viviendas particulares habitadas que disponen de energía eléctrica, agua entubada
+              de la red pública y drenaje
+      - name: viv26
+        data_type: int
+        description: Inhabited private dwellings without electricity, piped water, or drainage
+        config:
+          meta:
+            description_es: Viviendas particulares habitadas que no disponen de energía eléctrica, agua
+              entubada, ni drenaje
+      - name: viv27
+        data_type: int
+        description: Inhabited private dwellings with a refrigerator
+        config:
+          meta:
+            description_es: Viviendas particulares habitadas que disponen de refrigerador
+      - name: viv28
+        data_type: int
+        description: Inhabited private dwellings with a washing machine
+        config:
+          meta:
+            description_es: Viviendas particulares habitadas que disponen de lavadora
+      - name: viv29
+        data_type: int
+        description: Inhabited private dwellings with a car or truck
+        config:
+          meta:
+            description_es: Viviendas particulares habitadas que disponen de automóvil o camioneta
+      - name: viv30
+        data_type: int
+        description: Inhabited private dwellings without a refrigerator or washing machine
+        config:
+          meta:
+            description_es: Viviendas particulares habitadas que no disponen de refrigerador ni lavadora
+      - name: viv31
+        data_type: int
+        description: Inhabited private dwellings without a refrigerator, washing machine, or car or truck
+        config:
+          meta:
+            description_es: Viviendas particulares habitadas que no disponen de refrigerador, lavadora
+              ni automóvil o camioneta
+      - name: viv32
+        data_type: int
+        description: Inhabited private dwellings with a radio
+        config:
+          meta:
+            description_es: Viviendas particulares habitadas que disponen de radio
+      - name: viv33
+        data_type: int
+        description: Inhabited private dwellings with a television
+        config:
+          meta:
+            description_es: Viviendas particulares habitadas que disponen de televisor
+      - name: viv34
+        data_type: int
+        description: Inhabited private dwellings with a computer, laptop, or tablet
+        config:
+          meta:
+            description_es: Viviendas particulares habitadas que disponen de computadora, laptop o tablet
+      - name: viv35
+        data_type: int
+        description: Inhabited private dwellings with a landline telephone
+        config:
+          meta:
+            description_es: Viviendas particulares habitadas que disponen de línea telefónica fija
+      - name: viv36
+        data_type: int
+        description: Inhabited private dwellings with a cellular phone
+        config:
+          meta:
+            description_es: Viviendas particulares habitadas que disponen de teléfono celular
+      - name: viv37
+        data_type: int
+        description: Inhabited private dwellings with internet access
+        config:
+          meta:
+            description_es: Viviendas particulares habitadas que disponen de Internet
+      - name: viv38
+        data_type: int
+        description: Inhabited private dwellings without a radio or television
+        config:
+          meta:
+            description_es: Viviendas particulares habitadas sin radio ni televisor
+      - name: viv39
+        data_type: int
+        description: Inhabited private dwellings without a landline telephone or cellular phone
+        config:
+          meta:
+            description_es: Viviendas particulares habitadas sin línea telefónica fija ni teléfono celular
+      - name: viv40
+        data_type: int
+        description: Inhabited private dwellings without a computer or internet access
+        config:
+          meta:
+            description_es: Viviendas particulares habitadas sin computadora ni Internet
+      - name: viv41
+        data_type: int
+        description: Inhabited private dwellings without information and communication technologies (ICT)
+        config:
+          meta:
+            description_es: Viviendas particulares habitadas sin tecnologías de la información y de la
+              comunicación (TIC)
+      - name: viv42
+        data_type: int
+        description: Inhabited private dwellings with no goods
+        config:
+          meta:
+            description_es: Viviendas particulares habitadas sin ningún bien
+      - name: viv43
+        data_type: int
+        description: Inhabitants of private dwellings without piped water on the premises
+        config:
+          meta:
+            description_es: Ocupantes en viviendas particulares que no disponen de agua entubada en el
+              ámbito de la vivienda
+      - name: viv70
+        data_type: int
+        description: Inhabitants of private dwellings with a toilet
+        config:
+          meta:
+            description_es: Ocupantes en viviendas particulares que disponen de excusado o sanitario
+      - name: viv75
+        data_type: int
+        description: Inhabitants of private dwellings with drainage
+        config:
+          meta:
+            description_es: Ocupantes en viviendas particulares que disponen de drenaje
+      - name: viv76
+        data_type: int
+        description: Inhabitants of private dwellings without drainage
+        config:
+          meta:
+            description_es: Ocupantes en viviendas particulares que no disponen de drenaje
+      - name: viv77
+        data_type: int
+        description: Inhabitants of private dwellings with electricity, piped water, and drainage
+        config:
+          meta:
+            description_es: Ocupantes en viviendas particulares que disponen de energía eléctrica, agua
+              entubada y drenaje
+      - name: viv78
+        data_type: int
+        description: Inhabitants of inhabited private dwellings without electricity, piped water, or drainage
+        config:
+          meta:
+            description_es: Ocupantes en viviendas particulares habitadas que no disponen de energía eléctrica,
+              ni de agua entubada, ni drenaje
+      - name: viv79
+        data_type: int
+        description: Inhabited private dwellings with a microwave oven
+        config:
+          meta:
+            description_es: Viviendas particulares habitadas que disponen de horno de microondas
+      - name: viv80
+        data_type: int
+        description: Inhabited private dwellings with a motorcycle or motor scooter
+        config:
+          meta:
+            description_es: Viviendas particulares habitadas que disponen de motocicleta o motoneta
+      - name: viv81
+        data_type: int
+        description: Inhabited private dwellings with a bicycle used for transportation
+        config:
+          meta:
+            description_es: Viviendas particulares habitadas que disponen de bicicleta como medio de transporte
+      - name: viv82
+        data_type: int
+        description: Inhabited private dwellings with a pay television service
+        config:
+          meta:
+            description_es: Viviendas particulares habitadas que disponen de servicio de televisión de
+              paga
+      - name: viv83
+        data_type: int
+        description: Inhabited private dwellings with a paid internet service for movies, music, or videos
+        config:
+          meta:
+            description_es: Viviendas particulares habitadas que disponen de servicio de películas, música
+              o videos de paga por Internet
+      - name: viv84
+        data_type: int
+        description: Inhabited private dwellings with a video game console
+        config:
+          meta:
+            description_es: Viviendas particulares habitadas que disponen de consola de videojuegos
+      - name: viv90
+        data_type: int
+        description: Inhabited private dwellings with a rooftop water tank
+        config:
+          meta:
+            description_es: Viviendas particulares habitadas que disponen de tinaco
+      - name: viv91
+        data_type: int
+        description: Inhabited private dwellings with a cistern or underground water tank
+        config:
+          meta:
+            description_es: Viviendas particulares habitadas que disponen de cisterna o aljibe
+      - name: viv94
+        data_type: int
+        description: Total inhabited private dwellings with recorded characteristics
+        config:
+          meta:
+            description_es: Total de viviendas particulares habitadas con características
+      - name: viv92_r
+        data_type: float
+        description: Average number of inhabitants in inhabited private dwellings
+        config:
+          meta:
+            description_es: Promedio de ocupantes en viviendas particulares habitadas
+      - name: viv93_r
+        data_type: float
+        description: Average number of inhabitants per room in inhabited private dwellings
+        config:
+          meta:
+            description_es: Promedio de ocupantes por cuarto en viviendas particulares habitadas
+      - name: _source_file
+        data_type: text
+      - name: _source_member
+        data_type: text

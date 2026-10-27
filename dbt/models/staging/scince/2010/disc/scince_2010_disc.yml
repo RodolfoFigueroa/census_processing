@@ -1,0 +1,70 @@
+version: 2
+models:
+  - name: scince_2010_disc
+    description: Typed 2010 SCINCE disc attributes at AGEB level.
+    config:
+      schema: staging
+      materialized: table
+      contract:
+        enforced: true
+      meta:
+        dagster:
+          asset_key:
+            - staging
+            - '2010'
+            - scince
+            - disc
+          group: staging/2010/scince
+    columns:
+      - name: cvegeo
+        data_type: text
+        description: Unique identifier for the AGEB.
+        config:
+          meta:
+            description_es: null
+      - name: disc1
+        data_type: int
+        description: Disabled population
+        config:
+          meta:
+            description_es: Población con discapacidad
+      - name: disc2
+        data_type: int
+        description: Disabled female population
+        config:
+          meta:
+            description_es: Población femenina con discapacidad
+      - name: disc3
+        data_type: int
+        description: Disabled male population
+        config:
+          meta:
+            description_es: Población masculina con discapacidad
+      - name: disc4
+        data_type: int
+        description: Disabled population aged 0 to 14 years
+        config:
+          meta:
+            description_es: Población de 0 a 14 años con discapacidad
+      - name: disc5
+        data_type: int
+        description: Disabled population aged 15 to 59 years
+        config:
+          meta:
+            description_es: Población de 15 a 59 años con discapacidad
+      - name: disc6
+        data_type: int
+        description: Disabled population aged 60 years and older
+        config:
+          meta:
+            description_es: Población de 60 años y más con discapacidad
+      - name: disc14
+        data_type: int
+        description: Population with activity limitations entitled to health care services
+        config:
+          meta:
+            description_es: Población con limitación en la actividad derechohabiente a servicios de salud
+      - name: _source_file
+        data_type: text
+      - name: _source_member
+        data_type: text

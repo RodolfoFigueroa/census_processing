@@ -1,2 +1,19 @@
-select {{ scince_columns(2010, "edu") }}
+select
+    "cvegeo",
+    "edu1",
+    "edu4",
+    "edu7",
+    "edu10",
+    "edu13",
+    "edu16",
+    "edu19",
+    "edu22",
+    "edu25",
+    "edu28",
+    "edu31",
+    "edu34",
+    "edu37",
+    "edu40",
+    "edu43",
+    "edu46"
 from {{ ref("scince_2010_edu") }}

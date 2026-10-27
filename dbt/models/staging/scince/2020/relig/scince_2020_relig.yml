@@ -1,0 +1,52 @@
+version: 2
+models:
+  - name: scince_2020_relig
+    description: Typed 2020 SCINCE relig attributes at AGEB level.
+    config:
+      schema: staging
+      materialized: table
+      contract:
+        enforced: true
+      meta:
+        dagster:
+          asset_key:
+            - staging
+            - '2020'
+            - scince
+            - relig
+          group: staging/2020/scince
+    columns:
+      - name: cvegeo
+        data_type: text
+        description: Unique identifier for the AGEB.
+        config:
+          meta:
+            description_es: null
+      - name: relig1
+        data_type: int
+        description: Catholic population
+        config:
+          meta:
+            description_es: Población con religión católica
+      - name: relig2
+        data_type: int
+        description: Population affiliated with a Protestant or Evangelical Christian religious group
+        config:
+          meta:
+            description_es: Población con grupo religioso protestante/cristiano evangélico
+      - name: relig3
+        data_type: int
+        description: Population with religions other than those listed above
+        config:
+          meta:
+            description_es: Población con otras religiones diferentes a las anteriores
+      - name: relig4
+        data_type: int
+        description: Population with no religion or religious affiliation
+        config:
+          meta:
+            description_es: Población sin religión o sin adscripción religiosa
+      - name: _source_file
+        data_type: text
+      - name: _source_member
+        data_type: text

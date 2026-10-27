@@ -1,0 +1,46 @@
+version: 2
+models:
+  - name: scince_2010_fec
+    description: Typed 2010 SCINCE fec attributes at AGEB level.
+    config:
+      schema: staging
+      materialized: table
+      contract:
+        enforced: true
+      meta:
+        dagster:
+          asset_key:
+            - staging
+            - '2010'
+            - scince
+            - fec
+          group: staging/2010/scince
+    columns:
+      - name: cvegeo
+        data_type: text
+        description: Unique identifier for the AGEB.
+        config:
+          meta:
+            description_es: null
+      - name: fec1_r
+        data_type: float
+        description: Average number of children born alive
+        config:
+          meta:
+            description_es: Promedio de hijos nacidos vivos
+      - name: fec2_r
+        data_type: float
+        description: Average number of children born alive to women aged 15 to 49 years
+        config:
+          meta:
+            description_es: Promedio de hijos nacidos vivos de las mujeres de 15 a 49 años
+      - name: fec3_r
+        data_type: float
+        description: Percentage of women aged 15 to 19 years with at least one child born alive
+        config:
+          meta:
+            description_es: Porcentaje de mujeres de 15 a 19 años con al menos un hijo nacido vivo
+      - name: _source_file
+        data_type: text
+      - name: _source_member
+        data_type: text

@@ -1,0 +1,123 @@
+version: 2
+models:
+  - name: scince_2020_ageb_mig
+    description: 2020 census migration statistics obtained from the SCINCE dataset, aggregated by AGEB.
+    config:
+      meta:
+        dagster:
+          asset_key:
+            - scince
+            - '2020'
+            - ageb
+            - mig
+          group: scince/2020
+    constraints:
+      - type: primary_key
+        columns:
+          - cvegeo
+      - type: foreign_key
+        columns:
+          - cvegeo
+        to: ref("geo_unit_2020_ageb")
+        to_columns:
+          - cvegeo
+    columns:
+      - name: cvegeo
+        data_type: text
+        description: Unique identifier for the AGEB.
+        config:
+          meta:
+            description_es: null
+      - name: mig1
+        data_type: int
+        description: Population born in the state
+        config:
+          meta:
+            description_es: Población nacida en la entidad
+      - name: mig2
+        data_type: int
+        description: Female population born in the state
+        config:
+          meta:
+            description_es: Población femenina nacida en la entidad
+      - name: mig3
+        data_type: int
+        description: Male population born in the state
+        config:
+          meta:
+            description_es: Población masculina nacida en la entidad
+      - name: mig4
+        data_type: int
+        description: Population born in another state
+        config:
+          meta:
+            description_es: Población nacida en otra entidad
+      - name: mig5
+        data_type: int
+        description: Female population born in another state
+        config:
+          meta:
+            description_es: Población femenina nacida en otra entidad
+      - name: mig6
+        data_type: int
+        description: Male population born in another state
+        config:
+          meta:
+            description_es: Población masculina nacida en otra entidad
+      - name: mig7
+        data_type: int
+        description: Population born in another country
+        config:
+          meta:
+            description_es: Población nacida en otro país
+      - name: mig8
+        data_type: int
+        description: Population aged 5 years and older that lived in the state in March 2015
+        config:
+          meta:
+            description_es: Población de 5 años y más residente en la entidad en marzo de 2015
+      - name: mig9
+        data_type: int
+        description: Female population aged 5 years and older that lived in the state in March 2015
+        config:
+          meta:
+            description_es: Población femenina de 5 años y más residente en la entidad en marzo de 2015
+      - name: mig10
+        data_type: int
+        description: Male population aged 5 years and older that lived in the state in March 2015
+        config:
+          meta:
+            description_es: Población masculina de 5 años y más residente en la entidad en marzo de 2015
+      - name: mig11
+        data_type: int
+        description: Population aged 5 years and older that lived in another state in March 2015
+        config:
+          meta:
+            description_es: Población de 5 años y más residente en otra entidad en marzo de 2015
+      - name: mig12
+        data_type: int
+        description: Female population aged 5 years and older that lived in another state in March 2015
+        config:
+          meta:
+            description_es: Población femenina de 5 años y más residente en otra entidad en marzo de 2015
+      - name: mig13
+        data_type: int
+        description: Male population aged 5 years and older that lived in another state in March 2015
+        config:
+          meta:
+            description_es: Población masculina de 5 años y más residente en otra entidad en marzo de
+              2015
+      - name: mig14
+        data_type: int
+        description: Population aged 5 years and older that lived in another country in March 2015
+        config:
+          meta:
+            description_es: Población de 5 años y más residente en otro país en marzo de 2015
+      - name: mig15
+        data_type: int
+        description: Population aged 5 years and older that lived in the United States of America in March
+          2015
+        config:
+          meta:
+            description_es: Población de 5 años y más residente en Estados Unidos de América en marzo
+              de 2015

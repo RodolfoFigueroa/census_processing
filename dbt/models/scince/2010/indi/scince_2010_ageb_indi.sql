@@ -1,2 +1,23 @@
-select {{ scince_columns(2010, "indi") }}
+select
+    "cvegeo",
+    "indi1",
+    "indi2",
+    "indi3",
+    "indi4",
+    "indi5",
+    "indi6",
+    "indi7",
+    "indi8",
+    "indi9",
+    "indi10",
+    "indi11",
+    "indi12",
+    "indi13",
+    "indi14",
+    "indi15",
+    "indi16",
+    "indi17",
+    "indi18",
+    "indi19",
+    "indi20"
 from {{ ref("scince_2010_indi") }}

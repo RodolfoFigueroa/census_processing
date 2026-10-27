@@ -1,4 +1,3 @@
-import ast
 import re
 from functools import cache
 from pathlib import Path
@@ -80,8 +79,13 @@ def test_public_projection_matches_its_existing_contract(
     year: int, count: int, level: str, width: int
 ) -> None:
     directory = DBT / "models" / "census" / str(year) / level
-    properties = yaml.safe_load((directory / "schema.yml").read_text())["models"][0]
-    columns = ast.literal_eval(render_sql(properties["columns"]))
+    models = yaml.safe_load((directory.parent / f"census_{year}.yml").read_text())[
+        "models"
+    ]
+    properties = next(
+        model for model in models if model["name"] == f"census_{year}_{level}"
+    )
+    columns = properties["columns"]
     expected = [column["name"] for column in columns]
     assert len(expected) == count + (level != "ageb")
     sql = render_sql((directory / f"census_{year}_{level}.sql").read_text())
@@ -90,21 +94,32 @@ def test_public_projection_matches_its_existing_contract(
     assert ["cvegeo", *re.findall(r'"([^"]+)"', projection)] == expected
     assert relation == f"\"census_{year}\" where census_level = '{level}'"
     assert "*" not in projection
+    staging = yaml.safe_load(
+        (
+            DBT / "models" / "staging" / "census" / str(year) / f"census_{year}.yml"
+        ).read_text()
+    )["models"][0]
+    staging_types = {
+        column["name"]: column["data_type"] for column in staging["columns"]
+    }
+    assert all(
+        staging_types[column["name"]] == column["data_type"] for column in columns
+    )
 
 
 @pytest.mark.parametrize("year", [2010, 2020])
 def test_staging_projects_declared_types_and_provenance(year: int) -> None:
-    variables = yaml.safe_load((DBT / "vars.yml").read_text())["vars"]
-    columns = variables[f"census_{year}_columns"]
-    sql = render_sql(
-        (DBT / "models" / "staging" / "census" / f"census_{year}.sql").read_text()
-    )
+    directory = DBT / "models" / "staging" / "census" / str(year)
+    columns = yaml.safe_load((directory / f"census_{year}.yml").read_text())["models"][
+        0
+    ]["columns"]
+    sql = render_sql((directory / f"census_{year}.sql").read_text())
     assert f'from "ingest"."census_{year}"' in sql
     assert "lpad(ageb, 4, '0')" in sql
     assert "_source_file" in sql
     for column in columns:
         name, data_type = column["name"], column["data_type"]
-        if name == "cvegeo":
+        if data_type == "text":
             continue
         sql_type = "integer" if data_type == "int" else "double precision"
         assert f'end as "{name}"' in sql
@@ -115,6 +130,19 @@ def test_staging_projects_declared_types_and_provenance(year: int) -> None:
         )
     for name in ("nom_ent", "nom_mun", "nom_loc"):
         assert f'else "{name}"::text end as {name}' in sql
+    projection = sql.split(") select ")[1].split(" from typed")[0]
+    assert "*" not in projection
+    expected = [
+        "cvegeo",
+        "nom_ent",
+        "nom_mun",
+        "nom_loc",
+        *[column["name"] for column in columns if column["data_type"] != "text"],
+        "_source_file",
+    ]
+    assert [
+        name.strip('"') for name in projection.split(", case ")[0].split(", ")
+    ] == expected
 
 
 def test_fractional_counts_are_guarded_before_integer_conversion() -> None:
@@ -207,8 +235,9 @@ def test_declarations_link_ingestion_staging_and_geography(year: int) -> None:
     assert source["schema"] == "ingest"
     assert table["config"]["meta"]["dagster"]["asset_key"] == list(key.path)
     assert table["config"]["meta"]["dagster"]["group"] == asset.group_names_by_key[key]
-    models = yaml.safe_load((directory / "schema.yml").read_text())["models"]
-    model = next(model for model in models if model["name"] == f"census_{year}")
+    model = yaml.safe_load((directory / str(year) / f"census_{year}.yml").read_text())[
+        "models"
+    ][0]
     assert model["config"]["contract"]["enforced"] is True
     assert model["config"]["materialized"] == "table"
     assert model["config"]["schema"] == "staging"
@@ -218,7 +247,7 @@ def test_declarations_link_ingestion_staging_and_geography(year: int) -> None:
         "census",
     ]
     assert model["config"]["meta"]["dagster"]["group"] == f"staging/{year}/census"
-    columns = ast.literal_eval(render_sql(model["columns"]))
+    columns = model["columns"]
     assert [column["name"] for column in columns][-5:] == [
         "nom_ent",
         "nom_mun",
@@ -234,13 +263,6 @@ def test_declarations_link_ingestion_staging_and_geography(year: int) -> None:
     assert f"census_{year}_prepared" not in (DBT / "models" / "sources.yml").read_text()
 
 
-@pytest.mark.parametrize(
-    "template",
-    [
-        '{{ census_typed_value("value", "boolean") }}',
-        '{{ census_columns(2020, 13, "unknown_name") }}',
-    ],
-)
-def test_unsupported_macro_arguments_fail(template: str) -> None:
-    with pytest.raises(ValueError, match=r"Unsupported census type|keep_name must"):
-        render_sql(template)
+def test_unsupported_macro_arguments_fail() -> None:
+    with pytest.raises(ValueError, match="Unsupported census type"):
+        render_sql('{{ census_typed_value("value", "boolean") }}')

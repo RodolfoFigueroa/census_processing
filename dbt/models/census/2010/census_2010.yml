@@ -1,0 +1,2220 @@
+version: 2
+
+anchors:
+  - &cvegeo
+    name: cvegeo
+    data_type: text
+    description: Unique identifier for the geographic area.
+    config:
+      meta:
+        description_es: null
+  - &graproes
+    name: graproes
+    data_type: float
+    description: Average years of schooling
+    config:
+      meta:
+        description_es: Grado promedio de escolaridad
+  - &graproes_f
+    name: graproes_f
+    data_type: float
+    description: Average years of schooling of the female population
+    config:
+      meta:
+        description_es: Grado promedio de escolaridad de la población femenina
+  - &graproes_m
+    name: graproes_m
+    data_type: float
+    description: Average years of schooling of the male population
+    config:
+      meta:
+        description_es: Grado promedio de escolaridad de la población masculina
+  - &hogjef_f
+    name: hogjef_f
+    data_type: int
+    description: Census households with a female head of household
+    config:
+      meta:
+        description_es: Hogares censales con jefatura femenina
+  - &hogjef_m
+    name: hogjef_m
+    data_type: int
+    description: Census households with a male head of household
+    config:
+      meta:
+        description_es: Hogares censales con jefatura masculina
+  - &ocupvivpar
+    name: ocupvivpar
+    data_type: int
+    description: Inhabitants in inhabited private dwellings
+    config:
+      meta:
+        description_es: Ocupantes en viviendas particulares habitadas
+  - &p12a14noa
+    name: p12a14noa
+    data_type: int
+    description: Population aged 12 to 14 years that does not attend school
+    config:
+      meta:
+        description_es: Población de 12 a 14 años que no asiste a la escuela
+  - &p12a14noaf
+    name: p12a14noaf
+    data_type: int
+    description: Female population aged 12 to 14 years that does not attend school
+    config:
+      meta:
+        description_es: Población femenina de 12 a 14 años que no asiste a la escuela
+  - &p12a14noam
+    name: p12a14noam
+    data_type: int
+    description: Male population aged 12 to 14 years that does not attend school
+    config:
+      meta:
+        description_es: Población masculina de 12 a 14 años que no asiste a la escuela
+  - &p12ym_casa
+    name: p12ym_casa
+    data_type: int
+    description: Population aged 12 years and older that is married or in a consensual union
+    config:
+      meta:
+        description_es: 'Población casada o unida de 12 años y más '
+  - &p12ym_sepa
+    name: p12ym_sepa
+    data_type: int
+    description: Population aged 12 years and older that was previously married or in a consensual union
+    config:
+      meta:
+        description_es: 'Población que estuvo casada o unida de 12 años y más '
+  - &p12ym_solt
+    name: p12ym_solt
+    data_type: int
+    description: Population aged 12 years and older that is single or has never been in a union
+    config:
+      meta:
+        description_es: Población soltera o nunca unida de 12 años y más
+  - &p15a17a
+    name: p15a17a
+    data_type: int
+    description: Population aged 15 to 17 years that attends school
+    config:
+      meta:
+        description_es: Población de 15 a 17 años que asiste a la escuela
+  - &p15a17a_f
+    name: p15a17a_f
+    data_type: int
+    description: Female population aged 15 to 17 years that attends school
+    config:
+      meta:
+        description_es: Población femenina de 15 a 17 años que asiste a la escuela
+  - &p15a17a_m
+    name: p15a17a_m
+    data_type: int
+    description: Male population aged 15 to 17 years that attends school
+    config:
+      meta:
+        description_es: Población masculina de 15 a 17 años que asiste a la escuela
+  - &p15pri_co
+    name: p15pri_co
+    data_type: int
+    description: Population aged 15 years and older with complete primary education
+    config:
+      meta:
+        description_es: Población de 15 años y más con primaria completa
+  - &p15pri_cof
+    name: p15pri_cof
+    data_type: int
+    description: Female population aged 15 years and older with complete primary education
+    config:
+      meta:
+        description_es: Población femenina de 15 años y más con primaria completa
+  - &p15pri_com
+    name: p15pri_com
+    data_type: int
+    description: Male population aged 15 years and older with complete primary education
+    config:
+      meta:
+        description_es: Población masculina de 15 años y más con primaria completa
+  - &p15pri_in
+    name: p15pri_in
+    data_type: int
+    description: Population aged 15 years and older with incomplete primary education
+    config:
+      meta:
+        description_es: Población de 15 años y más con primaria incompleta
+  - &p15pri_inf
+    name: p15pri_inf
+    data_type: int
+    description: Female population aged 15 years and older with incomplete primary education
+    config:
+      meta:
+        description_es: Población femenina de 15 años y más con primaria incompleta
+  - &p15pri_inm
+    name: p15pri_inm
+    data_type: int
+    description: Male population aged 15 years and older with incomplete primary education
+    config:
+      meta:
+        description_es: Población masculina de 15 años y más con primaria incompleta
+  - &p15sec_co
+    name: p15sec_co
+    data_type: int
+    description: Population aged 15 years and older with complete secondary education
+    config:
+      meta:
+        description_es: Población de 15 años y más con secundaria completa
+  - &p15sec_cof
+    name: p15sec_cof
+    data_type: int
+    description: Female population aged 15 years and older with complete secondary education
+    config:
+      meta:
+        description_es: Población femenina de 15 años y más con secundaria completa
+  - &p15sec_com
+    name: p15sec_com
+    data_type: int
+    description: Male population aged 15 years and older with complete secondary education
+    config:
+      meta:
+        description_es: Población masculina de 15 años y más con secundaria completa
+  - &p15sec_in
+    name: p15sec_in
+    data_type: int
+    description: Population aged 15 years and older with incomplete secondary education
+    config:
+      meta:
+        description_es: Población de 15 años y más con secundaria incompleta
+  - &p15sec_inf
+    name: p15sec_inf
+    data_type: int
+    description: Female population aged 15 years and older with incomplete secondary education
+    config:
+      meta:
+        description_es: Población femenina de 15 años y más con secundaria incompleta
+  - &p15sec_inm
+    name: p15sec_inm
+    data_type: int
+    description: Male population aged 15 years and older with incomplete secondary education
+    config:
+      meta:
+        description_es: Población masculina de 15 años y más con secundaria incompleta
+  - &p15ym_an
+    name: p15ym_an
+    data_type: int
+    description: Population aged 15 years and older that cannot read and write
+    config:
+      meta:
+        description_es: Población de 15 años y más analfabeta
+  - &p15ym_an_f
+    name: p15ym_an_f
+    data_type: int
+    description: Female population aged 15 years and older that cannot read and write
+    config:
+      meta:
+        description_es: Población femenina de 15 años y más analfabeta
+  - &p15ym_an_m
+    name: p15ym_an_m
+    data_type: int
+    description: Male population aged 15 years and older that cannot read and write
+    config:
+      meta:
+        description_es: Población masculina de 15 años y más analfabeta
+  - &p15ym_se
+    name: p15ym_se
+    data_type: int
+    description: Population aged 15 years and older with no schooling
+    config:
+      meta:
+        description_es: Población de 15 años y más sin escolaridad
+  - &p15ym_se_f
+    name: p15ym_se_f
+    data_type: int
+    description: Female population aged 15 years and older with no schooling
+    config:
+      meta:
+        description_es: Población femenina de 15 años y más sin escolaridad
+  - &p15ym_se_m
+    name: p15ym_se_m
+    data_type: int
+    description: Male population aged 15 years and older with no schooling
+    config:
+      meta:
+        description_es: Población masculina de 15 años y más sin escolaridad
+  - &p18a24a
+    name: p18a24a
+    data_type: int
+    description: Population aged 18 to 24 years that attends school
+    config:
+      meta:
+        description_es: Población de 18 a 24 años que asiste a la escuela
+  - &p18a24a_f
+    name: p18a24a_f
+    data_type: int
+    description: Female population aged 18 to 24 years that attends school
+    config:
+      meta:
+        description_es: Población femenina de 18 a 24 años que asiste a la escuela
+  - &p18a24a_m
+    name: p18a24a_m
+    data_type: int
+    description: Male population aged 18 to 24 years that attends school
+    config:
+      meta:
+        description_es: Población masculina de 18 a 24 años que asiste a la escuela
+  - &p18ym_pb
+    name: p18ym_pb
+    data_type: int
+    description: Population aged 18 years and older with education beyond secondary education
+    config:
+      meta:
+        description_es: Población de 18 años y más con educación pos-básica
+  - &p18ym_pb_f
+    name: p18ym_pb_f
+    data_type: int
+    description: Female population aged 18 years and older with education beyond secondary education
+    config:
+      meta:
+        description_es: Población femenina de 18 años y más con educación pos-básica
+  - &p18ym_pb_m
+    name: p18ym_pb_m
+    data_type: int
+    description: Male population aged 18 years and older with education beyond secondary education
+    config:
+      meta:
+        description_es: Población masculina de 18 años y más con educación pos-básica
+  - &p3a5_noa
+    name: p3a5_noa
+    data_type: int
+    description: Population aged 3 to 5 years that does not attend school
+    config:
+      meta:
+        description_es: 'Población de 3 a 5 años que no asiste a la escuela '
+  - &p3a5_noa_f
+    name: p3a5_noa_f
+    data_type: int
+    description: Female population aged 3 to 5 years that does not attend school
+    config:
+      meta:
+        description_es: 'Población femenina de 3 a 5 años que no asiste a la escuela '
+  - &p3a5_noa_m
+    name: p3a5_noa_m
+    data_type: int
+    description: Male population aged 3 to 5 years that does not attend school
+    config:
+      meta:
+        description_es: 'Población masculina de 3 a 5 años que no asiste a la escuela '
+  - &p3hli_he
+    name: p3hli_he
+    data_type: int
+    description: Population aged 3 years and older that speaks an Indigenous language and Spanish
+    config:
+      meta:
+        description_es: Población de 3 años y más que habla alguna lengua indígena y habla español
+  - &p3hli_he_f
+    name: p3hli_he_f
+    data_type: int
+    description: Female population aged 3 years and older that speaks an Indigenous language and Spanish
+    config:
+      meta:
+        description_es: Población femenina de 3 años y más que habla alguna lengua indígena y habla español
+  - &p3hli_he_m
+    name: p3hli_he_m
+    data_type: int
+    description: Male population aged 3 years and older that speaks an Indigenous language and Spanish
+    config:
+      meta:
+        description_es: Población masculina de 3 años y más que habla alguna lengua indígena y habla español
+  - &p3hlinhe
+    name: p3hlinhe
+    data_type: int
+    description: Population aged 3 years and older that speaks an Indigenous language and does not speak
+      Spanish
+    config:
+      meta:
+        description_es: Población de 3 años y más que habla alguna lengua indígena y no habla español
+  - &p3hlinhe_f
+    name: p3hlinhe_f
+    data_type: int
+    description: Female population aged 3 years and older that speaks an Indigenous language and does
+      not speak Spanish
+    config:
+      meta:
+        description_es: Población femenina de 3 años y más que habla alguna lengua indígena y no habla
+          español
+  - &p3hlinhe_m
+    name: p3hlinhe_m
+    data_type: int
+    description: Male population aged 3 years and older that speaks an Indigenous language and does not
+      speak Spanish
+    config:
+      meta:
+        description_es: Población masculina de 3 años y más que habla alguna lengua indígena y no habla
+          español
+  - &p3ym_hli
+    name: p3ym_hli
+    data_type: int
+    description: Population aged 3 years and older that speaks an Indigenous language
+    config:
+      meta:
+        description_es: Población de 3 años y más que habla alguna lengua indígena
+  - &p3ym_hli_f
+    name: p3ym_hli_f
+    data_type: int
+    description: Female population aged 3 years and older that speaks an Indigenous language
+    config:
+      meta:
+        description_es: Población femenina de 3 años y más que habla alguna lengua indígena
+  - &p3ym_hli_m
+    name: p3ym_hli_m
+    data_type: int
+    description: Male population aged 3 years and older that speaks an Indigenous language
+    config:
+      meta:
+        description_es: Población masculina de 3 años y más que habla alguna lengua indígena
+  - &p5_hli
+    name: p5_hli
+    data_type: int
+    description: Population aged 5 years and older that speaks an Indigenous language
+    config:
+      meta:
+        description_es: Población de 5 años y más que habla alguna lengua indígena
+  - &p5_hli_he
+    name: p5_hli_he
+    data_type: int
+    description: Population aged 5 years and older that speaks an Indigenous language and Spanish
+    config:
+      meta:
+        description_es: Población de 5 años y más que habla alguna lengua indígena y habla español
+  - &p5_hli_nhe
+    name: p5_hli_nhe
+    data_type: int
+    description: Population aged 5 years and older that speaks an Indigenous language and does not speak
+      Spanish
+    config:
+      meta:
+        description_es: Población de 5 años y más que habla alguna lengua indígena y no habla español
+  - &p6a11_noa
+    name: p6a11_noa
+    data_type: int
+    description: Population aged 6 to 11 years that does not attend school
+    config:
+      meta:
+        description_es: Población de 6 a 11 años que no asiste a la escuela
+  - &p6a11_noaf
+    name: p6a11_noaf
+    data_type: int
+    description: Female population aged 6 to 11 years that does not attend school
+    config:
+      meta:
+        description_es: Población femenina de 6 a 11 años que no asiste a la escuela
+  - &p6a11_noam
+    name: p6a11_noam
+    data_type: int
+    description: Male population aged 6 to 11 years that does not attend school
+    config:
+      meta:
+        description_es: Población masculina de 6 a 11 años que no asiste a la escuela
+  - &p8a14an
+    name: p8a14an
+    data_type: int
+    description: Population aged 8 to 14 years that does not know how to read and write
+    config:
+      meta:
+        description_es: Población de 8 a 14 años que no saben leer y escribir
+  - &p8a14an_f
+    name: p8a14an_f
+    data_type: int
+    description: Female population aged 8 to 14 years that does not know how to read and write
+    config:
+      meta:
+        description_es: Población femenina  de 8 a 14 años que no saben leer y escribir
+  - &p8a14an_m
+    name: p8a14an_m
+    data_type: int
+    description: Male population aged 8 to 14 years that does not know how to read and write
+    config:
+      meta:
+        description_es: Población masculina de 8 a 14 años que no saben leer y escribir
+  - &p_0a2
+    name: p_0a2
+    data_type: int
+    description: Population aged 0 to 2 years
+    config:
+      meta:
+        description_es: 'Población de 0 a 2 años '
+  - &p_0a2_f
+    name: p_0a2_f
+    data_type: int
+    description: Female population aged 0 to 2 years
+    config:
+      meta:
+        description_es: Población femenina de 0 a 2 años
+  - &p_0a2_m
+    name: p_0a2_m
+    data_type: int
+    description: Male population aged 0 to 2 years
+    config:
+      meta:
+        description_es: Población masculina de 0 a 2 años
+  - &p_12a14
+    name: p_12a14
+    data_type: int
+    description: Population aged 12 to 14 years
+    config:
+      meta:
+        description_es: Población de 12 a 14 años
+  - &p_12a14_f
+    name: p_12a14_f
+    data_type: int
+    description: Female population aged 12 to 14 years
+    config:
+      meta:
+        description_es: Población femenina de 12 a 14 años
+  - &p_12a14_m
+    name: p_12a14_m
+    data_type: int
+    description: Male population aged 12 to 14 years
+    config:
+      meta:
+        description_es: Población masculina de 12 a 14 años
+  - &p_12ymas
+    name: p_12ymas
+    data_type: int
+    description: Population aged 12 years and older
+    config:
+      meta:
+        description_es: Población de 12 años y más
+  - &p_12ymas_f
+    name: p_12ymas_f
+    data_type: int
+    description: Female population aged 12 years and older
+    config:
+      meta:
+        description_es: Población femenina de 12 años y más
+  - &p_12ymas_m
+    name: p_12ymas_m
+    data_type: int
+    description: Male population aged 12 years and older
+    config:
+      meta:
+        description_es: Población masculina de 12 años y más
+  - &p_15a17
+    name: p_15a17
+    data_type: int
+    description: Population aged 15 to 17 years
+    config:
+      meta:
+        description_es: Población de 15 a 17 años
+  - &p_15a17_f
+    name: p_15a17_f
+    data_type: int
+    description: Female population aged 15 to 17 years
+    config:
+      meta:
+        description_es: Población femenina de 15 a 17 años
+  - &p_15a17_m
+    name: p_15a17_m
+    data_type: int
+    description: Male population aged 15 to 17 years
+    config:
+      meta:
+        description_es: Población masculina de 15 a 17 años
+  - &p_15a49_f
+    name: p_15a49_f
+    data_type: int
+    description: Female population aged 15 to 49 years
+    config:
+      meta:
+        description_es: Población femenina de 15 a 49 años 
+  - &p_15ymas
+    name: p_15ymas
+    data_type: int
+    description: Population aged 15 years and older
+    config:
+      meta:
+        description_es: Población de 15 años y más
+  - &p_15ymas_f
+    name: p_15ymas_f
+    data_type: int
+    description: Female population aged 15 years and older
+    config:
+      meta:
+        description_es: Población femenina de 15 años y más
+  - &p_15ymas_m
+    name: p_15ymas_m
+    data_type: int
+    description: Male population aged 15 years and older
+    config:
+      meta:
+        description_es: Población masculina de 15 años y más
+  - &p_18a24
+    name: p_18a24
+    data_type: int
+    description: Population aged 18 to 24 years
+    config:
+      meta:
+        description_es: Población de 18 a 24 años
+  - &p_18a24_f
+    name: p_18a24_f
+    data_type: int
+    description: Female population aged 18 to 24 years
+    config:
+      meta:
+        description_es: Población femenina de 18 a 24 años
+  - &p_18a24_m
+    name: p_18a24_m
+    data_type: int
+    description: Male population aged 18 to 24 years
+    config:
+      meta:
+        description_es: Población masculina de 18 a 24 años
+  - &p_18ymas
+    name: p_18ymas
+    data_type: int
+    description: Population aged 18 years and older
+    config:
+      meta:
+        description_es: Población de 18 años y más
+  - &p_18ymas_f
+    name: p_18ymas_f
+    data_type: int
+    description: Female population aged 18 years and older
+    config:
+      meta:
+        description_es: Población femenina de 18 años y más
+  - &p_18ymas_m
+    name: p_18ymas_m
+    data_type: int
+    description: Male population aged 18 years and older
+    config:
+      meta:
+        description_es: Población masculina de 18 años y más
+  - &p_3a5
+    name: p_3a5
+    data_type: int
+    description: Population aged 3 to 5 years
+    config:
+      meta:
+        description_es: Población de 3 a 5 años
+  - &p_3a5_f
+    name: p_3a5_f
+    data_type: int
+    description: Female population aged 3 to 5 years
+    config:
+      meta:
+        description_es: Población femenina de 3 a 5 años
+  - &p_3a5_m
+    name: p_3a5_m
+    data_type: int
+    description: Male population aged 3 to 5 years
+    config:
+      meta:
+        description_es: Población masculina de 3 a 5 años
+  - &p_3ymas
+    name: p_3ymas
+    data_type: int
+    description: Population aged 3 years and older
+    config:
+      meta:
+        description_es: Población de  3 años y más
+  - &p_3ymas_f
+    name: p_3ymas_f
+    data_type: int
+    description: Female population aged 3 years and older
+    config:
+      meta:
+        description_es: Población femenina de 3 años y más
+  - &p_3ymas_m
+    name: p_3ymas_m
+    data_type: int
+    description: Male population aged 3 years and older
+    config:
+      meta:
+        description_es: Población masculina de 3 años y más
+  - &p_5ymas
+    name: p_5ymas
+    data_type: int
+    description: Population aged 5 years and older
+    config:
+      meta:
+        description_es: Población de  5 años y más
+  - &p_5ymas_f
+    name: p_5ymas_f
+    data_type: int
+    description: Female population aged 5 years and older
+    config:
+      meta:
+        description_es: Población femenina de 5 años y más
+  - &p_5ymas_m
+    name: p_5ymas_m
+    data_type: int
+    description: Male population aged 5 years and older
+    config:
+      meta:
+        description_es: Población masculina de 5 años y más
+  - &p_60ymas
+    name: p_60ymas
+    data_type: int
+    description: Population aged 60 years and older
+    config:
+      meta:
+        description_es: Población de 60 años y más
+  - &p_60ymas_f
+    name: p_60ymas_f
+    data_type: int
+    description: Female population aged 60 years and older
+    config:
+      meta:
+        description_es: Población femenina de 60 años y más
+  - &p_60ymas_m
+    name: p_60ymas_m
+    data_type: int
+    description: Male population aged 60 years and older
+    config:
+      meta:
+        description_es: Población masculina de 60 años y más
+  - &p_6a11
+    name: p_6a11
+    data_type: int
+    description: Population aged 6 to 11 years
+    config:
+      meta:
+        description_es: Población de 6 a 11 años
+  - &p_6a11_f
+    name: p_6a11_f
+    data_type: int
+    description: Female population aged 6 to 11 years
+    config:
+      meta:
+        description_es: Población femenina de 6 a 11 años
+  - &p_6a11_m
+    name: p_6a11_m
+    data_type: int
+    description: Male population aged 6 to 11 years
+    config:
+      meta:
+        description_es: Población masculina de 6 a 11 años
+  - &p_8a14
+    name: p_8a14
+    data_type: int
+    description: Population aged 8 to 14 years
+    config:
+      meta:
+        description_es: Población de 8 a 14 años
+  - &p_8a14_f
+    name: p_8a14_f
+    data_type: int
+    description: Female population aged 8 to 14 years
+    config:
+      meta:
+        description_es: Población femenina de 8 a 14 años
+  - &p_8a14_m
+    name: p_8a14_m
+    data_type: int
+    description: Male population aged 8 to 14 years
+    config:
+      meta:
+        description_es: Población masculina de 8 a 14 años
+  - &pcatolica
+    name: pcatolica
+    data_type: int
+    description: Catholic population
+    config:
+      meta:
+        description_es: 'Población con religión católica '
+  - &pclim_aud
+    name: pclim_aud
+    data_type: int
+    description: Population with difficulty hearing
+    config:
+      meta:
+        description_es: Población con limitación para escuchar
+  - &pclim_leng
+    name: pclim_leng
+    data_type: int
+    description: Population with difficulty speaking, communicating or conversing
+    config:
+      meta:
+        description_es: Población con limitación para hablar, comunicarse o conversar
+  - &pclim_men
+    name: pclim_men
+    data_type: int
+    description: Population with difficulty paying attention or learning simple things
+    config:
+      meta:
+        description_es: Población con limitación para poner atención o aprender cosas sencillas
+  - &pclim_men2
+    name: pclim_men2
+    data_type: int
+    description: Population with a mental limitation
+    config:
+      meta:
+        description_es: Población con limitación mental
+  - &pclim_mot
+    name: pclim_mot
+    data_type: int
+    description: Population with difficulty walking or moving, going up or down
+    config:
+      meta:
+        description_es: Población con limitación para caminar o moverse, subir o bajar
+  - &pclim_mot2
+    name: pclim_mot2
+    data_type: int
+    description: Population with difficulty dressing, bathing or eating
+    config:
+      meta:
+        description_es: Población con limitación para vestirse, bañarse o comer
+  - &pclim_vis
+    name: pclim_vis
+    data_type: int
+    description: Population with difficulty seeing, even when wearing glasses
+    config:
+      meta:
+        description_es: Población con limitación para ver, aún usando lentes
+  - &pcon_lim
+    name: pcon_lim
+    data_type: int
+    description: Population with activity limitations
+    config:
+      meta:
+        description_es: Población con limitación en la actividad
+  - &pder_imss
+    name: pder_imss
+    data_type: int
+    description: Population entitled to IMSS services
+    config:
+      meta:
+        description_es: Población derechohabiente del imss  
+  - &pder_iste
+    name: pder_iste
+    data_type: int
+    description: Population entitled to ISSSTE services
+    config:
+      meta:
+        description_es: Población derechohabiente del issste
+  - &pder_istee
+    name: pder_istee
+    data_type: int
+    description: Population entitled to state ISSSTE services
+    config:
+      meta:
+        description_es: Población derechohabiente del issste estatal
+  - &pder_segp
+    name: pder_segp
+    data_type: int
+    description: Population entitled to Seguro Popular or Seguro Médico para una Nueva Generación services
+    config:
+      meta:
+        description_es: Población derechohabiente del seguro popular o seguro médico para una nueva generación
+  - &pder_ss
+    name: pder_ss
+    data_type: int
+    description: Population entitled to health care services
+    config:
+      meta:
+        description_es: Población derechohabiente a servicios de salud
+  - &pdesocup
+    name: pdesocup
+    data_type: int
+    description: Unemployed population
+    config:
+      meta:
+        description_es: Población desocupada
+  - &pdesocup_f
+    name: pdesocup_f
+    data_type: int
+    description: Unemployed female population
+    config:
+      meta:
+        description_es: Población femenina desocupada
+  - &pdesocup_m
+    name: pdesocup_m
+    data_type: int
+    description: Unemployed male population
+    config:
+      meta:
+        description_es: Población masculina desocupada
+  - &pe_inac
+    name: pe_inac
+    data_type: int
+    description: Economically inactive population
+    config:
+      meta:
+        description_es: Población no económicamente activa
+  - &pe_inac_f
+    name: pe_inac_f
+    data_type: int
+    description: Economically inactive female population
+    config:
+      meta:
+        description_es: Población femenina no económicamente activa
+  - &pe_inac_m
+    name: pe_inac_m
+    data_type: int
+    description: Economically inactive male population
+    config:
+      meta:
+        description_es: Población masculina no económicamente activa
+  - &pea
+    name: pea
+    data_type: int
+    description: Economically active population
+    config:
+      meta:
+        description_es: Población económicamente activa
+  - &pea_f
+    name: pea_f
+    data_type: int
+    description: Economically active female population
+    config:
+      meta:
+        description_es: Población femenina económicamente activa
+  - &pea_m
+    name: pea_m
+    data_type: int
+    description: Economically active male population
+    config:
+      meta:
+        description_es: Población masculina económicamente activa
+  - &phog_ind
+    name: phog_ind
+    data_type: int
+    description: Population in Indigenous census households
+    config:
+      meta:
+        description_es: Población en hogares censales indígenas
+  - &phogjef_f
+    name: phogjef_f
+    data_type: int
+    description: Household population in census households with a female head of household
+    config:
+      meta:
+        description_es: Población en hogares censales con jefatura femenina
+  - &phogjef_m
+    name: phogjef_m
+    data_type: int
+    description: Household population in census households with a male head of household
+    config:
+      meta:
+        description_es: Población en hogares censales con jefatura masculina
+  - &pnacent
+    name: pnacent
+    data_type: int
+    description: Population born in the state
+    config:
+      meta:
+        description_es: Población nacida en la entidad
+  - &pnacent_f
+    name: pnacent_f
+    data_type: int
+    description: Female population born in the state
+    config:
+      meta:
+        description_es: Población femenina nacida en la entidad
+  - &pnacent_m
+    name: pnacent_m
+    data_type: int
+    description: Male population born in the state
+    config:
+      meta:
+        description_es: Población masculina nacida en la entidad
+  - &pnacoe
+    name: pnacoe
+    data_type: int
+    description: Population born in another state
+    config:
+      meta:
+        description_es: 'Población nacida en otra entidad '
+  - &pnacoe_f
+    name: pnacoe_f
+    data_type: int
+    description: Female population born in another state
+    config:
+      meta:
+        description_es: 'Población femenina nacida en otra entidad '
+  - &pnacoe_m
+    name: pnacoe_m
+    data_type: int
+    description: Male population born in another state
+    config:
+      meta:
+        description_es: 'Población masculina nacida en otra entidad '
+  - &pncatolica
+    name: pncatolica
+    data_type: int
+    description: Population belonging to Protestant, Evangelical or non-Evangelical Biblical religions
+    config:
+      meta:
+        description_es: Protestantes, evangélicas y bíblicas diferentes de evangélicas
+  - &pob0_14
+    name: pob0_14
+    data_type: int
+    description: Population aged 0 to 14 years
+    config:
+      meta:
+        description_es: Población de cero a 14 años
+  - &pob15_64
+    name: pob15_64
+    data_type: int
+    description: Population aged 15 to 64 years
+    config:
+      meta:
+        description_es: Población de 15 a 64 años
+  - &pob65_mas
+    name: pob65_mas
+    data_type: int
+    description: Population aged 65 years and older
+    config:
+      meta:
+        description_es: Población de 65 años y más
+  - &pobfem
+    name: pobfem
+    data_type: int
+    description: Female population
+    config:
+      meta:
+        description_es: Población femenina
+  - &pobhog
+    name: pobhog
+    data_type: int
+    description: Census household population
+    config:
+      meta:
+        description_es: Población en hogares censales
+  - &pobmas
+    name: pobmas
+    data_type: int
+    description: Male population
+    config:
+      meta:
+        description_es: Población masculina
+  - &pobtot
+    name: pobtot
+    data_type: int
+    description: Total population
+    config:
+      meta:
+        description_es: Población total
+  - &pocupada
+    name: pocupada
+    data_type: int
+    description: Employed population
+    config:
+      meta:
+        description_es: Población ocupada
+  - &pocupada_f
+    name: pocupada_f
+    data_type: int
+    description: Employed female population
+    config:
+      meta:
+        description_es: Población femenina ocupada
+  - &pocupada_m
+    name: pocupada_m
+    data_type: int
+    description: Employed male population
+    config:
+      meta:
+        description_es: Población masculina ocupada
+  - &potras_rel
+    name: potras_rel
+    data_type: int
+    description: Population belonging to religions other than those listed above
+    config:
+      meta:
+        description_es: Población con otras religiones diferentes a las anteriores
+  - &pres2005
+    name: pres2005
+    data_type: int
+    description: Population aged 5 years and older that in June 2005 lived in the same state as the current
+      state of residence
+    config:
+      meta:
+        description_es: Población de 5 años y más residente en la entidad en junio de 2005
+  - &pres2005_f
+    name: pres2005_f
+    data_type: int
+    description: Female population aged 5 years and older that in June 2005 lived in the same state as
+      the current state of residence
+    config:
+      meta:
+        description_es: Población femenina de 5 años y más residente en la entidad en junio de 2005
+  - &pres2005_m
+    name: pres2005_m
+    data_type: int
+    description: Male population aged 5 years and older that in June 2005 lived in the same state as the
+      current state of residence
+    config:
+      meta:
+        description_es: Población masculina de 5 años y más residente en la entidad en junio de 2005
+  - &presoe05
+    name: presoe05
+    data_type: int
+    description: Population aged 5 years and older that in June 2005 lived in a different state than the
+      current state of residence
+    config:
+      meta:
+        description_es: Población de 5 años y más residente en otra entidad en  junio de 2005
+  - &presoe05_f
+    name: presoe05_f
+    data_type: int
+    description: Female population aged 5 years and older that in June 2005 lived in a different state
+      than the current state of residence
+    config:
+      meta:
+        description_es: Población femenina de 5 años y más residente en otra entidad en  junio de 2005
+  - &presoe05_m
+    name: presoe05_m
+    data_type: int
+    description: Male population aged 5 years and older that in June 2005 lived in a different state than
+      the current state of residence
+    config:
+      meta:
+        description_es: Población masculina de 5 años y más residente en otra entidad en  junio de 2005
+  - &pro_ocup_c
+    name: pro_ocup_c
+    data_type: float
+    description: Average number of inhabitants per room in inhabited private dwellings
+    config:
+      meta:
+        description_es: Promedio de ocupantes por cuarto en viviendas particulares habitadas
+  - &prom_hnv
+    name: prom_hnv
+    data_type: float
+    description: Average number of children born alive
+    config:
+      meta:
+        description_es: Promedio de hijos nacidos vivos
+  - &prom_ocup
+    name: prom_ocup
+    data_type: float
+    description: Average number of inhabitants in inhabited private dwellings
+    config:
+      meta:
+        description_es: Promedio de ocupantes en viviendas particulares habitadas
+  - &psin_lim
+    name: psin_lim
+    data_type: int
+    description: Population without activity limitations
+    config:
+      meta:
+        description_es: Población sin limitación en la actividad
+  - &psin_relig
+    name: psin_relig
+    data_type: int
+    description: Population with no religion
+    config:
+      meta:
+        description_es: Población sin religión
+  - &psinder
+    name: psinder
+    data_type: int
+    description: Population not entitled to health care services
+    config:
+      meta:
+        description_es: Población sin derechohabiencia a servicios de salud  
+  - &rel_h_m
+    name: rel_h_m
+    data_type: float
+    description: Male-to-female ratio
+    config:
+      meta:
+        description_es: Relación hombres-mujeres
+  - &tothog
+    name: tothog
+    data_type: int
+    description: Total census households
+    config:
+      meta:
+        description_es: Total de hogares censales
+  - &tvivhab
+    name: tvivhab
+    data_type: int
+    description: Total inhabited dwellings
+    config:
+      meta:
+        description_es: Total de viviendas habitadas
+  - &tvivpar
+    name: tvivpar
+    data_type: int
+    description: Total private dwellings
+    config:
+      meta:
+        description_es: Total de viviendas particulares
+  - &tvivparhab
+    name: tvivparhab
+    data_type: int
+    description: Total inhabited private dwellings
+    config:
+      meta:
+        description_es: Total de viviendas particulares habitadas
+  - &vivpar_des
+    name: vivpar_des
+    data_type: int
+    description: Uninhabited private dwellings
+    config:
+      meta:
+        description_es: Viviendas particulares deshabitadas
+  - &vivpar_hab
+    name: vivpar_hab
+    data_type: int
+    description: Inhabited private dwellings
+    config:
+      meta:
+        description_es: Viviendas particulares habitadas
+  - &vivpar_ut
+    name: vivpar_ut
+    data_type: int
+    description: Private dwellings for temporary use
+    config:
+      meta:
+        description_es: Viviendas particulares de uso temporal
+  - &vivtot
+    name: vivtot
+    data_type: int
+    description: Total dwellings
+    config:
+      meta:
+        description_es: Total de viviendas
+  - &vph_1cuart
+    name: vph_1cuart
+    data_type: int
+    description: Inhabited private dwellings with only one room
+    config:
+      meta:
+        description_es: Viviendas particulares habitadas con un solo cuarto 
+  - &vph_1dor
+    name: vph_1dor
+    data_type: int
+    description: Inhabited private dwellings with one bedroom
+    config:
+      meta:
+        description_es: Viviendas particulares habitadas con un dormitorio
+  - &vph_2cuart
+    name: vph_2cuart
+    data_type: int
+    description: Inhabited private dwellings with two rooms
+    config:
+      meta:
+        description_es: Viviendas particulares habitadas con dos cuartos
+  - &vph_2ymasd
+    name: vph_2ymasd
+    data_type: int
+    description: Inhabited private dwellings with two or more bedrooms
+    config:
+      meta:
+        description_es: Viviendas particulares habitadas con dos dormitorios y más
+  - &vph_3ymasc
+    name: vph_3ymasc
+    data_type: int
+    description: Inhabited private dwellings with three or more rooms
+    config:
+      meta:
+        description_es: Viviendas particulares habitadas con 3 cuartos y más
+  - &vph_aguadv
+    name: vph_aguadv
+    data_type: int
+    description: Inhabited private dwellings with piped water on the premises
+    config:
+      meta:
+        description_es: Viviendas particulares habitadas que disponen de agua entubada en  el ámbito de
+          la vivienda
+  - &vph_aguafv
+    name: vph_aguafv
+    data_type: int
+    description: Inhabited private dwellings without piped water on the premises
+    config:
+      meta:
+        description_es: Viviendas particulares habitadas que no disponen de agua entubada en el ámbito
+          de la vivienda
+  - &vph_autom
+    name: vph_autom
+    data_type: int
+    description: Inhabited private dwellings with a car or truck
+    config:
+      meta:
+        description_es: Viviendas particulares habitadas que disponen de automóvil o camioneta
+  - &vph_c_elec
+    name: vph_c_elec
+    data_type: int
+    description: Inhabited private dwellings with electricity
+    config:
+      meta:
+        description_es: Viviendas particulares habitadas que disponen de luz eléctrica
+  - &vph_c_serv
+    name: vph_c_serv
+    data_type: int
+    description: Inhabited private dwellings with electricity, piped water from the public supply and
+      drainage
+    config:
+      meta:
+        description_es: 'Viviendas particulares habitadas que disponen de luz eléctrica, agua entubada
+          de la red pública y drenaje '
+  - &vph_cel
+    name: vph_cel
+    data_type: int
+    description: Inhabited private dwellings with a mobile phone
+    config:
+      meta:
+        description_es: Viviendas particulares habitadas que disponen de teléfono celular
+  - &vph_drenaj
+    name: vph_drenaj
+    data_type: int
+    description: Inhabited private dwellings with drainage
+    config:
+      meta:
+        description_es: Viviendas particulares habitadas que disponen de drenaje
+  - &vph_excsa
+    name: vph_excsa
+    data_type: int
+    description: Inhabited private dwellings with a toilet
+    config:
+      meta:
+        description_es: Viviendas particulares habitadas que disponen de excusado o sanitario
+  - &vph_inter
+    name: vph_inter
+    data_type: int
+    description: Inhabited private dwellings with Internet access
+    config:
+      meta:
+        description_es: Viviendas particulares habitadas que disponen de internet
+  - &vph_lavad
+    name: vph_lavad
+    data_type: int
+    description: Inhabited private dwellings with a washing machine
+    config:
+      meta:
+        description_es: Viviendas particulares habitadas que disponen de lavadora
+  - &vph_nodren
+    name: vph_nodren
+    data_type: int
+    description: Inhabited private dwellings without drainage
+    config:
+      meta:
+        description_es: Viviendas particulares habitadas que no disponen de drenaje
+  - &vph_pc
+    name: vph_pc
+    data_type: int
+    description: Inhabited private dwellings with a computer
+    config:
+      meta:
+        description_es: Viviendas particulares habitadas que disponen de computadora
+  - &vph_pisodt
+    name: vph_pisodt
+    data_type: int
+    description: Inhabited private dwellings with floors made of materials other than dirt
+    config:
+      meta:
+        description_es: Viviendas particulares habitadas con piso de material diferente de tierra
+  - &vph_pisoti
+    name: vph_pisoti
+    data_type: int
+    description: Inhabited private dwellings with dirt floors
+    config:
+      meta:
+        description_es: Viviendas particulares habitadas con piso de tierra
+  - &vph_radio
+    name: vph_radio
+    data_type: int
+    description: Inhabited private dwellings with a radio
+    config:
+      meta:
+        description_es: Viviendas particulares habitadas que disponen de radio
+  - &vph_refri
+    name: vph_refri
+    data_type: int
+    description: Inhabited private dwellings with a refrigerator
+    config:
+      meta:
+        description_es: Viviendas particulares habitadas que disponen de refrigerador
+  - &vph_s_elec
+    name: vph_s_elec
+    data_type: int
+    description: Inhabited private dwellings without electricity
+    config:
+      meta:
+        description_es: Viviendas particulares habitadas que no disponen de luz eléctrica
+  - &vph_snbien
+    name: vph_snbien
+    data_type: int
+    description: Inhabited private dwellings with none of the listed goods
+    config:
+      meta:
+        description_es: Viviendas particulares habitadas sin ningún bien
+  - &vph_telef
+    name: vph_telef
+    data_type: int
+    description: Inhabited private dwellings with a landline telephone
+    config:
+      meta:
+        description_es: Viviendas particulares habitadas que disponen de línea telefónica fija
+  - &vph_tv
+    name: vph_tv
+    data_type: int
+    description: Inhabited private dwellings with a television
+    config:
+      meta:
+        description_es: Viviendas particulares habitadas que disponen de televisor
+
+models:
+  - name: census_2010_ageb
+    description: 2010 census statistics aggregated by AGEB.
+    config:
+      meta:
+        dagster:
+          asset_key:
+            - census
+            - '2010'
+            - ageb
+          group: census/2010
+    constraints:
+      - type: primary_key
+        columns:
+          - cvegeo
+      - type: foreign_key
+        columns:
+          - cvegeo
+        to: ref("geo_unit_2010_ageb")
+        to_columns:
+          - cvegeo
+      - type: check
+        expression: char_length(cvegeo) = 13
+    columns:
+      - *cvegeo
+      - *graproes
+      - *graproes_f
+      - *graproes_m
+      - *hogjef_f
+      - *hogjef_m
+      - *ocupvivpar
+      - *p12a14noa
+      - *p12a14noaf
+      - *p12a14noam
+      - *p12ym_casa
+      - *p12ym_sepa
+      - *p12ym_solt
+      - *p15a17a
+      - *p15a17a_f
+      - *p15a17a_m
+      - *p15pri_co
+      - *p15pri_cof
+      - *p15pri_com
+      - *p15pri_in
+      - *p15pri_inf
+      - *p15pri_inm
+      - *p15sec_co
+      - *p15sec_cof
+      - *p15sec_com
+      - *p15sec_in
+      - *p15sec_inf
+      - *p15sec_inm
+      - *p15ym_an
+      - *p15ym_an_f
+      - *p15ym_an_m
+      - *p15ym_se
+      - *p15ym_se_f
+      - *p15ym_se_m
+      - *p18a24a
+      - *p18a24a_f
+      - *p18a24a_m
+      - *p18ym_pb
+      - *p18ym_pb_f
+      - *p18ym_pb_m
+      - *p3a5_noa
+      - *p3a5_noa_f
+      - *p3a5_noa_m
+      - *p3hli_he
+      - *p3hli_he_f
+      - *p3hli_he_m
+      - *p3hlinhe
+      - *p3hlinhe_f
+      - *p3hlinhe_m
+      - *p3ym_hli
+      - *p3ym_hli_f
+      - *p3ym_hli_m
+      - *p5_hli
+      - *p5_hli_he
+      - *p5_hli_nhe
+      - *p6a11_noa
+      - *p6a11_noaf
+      - *p6a11_noam
+      - *p8a14an
+      - *p8a14an_f
+      - *p8a14an_m
+      - *p_0a2
+      - *p_0a2_f
+      - *p_0a2_m
+      - *p_12a14
+      - *p_12a14_f
+      - *p_12a14_m
+      - *p_12ymas
+      - *p_12ymas_f
+      - *p_12ymas_m
+      - *p_15a17
+      - *p_15a17_f
+      - *p_15a17_m
+      - *p_15a49_f
+      - *p_15ymas
+      - *p_15ymas_f
+      - *p_15ymas_m
+      - *p_18a24
+      - *p_18a24_f
+      - *p_18a24_m
+      - *p_18ymas
+      - *p_18ymas_f
+      - *p_18ymas_m
+      - *p_3a5
+      - *p_3a5_f
+      - *p_3a5_m
+      - *p_3ymas
+      - *p_3ymas_f
+      - *p_3ymas_m
+      - *p_5ymas
+      - *p_5ymas_f
+      - *p_5ymas_m
+      - *p_60ymas
+      - *p_60ymas_f
+      - *p_60ymas_m
+      - *p_6a11
+      - *p_6a11_f
+      - *p_6a11_m
+      - *p_8a14
+      - *p_8a14_f
+      - *p_8a14_m
+      - *pcatolica
+      - *pclim_aud
+      - *pclim_leng
+      - *pclim_men
+      - *pclim_men2
+      - *pclim_mot
+      - *pclim_mot2
+      - *pclim_vis
+      - *pcon_lim
+      - *pder_imss
+      - *pder_iste
+      - *pder_istee
+      - *pder_segp
+      - *pder_ss
+      - *pdesocup
+      - *pdesocup_f
+      - *pdesocup_m
+      - *pe_inac
+      - *pe_inac_f
+      - *pe_inac_m
+      - *pea
+      - *pea_f
+      - *pea_m
+      - *phog_ind
+      - *phogjef_f
+      - *phogjef_m
+      - *pnacent
+      - *pnacent_f
+      - *pnacent_m
+      - *pnacoe
+      - *pnacoe_f
+      - *pnacoe_m
+      - *pncatolica
+      - *pob0_14
+      - *pob15_64
+      - *pob65_mas
+      - *pobfem
+      - *pobhog
+      - *pobmas
+      - *pobtot
+      - *pocupada
+      - *pocupada_f
+      - *pocupada_m
+      - *potras_rel
+      - *pres2005
+      - *pres2005_f
+      - *pres2005_m
+      - *presoe05
+      - *presoe05_f
+      - *presoe05_m
+      - *pro_ocup_c
+      - *prom_hnv
+      - *prom_ocup
+      - *psin_lim
+      - *psin_relig
+      - *psinder
+      - *rel_h_m
+      - *tothog
+      - *tvivhab
+      - *tvivpar
+      - *tvivparhab
+      - *vivpar_des
+      - *vivpar_hab
+      - *vivpar_ut
+      - *vivtot
+      - *vph_1cuart
+      - *vph_1dor
+      - *vph_2cuart
+      - *vph_2ymasd
+      - *vph_3ymasc
+      - *vph_aguadv
+      - *vph_aguafv
+      - *vph_autom
+      - *vph_c_elec
+      - *vph_c_serv
+      - *vph_cel
+      - *vph_drenaj
+      - *vph_excsa
+      - *vph_inter
+      - *vph_lavad
+      - *vph_nodren
+      - *vph_pc
+      - *vph_pisodt
+      - *vph_pisoti
+      - *vph_radio
+      - *vph_refri
+      - *vph_s_elec
+      - *vph_snbien
+      - *vph_telef
+      - *vph_tv
+  - name: census_2010_ent
+    description: 2010 census statistics aggregated by state
+    config:
+      meta:
+        dagster:
+          asset_key:
+            - census
+            - '2010'
+            - ent
+          group: census/2010
+    constraints:
+      - type: primary_key
+        columns:
+          - cvegeo
+      - type: foreign_key
+        columns:
+          - cvegeo
+        to: ref("geo_unit_2010_ent")
+        to_columns:
+          - cvegeo
+      - type: check
+        expression: char_length(cvegeo) = 2
+    columns:
+      - *cvegeo
+      - *graproes
+      - *graproes_f
+      - *graproes_m
+      - *hogjef_f
+      - *hogjef_m
+      - *ocupvivpar
+      - *p12a14noa
+      - *p12a14noaf
+      - *p12a14noam
+      - *p12ym_casa
+      - *p12ym_sepa
+      - *p12ym_solt
+      - *p15a17a
+      - *p15a17a_f
+      - *p15a17a_m
+      - *p15pri_co
+      - *p15pri_cof
+      - *p15pri_com
+      - *p15pri_in
+      - *p15pri_inf
+      - *p15pri_inm
+      - *p15sec_co
+      - *p15sec_cof
+      - *p15sec_com
+      - *p15sec_in
+      - *p15sec_inf
+      - *p15sec_inm
+      - *p15ym_an
+      - *p15ym_an_f
+      - *p15ym_an_m
+      - *p15ym_se
+      - *p15ym_se_f
+      - *p15ym_se_m
+      - *p18a24a
+      - *p18a24a_f
+      - *p18a24a_m
+      - *p18ym_pb
+      - *p18ym_pb_f
+      - *p18ym_pb_m
+      - *p3a5_noa
+      - *p3a5_noa_f
+      - *p3a5_noa_m
+      - *p3hli_he
+      - *p3hli_he_f
+      - *p3hli_he_m
+      - *p3hlinhe
+      - *p3hlinhe_f
+      - *p3hlinhe_m
+      - *p3ym_hli
+      - *p3ym_hli_f
+      - *p3ym_hli_m
+      - *p5_hli
+      - *p5_hli_he
+      - *p5_hli_nhe
+      - *p6a11_noa
+      - *p6a11_noaf
+      - *p6a11_noam
+      - *p8a14an
+      - *p8a14an_f
+      - *p8a14an_m
+      - *p_0a2
+      - *p_0a2_f
+      - *p_0a2_m
+      - *p_12a14
+      - *p_12a14_f
+      - *p_12a14_m
+      - *p_12ymas
+      - *p_12ymas_f
+      - *p_12ymas_m
+      - *p_15a17
+      - *p_15a17_f
+      - *p_15a17_m
+      - *p_15a49_f
+      - *p_15ymas
+      - *p_15ymas_f
+      - *p_15ymas_m
+      - *p_18a24
+      - *p_18a24_f
+      - *p_18a24_m
+      - *p_18ymas
+      - *p_18ymas_f
+      - *p_18ymas_m
+      - *p_3a5
+      - *p_3a5_f
+      - *p_3a5_m
+      - *p_3ymas
+      - *p_3ymas_f
+      - *p_3ymas_m
+      - *p_5ymas
+      - *p_5ymas_f
+      - *p_5ymas_m
+      - *p_60ymas
+      - *p_60ymas_f
+      - *p_60ymas_m
+      - *p_6a11
+      - *p_6a11_f
+      - *p_6a11_m
+      - *p_8a14
+      - *p_8a14_f
+      - *p_8a14_m
+      - *pcatolica
+      - *pclim_aud
+      - *pclim_leng
+      - *pclim_men
+      - *pclim_men2
+      - *pclim_mot
+      - *pclim_mot2
+      - *pclim_vis
+      - *pcon_lim
+      - *pder_imss
+      - *pder_iste
+      - *pder_istee
+      - *pder_segp
+      - *pder_ss
+      - *pdesocup
+      - *pdesocup_f
+      - *pdesocup_m
+      - *pe_inac
+      - *pe_inac_f
+      - *pe_inac_m
+      - *pea
+      - *pea_f
+      - *pea_m
+      - *phog_ind
+      - *phogjef_f
+      - *phogjef_m
+      - *pnacent
+      - *pnacent_f
+      - *pnacent_m
+      - *pnacoe
+      - *pnacoe_f
+      - *pnacoe_m
+      - *pncatolica
+      - *pob0_14
+      - *pob15_64
+      - *pob65_mas
+      - *pobfem
+      - *pobhog
+      - *pobmas
+      - *pobtot
+      - *pocupada
+      - *pocupada_f
+      - *pocupada_m
+      - *potras_rel
+      - *pres2005
+      - *pres2005_f
+      - *pres2005_m
+      - *presoe05
+      - *presoe05_f
+      - *presoe05_m
+      - *pro_ocup_c
+      - *prom_hnv
+      - *prom_ocup
+      - *psin_lim
+      - *psin_relig
+      - *psinder
+      - *rel_h_m
+      - *tothog
+      - *tvivhab
+      - *tvivpar
+      - *tvivparhab
+      - *vivpar_des
+      - *vivpar_hab
+      - *vivpar_ut
+      - *vivtot
+      - *vph_1cuart
+      - *vph_1dor
+      - *vph_2cuart
+      - *vph_2ymasd
+      - *vph_3ymasc
+      - *vph_aguadv
+      - *vph_aguafv
+      - *vph_autom
+      - *vph_c_elec
+      - *vph_c_serv
+      - *vph_cel
+      - *vph_drenaj
+      - *vph_excsa
+      - *vph_inter
+      - *vph_lavad
+      - *vph_nodren
+      - *vph_pc
+      - *vph_pisodt
+      - *vph_pisoti
+      - *vph_radio
+      - *vph_refri
+      - *vph_s_elec
+      - *vph_snbien
+      - *vph_telef
+      - *vph_tv
+      - name: nom_ent
+        data_type: text
+  - name: census_2010_mun
+    description: 2010 census statistics aggregated by municipality
+    config:
+      meta:
+        dagster:
+          asset_key:
+            - census
+            - '2010'
+            - mun
+          group: census/2010
+    constraints:
+      - type: primary_key
+        columns:
+          - cvegeo
+      - type: foreign_key
+        columns:
+          - cvegeo
+        to: ref("geo_unit_2010_mun")
+        to_columns:
+          - cvegeo
+      - type: check
+        expression: char_length(cvegeo) = 5
+    columns:
+      - *cvegeo
+      - *graproes
+      - *graproes_f
+      - *graproes_m
+      - *hogjef_f
+      - *hogjef_m
+      - *ocupvivpar
+      - *p12a14noa
+      - *p12a14noaf
+      - *p12a14noam
+      - *p12ym_casa
+      - *p12ym_sepa
+      - *p12ym_solt
+      - *p15a17a
+      - *p15a17a_f
+      - *p15a17a_m
+      - *p15pri_co
+      - *p15pri_cof
+      - *p15pri_com
+      - *p15pri_in
+      - *p15pri_inf
+      - *p15pri_inm
+      - *p15sec_co
+      - *p15sec_cof
+      - *p15sec_com
+      - *p15sec_in
+      - *p15sec_inf
+      - *p15sec_inm
+      - *p15ym_an
+      - *p15ym_an_f
+      - *p15ym_an_m
+      - *p15ym_se
+      - *p15ym_se_f
+      - *p15ym_se_m
+      - *p18a24a
+      - *p18a24a_f
+      - *p18a24a_m
+      - *p18ym_pb
+      - *p18ym_pb_f
+      - *p18ym_pb_m
+      - *p3a5_noa
+      - *p3a5_noa_f
+      - *p3a5_noa_m
+      - *p3hli_he
+      - *p3hli_he_f
+      - *p3hli_he_m
+      - *p3hlinhe
+      - *p3hlinhe_f
+      - *p3hlinhe_m
+      - *p3ym_hli
+      - *p3ym_hli_f
+      - *p3ym_hli_m
+      - *p5_hli
+      - *p5_hli_he
+      - *p5_hli_nhe
+      - *p6a11_noa
+      - *p6a11_noaf
+      - *p6a11_noam
+      - *p8a14an
+      - *p8a14an_f
+      - *p8a14an_m
+      - *p_0a2
+      - *p_0a2_f
+      - *p_0a2_m
+      - *p_12a14
+      - *p_12a14_f
+      - *p_12a14_m
+      - *p_12ymas
+      - *p_12ymas_f
+      - *p_12ymas_m
+      - *p_15a17
+      - *p_15a17_f
+      - *p_15a17_m
+      - *p_15a49_f
+      - *p_15ymas
+      - *p_15ymas_f
+      - *p_15ymas_m
+      - *p_18a24
+      - *p_18a24_f
+      - *p_18a24_m
+      - *p_18ymas
+      - *p_18ymas_f
+      - *p_18ymas_m
+      - *p_3a5
+      - *p_3a5_f
+      - *p_3a5_m
+      - *p_3ymas
+      - *p_3ymas_f
+      - *p_3ymas_m
+      - *p_5ymas
+      - *p_5ymas_f
+      - *p_5ymas_m
+      - *p_60ymas
+      - *p_60ymas_f
+      - *p_60ymas_m
+      - *p_6a11
+      - *p_6a11_f
+      - *p_6a11_m
+      - *p_8a14
+      - *p_8a14_f
+      - *p_8a14_m
+      - *pcatolica
+      - *pclim_aud
+      - *pclim_leng
+      - *pclim_men
+      - *pclim_men2
+      - *pclim_mot
+      - *pclim_mot2
+      - *pclim_vis
+      - *pcon_lim
+      - *pder_imss
+      - *pder_iste
+      - *pder_istee
+      - *pder_segp
+      - *pder_ss
+      - *pdesocup
+      - *pdesocup_f
+      - *pdesocup_m
+      - *pe_inac
+      - *pe_inac_f
+      - *pe_inac_m
+      - *pea
+      - *pea_f
+      - *pea_m
+      - *phog_ind
+      - *phogjef_f
+      - *phogjef_m
+      - *pnacent
+      - *pnacent_f
+      - *pnacent_m
+      - *pnacoe
+      - *pnacoe_f
+      - *pnacoe_m
+      - *pncatolica
+      - *pob0_14
+      - *pob15_64
+      - *pob65_mas
+      - *pobfem
+      - *pobhog
+      - *pobmas
+      - *pobtot
+      - *pocupada
+      - *pocupada_f
+      - *pocupada_m
+      - *potras_rel
+      - *pres2005
+      - *pres2005_f
+      - *pres2005_m
+      - *presoe05
+      - *presoe05_f
+      - *presoe05_m
+      - *pro_ocup_c
+      - *prom_hnv
+      - *prom_ocup
+      - *psin_lim
+      - *psin_relig
+      - *psinder
+      - *rel_h_m
+      - *tothog
+      - *tvivhab
+      - *tvivpar
+      - *tvivparhab
+      - *vivpar_des
+      - *vivpar_hab
+      - *vivpar_ut
+      - *vivtot
+      - *vph_1cuart
+      - *vph_1dor
+      - *vph_2cuart
+      - *vph_2ymasd
+      - *vph_3ymasc
+      - *vph_aguadv
+      - *vph_aguafv
+      - *vph_autom
+      - *vph_c_elec
+      - *vph_c_serv
+      - *vph_cel
+      - *vph_drenaj
+      - *vph_excsa
+      - *vph_inter
+      - *vph_lavad
+      - *vph_nodren
+      - *vph_pc
+      - *vph_pisodt
+      - *vph_pisoti
+      - *vph_radio
+      - *vph_refri
+      - *vph_s_elec
+      - *vph_snbien
+      - *vph_telef
+      - *vph_tv
+      - name: nom_mun
+        data_type: text
+  - name: census_2010_loc
+    description: 2010 census statistics aggregated by locality
+    config:
+      meta:
+        dagster:
+          asset_key:
+            - census
+            - '2010'
+            - loc
+          group: census/2010
+    constraints:
+      - type: primary_key
+        columns:
+          - cvegeo
+      - type: foreign_key
+        columns:
+          - cvegeo
+        to: ref("geo_unit_2010_loc")
+        to_columns:
+          - cvegeo
+      - type: check
+        expression: char_length(cvegeo) = 9
+    columns:
+      - *cvegeo
+      - *graproes
+      - *graproes_f
+      - *graproes_m
+      - *hogjef_f
+      - *hogjef_m
+      - *ocupvivpar
+      - *p12a14noa
+      - *p12a14noaf
+      - *p12a14noam
+      - *p12ym_casa
+      - *p12ym_sepa
+      - *p12ym_solt
+      - *p15a17a
+      - *p15a17a_f
+      - *p15a17a_m
+      - *p15pri_co
+      - *p15pri_cof
+      - *p15pri_com
+      - *p15pri_in
+      - *p15pri_inf
+      - *p15pri_inm
+      - *p15sec_co
+      - *p15sec_cof
+      - *p15sec_com
+      - *p15sec_in
+      - *p15sec_inf
+      - *p15sec_inm
+      - *p15ym_an
+      - *p15ym_an_f
+      - *p15ym_an_m
+      - *p15ym_se
+      - *p15ym_se_f
+      - *p15ym_se_m
+      - *p18a24a
+      - *p18a24a_f
+      - *p18a24a_m
+      - *p18ym_pb
+      - *p18ym_pb_f
+      - *p18ym_pb_m
+      - *p3a5_noa
+      - *p3a5_noa_f
+      - *p3a5_noa_m
+      - *p3hli_he
+      - *p3hli_he_f
+      - *p3hli_he_m
+      - *p3hlinhe
+      - *p3hlinhe_f
+      - *p3hlinhe_m
+      - *p3ym_hli
+      - *p3ym_hli_f
+      - *p3ym_hli_m
+      - *p5_hli
+      - *p5_hli_he
+      - *p5_hli_nhe
+      - *p6a11_noa
+      - *p6a11_noaf
+      - *p6a11_noam
+      - *p8a14an
+      - *p8a14an_f
+      - *p8a14an_m
+      - *p_0a2
+      - *p_0a2_f
+      - *p_0a2_m
+      - *p_12a14
+      - *p_12a14_f
+      - *p_12a14_m
+      - *p_12ymas
+      - *p_12ymas_f
+      - *p_12ymas_m
+      - *p_15a17
+      - *p_15a17_f
+      - *p_15a17_m
+      - *p_15a49_f
+      - *p_15ymas
+      - *p_15ymas_f
+      - *p_15ymas_m
+      - *p_18a24
+      - *p_18a24_f
+      - *p_18a24_m
+      - *p_18ymas
+      - *p_18ymas_f
+      - *p_18ymas_m
+      - *p_3a5
+      - *p_3a5_f
+      - *p_3a5_m
+      - *p_3ymas
+      - *p_3ymas_f
+      - *p_3ymas_m
+      - *p_5ymas
+      - *p_5ymas_f
+      - *p_5ymas_m
+      - *p_60ymas
+      - *p_60ymas_f
+      - *p_60ymas_m
+      - *p_6a11
+      - *p_6a11_f
+      - *p_6a11_m
+      - *p_8a14
+      - *p_8a14_f
+      - *p_8a14_m
+      - *pcatolica
+      - *pclim_aud
+      - *pclim_leng
+      - *pclim_men
+      - *pclim_men2
+      - *pclim_mot
+      - *pclim_mot2
+      - *pclim_vis
+      - *pcon_lim
+      - *pder_imss
+      - *pder_iste
+      - *pder_istee
+      - *pder_segp
+      - *pder_ss
+      - *pdesocup
+      - *pdesocup_f
+      - *pdesocup_m
+      - *pe_inac
+      - *pe_inac_f
+      - *pe_inac_m
+      - *pea
+      - *pea_f
+      - *pea_m
+      - *phog_ind
+      - *phogjef_f
+      - *phogjef_m
+      - *pnacent
+      - *pnacent_f
+      - *pnacent_m
+      - *pnacoe
+      - *pnacoe_f
+      - *pnacoe_m
+      - *pncatolica
+      - *pob0_14
+      - *pob15_64
+      - *pob65_mas
+      - *pobfem
+      - *pobhog
+      - *pobmas
+      - *pobtot
+      - *pocupada
+      - *pocupada_f
+      - *pocupada_m
+      - *potras_rel
+      - *pres2005
+      - *pres2005_f
+      - *pres2005_m
+      - *presoe05
+      - *presoe05_f
+      - *presoe05_m
+      - *pro_ocup_c
+      - *prom_hnv
+      - *prom_ocup
+      - *psin_lim
+      - *psin_relig
+      - *psinder
+      - *rel_h_m
+      - *tothog
+      - *tvivhab
+      - *tvivpar
+      - *tvivparhab
+      - *vivpar_des
+      - *vivpar_hab
+      - *vivpar_ut
+      - *vivtot
+      - *vph_1cuart
+      - *vph_1dor
+      - *vph_2cuart
+      - *vph_2ymasd
+      - *vph_3ymasc
+      - *vph_aguadv
+      - *vph_aguafv
+      - *vph_autom
+      - *vph_c_elec
+      - *vph_c_serv
+      - *vph_cel
+      - *vph_drenaj
+      - *vph_excsa
+      - *vph_inter
+      - *vph_lavad
+      - *vph_nodren
+      - *vph_pc
+      - *vph_pisodt
+      - *vph_pisoti
+      - *vph_radio
+      - *vph_refri
+      - *vph_s_elec
+      - *vph_snbien
+      - *vph_telef
+      - *vph_tv
+      - name: nom_loc
+        data_type: text

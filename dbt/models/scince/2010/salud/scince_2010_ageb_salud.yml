@@ -1,0 +1,68 @@
+version: 2
+models:
+  - name: scince_2010_ageb_salud
+    description: 2010 census healthcare statistics obtained from the SCINCE dataset, aggregated by AGEB.
+    config:
+      meta:
+        dagster:
+          asset_key:
+            - scince
+            - '2010'
+            - ageb
+            - salud
+          group: scince/2010
+    constraints:
+      - type: primary_key
+        columns:
+          - cvegeo
+      - type: foreign_key
+        columns:
+          - cvegeo
+        to: ref("geo_unit_2010_ageb")
+        to_columns:
+          - cvegeo
+    columns:
+      - name: cvegeo
+        data_type: text
+        description: Unique identifier for the AGEB.
+        config:
+          meta:
+            description_es: null
+      - name: salud1
+        data_type: int
+        description: Population entitled to health care services
+        config:
+          meta:
+            description_es: Población derechohabiente a servicios de salud
+      - name: salud2
+        data_type: int
+        description: Population not entitled to health care services
+        config:
+          meta:
+            description_es: Población sin derechohabiencia a servicios de salud
+      - name: salud3
+        data_type: int
+        description: Population entitled to IMSS services
+        config:
+          meta:
+            description_es: Población derechohabiente del IMSS
+      - name: salud4
+        data_type: int
+        description: Population entitled to ISSSTE or state ISSSTE services
+        config:
+          meta:
+            description_es: Población derechohabiente del ISSSTE o ISSSTE estatal
+      - name: salud5
+        data_type: int
+        description: Population entitled to Seguro Popular or Seguro Médico para una Nueva Generación
+          services
+        config:
+          meta:
+            description_es: Población derechohabiente del Seguro Popular o Seguro Médico para una Nueva
+              Generación
+      - name: salud6
+        data_type: int
+        description: Population entitled to Pemex, Sedena, or Semar health care services
+        config:
+          meta:
+            description_es: Población derechohabiente de Pemex, Sedena o Semar

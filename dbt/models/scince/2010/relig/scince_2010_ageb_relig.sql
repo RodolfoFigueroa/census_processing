@@ -1,2 +1,7 @@
-select {{ scince_columns(2010, "relig") }}
+select
+    "cvegeo",
+    "relig1",
+    "relig2",
+    "relig3",
+    "relig4"
 from {{ ref("scince_2010_relig") }}

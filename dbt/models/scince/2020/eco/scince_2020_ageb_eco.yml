@@ -1,0 +1,180 @@
+version: 2
+models:
+  - name: scince_2020_ageb_eco
+    description: 2020 census economic statistics obtained from the SCINCE dataset, aggregated by AGEB.
+    config:
+      meta:
+        dagster:
+          asset_key:
+            - scince
+            - '2020'
+            - ageb
+            - eco
+          group: scince/2020
+    constraints:
+      - type: primary_key
+        columns:
+          - cvegeo
+      - type: foreign_key
+        columns:
+          - cvegeo
+        to: ref("geo_unit_2020_ageb")
+        to_columns:
+          - cvegeo
+    columns:
+      - name: cvegeo
+        data_type: text
+        description: Unique identifier for the AGEB.
+        config:
+          meta:
+            description_es: null
+      - name: eco1
+        data_type: int
+        description: Economically active population aged 12 years and older
+        config:
+          meta:
+            description_es: Población de 12 años y más económicamente activa
+      - name: eco2
+        data_type: int
+        description: Economically active female population aged 12 years and older
+        config:
+          meta:
+            description_es: Población femenina de 12 años y más económicamente activa
+      - name: eco3
+        data_type: int
+        description: Economically active male population aged 12 years and older
+        config:
+          meta:
+            description_es: Población masculina de 12 años y más económicamente activa
+      - name: eco4
+        data_type: int
+        description: Employed population aged 12 years and older
+        config:
+          meta:
+            description_es: Población de 12 años y más ocupada
+      - name: eco5
+        data_type: int
+        description: Employed female population aged 12 years and older
+        config:
+          meta:
+            description_es: Población femenina de 12 años y más ocupada
+      - name: eco6
+        data_type: int
+        description: Employed male population aged 12 years and older
+        config:
+          meta:
+            description_es: Población masculina de 12 años y más ocupada
+      - name: eco7
+        data_type: int
+        description: Employed population aged 12 years and older with no schooling
+        config:
+          meta:
+            description_es: Población de 12 años y más ocupada sin escolaridad
+      - name: eco10
+        data_type: int
+        description: Employed population aged 12 years and older with at least one completed grade of
+          primary education
+        config:
+          meta:
+            description_es: Población de 12 años y más ocupada con al menos un grado aprobado en primaria
+      - name: eco13
+        data_type: int
+        description: Employed population aged 12 years and older with incomplete secondary education or
+          equivalent
+        config:
+          meta:
+            description_es: Población de 12 años y más ocupada con secundaria o equivalente incompleta
+      - name: eco16
+        data_type: int
+        description: Employed population aged 12 years and older with complete secondary education or
+          equivalent
+        config:
+          meta:
+            description_es: Población de 12 años y más ocupada con secundaria o equivalente completa
+      - name: eco19
+        data_type: int
+        description: Employed population aged 12 years and older with at least one completed grade of
+          upper secondary education
+        config:
+          meta:
+            description_es: Población de 12 años y más ocupada con al menos un grado aprobado en educación
+              media superior
+      - name: eco22
+        data_type: int
+        description: Employed population aged 12 years and older with at least one completed year of higher
+          or postgraduate education
+        config:
+          meta:
+            description_es: Población de 12 años y más ocupada con al menos un grado aprobado en educación
+              superior o posgrado
+      - name: eco25
+        data_type: int
+        description: Unemployed population aged 12 years and older
+        config:
+          meta:
+            description_es: Población de 12 años y más desocupada
+      - name: eco26
+        data_type: int
+        description: Unemployed female population aged 12 years and older
+        config:
+          meta:
+            description_es: Población femenina de 12 años y más desocupada
+      - name: eco27
+        data_type: int
+        description: Unemployed male population aged 12 years and older
+        config:
+          meta:
+            description_es: Población masculina de 12 años y más desocupada
+      - name: eco28
+        data_type: int
+        description: Economically inactive population aged 12 years and older
+        config:
+          meta:
+            description_es: Población de 12 años y más no económicamente activa
+      - name: eco29
+        data_type: int
+        description: Economically inactive female population aged 12 years and older
+        config:
+          meta:
+            description_es: Población femenina de 12 años y más no económicamente activa
+      - name: eco30
+        data_type: int
+        description: Economically inactive male population aged 12 years and older
+        config:
+          meta:
+            description_es: Población masculina de 12 años y más no económicamente activa
+      - name: eco31
+        data_type: int
+        description: Economically inactive population aged 12 years and older who are pensioners or retired
+        config:
+          meta:
+            description_es: Población de 12 años y más no económicamente activa pensionada o jubilada
+      - name: eco34
+        data_type: int
+        description: Economically inactive population aged 12 years and older who are students
+        config:
+          meta:
+            description_es: Población de 12 años y más no económicamente activa que se dedica a estudiar
+      - name: eco37
+        data_type: int
+        description: Economically inactive population aged 12 years and older dedicated to household chores
+        config:
+          meta:
+            description_es: Población de 12 años y más no económicamente activa que se dedica a los quehaceres
+              del hogar
+      - name: eco40
+        data_type: int
+        description: Economically inactive population aged 12 years and older with a permanent disability,
+          limitation, mental problem, or mental condition that prevents them from working
+        config:
+          meta:
+            description_es: Población de 12 años y más no económicamente activa que tiene alguna discapacidad,
+              limitación, problema o situación mental permanente que le impide trabajar
+      - name: eco43
+        data_type: int
+        description: Economically inactive population aged 12 years and older with another reason that
+          prevents them from working
+        config:
+          meta:
+            description_es: Población de 12 años y más no económicamente activa que tiene otra razón que
+              le impide trabajar

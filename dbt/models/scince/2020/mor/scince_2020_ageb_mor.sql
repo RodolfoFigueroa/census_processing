@@ -1,2 +1,4 @@
-select {{ scince_columns(2020, "mor") }}
+select
+    "cvegeo",
+    "mor1_r"
 from {{ ref("scince_2020_mor") }}

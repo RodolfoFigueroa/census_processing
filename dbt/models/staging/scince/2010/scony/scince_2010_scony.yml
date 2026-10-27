@@ -1,0 +1,101 @@
+version: 2
+models:
+  - name: scince_2010_scony
+    description: Typed 2010 SCINCE scony attributes at AGEB level.
+    config:
+      schema: staging
+      materialized: table
+      contract:
+        enforced: true
+      meta:
+        dagster:
+          asset_key:
+            - staging
+            - '2010'
+            - scince
+            - scony
+          group: staging/2010/scince
+    columns:
+      - name: cvegeo
+        data_type: text
+        description: Unique identifier for the AGEB.
+        config:
+          meta:
+            description_es: null
+      - name: scony1
+        data_type: int
+        description: Population aged 12 years and older who are single or have never been in a union
+        config:
+          meta:
+            description_es: Población soltera o nunca unida de 12 años y más
+      - name: scony2
+        data_type: int
+        description: Female population aged 12 years and older who are single or have never been in a
+          union
+        config:
+          meta:
+            description_es: Población femenina soltera o nunca unida de 12 años y más
+      - name: scony3
+        data_type: int
+        description: Male population aged 12 years and older who are single or have never been in a union
+        config:
+          meta:
+            description_es: Población masculina soltera o nunca unida de 12 años y más
+      - name: scony4
+        data_type: int
+        description: Population aged 12 years and older who are married or in a union
+        config:
+          meta:
+            description_es: Población casada o unida de 12 años y más
+      - name: scony5
+        data_type: int
+        description: Female population aged 12 years and older who are married or in a union
+        config:
+          meta:
+            description_es: Población femenina casada o unida de 12 años y más
+      - name: scony6
+        data_type: int
+        description: Male population aged 12 years and older who are married or in a union
+        config:
+          meta:
+            description_es: Población masculina casada o unida de 12 años y más
+      - name: scony7
+        data_type: int
+        description: Population aged 12 years and older who were formerly married or in a union
+        config:
+          meta:
+            description_es: Población que estuvo casada o unida de 12 años y más
+      - name: scony8
+        data_type: int
+        description: Female population aged 12 years and older who were formerly married or in a union
+        config:
+          meta:
+            description_es: Población femenina que estuvo casada o unida de 12 años y más
+      - name: scony9
+        data_type: int
+        description: Male population aged 12 years and older who were formerly married or in a union
+        config:
+          meta:
+            description_es: Población masculina que estuvo casada o unida de 12 años y más
+      - name: scony10
+        data_type: int
+        description: Population aged 15 to 24 years who are married or in a union
+        config:
+          meta:
+            description_es: Población casada o unida de 15 a 24 años
+      - name: scony11
+        data_type: int
+        description: Female population aged 15 to 24 years who are married or in a union
+        config:
+          meta:
+            description_es: Población femenina casada o unida de 15 a 24 años
+      - name: scony12
+        data_type: int
+        description: Male population aged 15 to 24 years who are married or in a union
+        config:
+          meta:
+            description_es: Población masculina casada o unida de 15 a 24 años
+      - name: _source_file
+        data_type: text
+      - name: _source_member
+        data_type: text

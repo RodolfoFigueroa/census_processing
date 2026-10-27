@@ -1,0 +1,20 @@
+select
+    {{ scince_typed_value('"cvegeo"', "text") }} as "cvegeo",
+    {{ scince_typed_value('"mig1"', "int") }} as "mig1",
+    {{ scince_typed_value('"mig2"', "int") }} as "mig2",
+    {{ scince_typed_value('"mig3"', "int") }} as "mig3",
+    {{ scince_typed_value('"mig4"', "int") }} as "mig4",
+    {{ scince_typed_value('"mig5"', "int") }} as "mig5",
+    {{ scince_typed_value('"mig6"', "int") }} as "mig6",
+    {{ scince_typed_value('"mig7"', "int") }} as "mig7",
+    {{ scince_typed_value('"mig8"', "int") }} as "mig8",
+    {{ scince_typed_value('"mig9"', "int") }} as "mig9",
+    {{ scince_typed_value('"mig10"', "int") }} as "mig10",
+    {{ scince_typed_value('"mig11"', "int") }} as "mig11",
+    {{ scince_typed_value('"mig12"', "int") }} as "mig12",
+    {{ scince_typed_value('"mig13"', "int") }} as "mig13",
+    {{ scince_typed_value('"mig14"', "int") }} as "mig14",
+    {{ scince_typed_value('"mig15"', "int") }} as "mig15",
+    _source_file,
+    _source_member
+from {{ source("scince_ingest", "scince_2020_mig") }}

@@ -1,0 +1,54 @@
+version: 2
+models:
+  - name: scince_2020_ageb_relig
+    description: 2020 census religion statistics obtained from the SCINCE dataset, aggregated by AGEB.
+    config:
+      meta:
+        dagster:
+          asset_key:
+            - scince
+            - '2020'
+            - ageb
+            - relig
+          group: scince/2020
+    constraints:
+      - type: primary_key
+        columns:
+          - cvegeo
+      - type: foreign_key
+        columns:
+          - cvegeo
+        to: ref("geo_unit_2020_ageb")
+        to_columns:
+          - cvegeo
+    columns:
+      - name: cvegeo
+        data_type: text
+        description: Unique identifier for the AGEB.
+        config:
+          meta:
+            description_es: null
+      - name: relig1
+        data_type: int
+        description: Catholic population
+        config:
+          meta:
+            description_es: Población con religión católica
+      - name: relig2
+        data_type: int
+        description: Population affiliated with a Protestant or Evangelical Christian religious group
+        config:
+          meta:
+            description_es: Población con grupo religioso protestante/cristiano evangélico
+      - name: relig3
+        data_type: int
+        description: Population with religions other than those listed above
+        config:
+          meta:
+            description_es: Población con otras religiones diferentes a las anteriores
+      - name: relig4
+        data_type: int
+        description: Population with no religion or religious affiliation
+        config:
+          meta:
+            description_es: Población sin religión o sin adscripción religiosa

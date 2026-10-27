@@ -1,0 +1,88 @@
+version: 2
+models:
+  - name: scince_2020_salud
+    description: Typed 2020 SCINCE salud attributes at AGEB level.
+    config:
+      schema: staging
+      materialized: table
+      contract:
+        enforced: true
+      meta:
+        dagster:
+          asset_key:
+            - staging
+            - '2020'
+            - scince
+            - salud
+          group: staging/2020/scince
+    columns:
+      - name: cvegeo
+        data_type: text
+        description: Unique identifier for the AGEB.
+        config:
+          meta:
+            description_es: null
+      - name: salud1
+        data_type: int
+        description: Population affiliated with health care services
+        config:
+          meta:
+            description_es: Población afiliada a servicios de salud
+      - name: salud2
+        data_type: int
+        description: Population not affiliated with health care services
+        config:
+          meta:
+            description_es: Población sin afiliación a servicios de salud
+      - name: salud3
+        data_type: int
+        description: Population affiliated with IMSS health care services
+        config:
+          meta:
+            description_es: Población afiliada a servicios de salud en el IMSS
+      - name: salud4
+        data_type: int
+        description: Population affiliated with ISSSTE health care services
+        config:
+          meta:
+            description_es: Población afiliada a servicios de salud en el ISSSTE
+      - name: salud5
+        data_type: int
+        description: Population affiliated with Instituto de Salud para el Bienestar health care services
+        config:
+          meta:
+            description_es: Población afiliada a servicios de salud en el Instituto de Salud para el Bienestar
+      - name: salud6
+        data_type: int
+        description: Population affiliated with Pemex, Defense, or Navy health care services
+        config:
+          meta:
+            description_es: Población afiliada a servicios de salud en Pemex, Defensa o Marina
+      - name: salud7
+        data_type: int
+        description: Population affiliated with health care services at a private institution
+        config:
+          meta:
+            description_es: Población afiliada a servicios de salud en una institución privada
+      - name: salud8
+        data_type: int
+        description: Population affiliated with health care services at another institution
+        config:
+          meta:
+            description_es: Población afiliada a servicios de salud en otra institución
+      - name: salud9
+        data_type: int
+        description: Population affiliated with state ISSSTE health care services
+        config:
+          meta:
+            description_es: Población afiliada a servicios de salud en el ISSSTE estatal
+      - name: salud10
+        data_type: int
+        description: Population affiliated with IMSS BIENESTAR health care services
+        config:
+          meta:
+            description_es: Población afiliada a servicios de salud en el IMSS BIENESTAR
+      - name: _source_file
+        data_type: text
+      - name: _source_member
+        data_type: text

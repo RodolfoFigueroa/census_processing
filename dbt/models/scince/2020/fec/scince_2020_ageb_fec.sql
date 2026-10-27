@@ -1,2 +1,6 @@
-select {{ scince_columns(2020, "fec") }}
+select
+    "cvegeo",
+    "fec1_r",
+    "fec2_r",
+    "fec3_r"
 from {{ ref("scince_2020_fec") }}
