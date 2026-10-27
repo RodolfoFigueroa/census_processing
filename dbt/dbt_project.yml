@@ -22,3 +22,5 @@ models:
 
 flags:
   send_anonymous_usage_stats: false
+  # Only test selected models and their upstream dependencies during partial builds.
+  indirect_selection: buildable
