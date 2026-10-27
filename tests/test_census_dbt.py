@@ -180,8 +180,9 @@ def test_schema_generation(target: str, custom: str, expected: str) -> None:
 @pytest.mark.parametrize("year", [2010, 2020])
 def test_declarations_link_ingestion_staging_and_geography(year: int) -> None:
     asset = {2010: census_2010, 2020: census_2020}[year]
-    key = dg.AssetKey(["ingest", "census", str(year)])
+    key = dg.AssetKey(["ingest", str(year), "census"])
     assert asset.keys == {key}
+    assert asset.group_names_by_key[key] == f"ingest/{year}/census"
     assert asset.asset_deps[key] == {dg.AssetKey(["input", str(year), "demography"])}
     assert asset.get_io_manager_key_for_asset_key(key) == "postgres_manager"
     assert asset.metadata_by_key[key] == {"schema": "ingest", "table": f"census_{year}"}
@@ -193,6 +194,7 @@ def test_declarations_link_ingestion_staging_and_geography(year: int) -> None:
     )
     assert source["schema"] == "ingest"
     assert table["config"]["meta"]["dagster"]["asset_key"] == list(key.path)
+    assert table["config"]["meta"]["dagster"]["group"] == asset.group_names_by_key[key]
     models = yaml.safe_load((directory / "schema.yml").read_text())["models"]
     model = next(model for model in models if model["name"] == f"stg_census__{year}")
     assert model["config"]["contract"]["enforced"] is True
@@ -200,9 +202,10 @@ def test_declarations_link_ingestion_staging_and_geography(year: int) -> None:
     assert model["config"]["schema"] == "staging"
     assert model["config"]["meta"]["dagster"]["asset_key"] == [
         "staging",
-        "census",
         str(year),
+        "census",
     ]
+    assert model["config"]["meta"]["dagster"]["group"] == f"staging/{year}/census"
     columns = ast.literal_eval(render_sql(model["columns"]))
     assert [column["name"] for column in columns][-5:] == [
         "nom_ent",

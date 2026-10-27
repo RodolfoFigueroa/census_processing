@@ -10,8 +10,8 @@ models:
         enforced: true
       meta:
         dagster:
-          asset_key: ["staging", "census", "2010"]
-          group: staging/census
+          asset_key: ["staging", "2010", "census"]
+          group: staging/2010/census
     columns: "{{ var('census_2010_columns') + [
       {'name': 'nom_ent', 'data_type': 'text'},
       {'name': 'nom_mun', 'data_type': 'text'},
@@ -29,8 +29,8 @@ models:
         enforced: true
       meta:
         dagster:
-          asset_key: ["staging", "census", "2020"]
-          group: staging/census
+          asset_key: ["staging", "2020", "census"]
+          group: staging/2020/census
     columns: "{{ var('census_2020_columns') + [
       {'name': 'nom_ent', 'data_type': 'text'},
       {'name': 'nom_mun', 'data_type': 'text'},

@@ -9,11 +9,11 @@ from census_processing.readers.census import load_census
 
 def census_ingest_factory(year: int) -> dg.AssetsDefinition:
     @dg.asset(
-        key=["ingest", "census", str(year)],
+        key=["ingest", str(year), "census"],
         deps=[["input", str(year), "demography"]],
         io_manager_key="postgres_manager",
         metadata={"schema": "ingest", "table": f"census_{year}"},
-        group_name="ingest/census",
+        group_name=f"ingest/{year}/census",
     )
     def _asset(path_resource: PathResource) -> pd.DataFrame:
         return load_census(Path(path_resource.in_path) / str(year) / "census", year)

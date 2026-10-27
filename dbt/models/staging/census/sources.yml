@@ -9,10 +9,12 @@ sources:
         config:
           meta:
             dagster:
-              asset_key: ["ingest", "census", "2010"]
+              asset_key: ["ingest", "2010", "census"]
+              group: ingest/2010/census
       - name: census_2020
         description: Source records from all 32 state census archives for 2020.
         config:
           meta:
             dagster:
-              asset_key: ["ingest", "census", "2020"]
+              asset_key: ["ingest", "2020", "census"]
+              group: ingest/2020/census
