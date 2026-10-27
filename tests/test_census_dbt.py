@@ -76,7 +76,7 @@ def test_public_projection_matches_its_existing_contract(
     projection, relation = sql.split(" from ")
     assert projection.startswith(f"select left(cvegeo, {width}) as cvegeo")
     assert ["cvegeo", *re.findall(r'"([^"]+)"', projection)] == expected
-    assert relation == f"\"stg_census__{year}\" where census_level = '{level}'"
+    assert relation == f"\"census_{year}\" where census_level = '{level}'"
     assert "*" not in projection
 
 
@@ -85,7 +85,7 @@ def test_staging_projects_declared_types_and_provenance(year: int) -> None:
     variables = yaml.safe_load((DBT / "vars.yml").read_text())["vars"]
     columns = variables[f"census_{year}_columns"]
     sql = render_sql(
-        (DBT / "models" / "staging" / "census" / f"stg_census__{year}.sql").read_text()
+        (DBT / "models" / "staging" / "census" / f"census_{year}.sql").read_text()
     )
     assert f'from "ingest"."census_{year}"' in sql
     assert "lpad(ageb, 4, '0')" in sql
@@ -196,7 +196,7 @@ def test_declarations_link_ingestion_staging_and_geography(year: int) -> None:
     assert table["config"]["meta"]["dagster"]["asset_key"] == list(key.path)
     assert table["config"]["meta"]["dagster"]["group"] == asset.group_names_by_key[key]
     models = yaml.safe_load((directory / "schema.yml").read_text())["models"]
-    model = next(model for model in models if model["name"] == f"stg_census__{year}")
+    model = next(model for model in models if model["name"] == f"census_{year}")
     assert model["config"]["contract"]["enforced"] is True
     assert model["config"]["materialized"] == "table"
     assert model["config"]["schema"] == "staging"
@@ -217,7 +217,7 @@ def test_declarations_link_ingestion_staging_and_geography(year: int) -> None:
 
     for level in ("ent", "mun", "loc", "ageb"):
         sql = render_sql("{{ geo_unit_ids(" + str(year) + ', "' + level + '") }}')
-        assert f'from "stg_census__{year}"' in sql
+        assert f'from "census_{year}"' in sql
         assert f"census_{year}_prepared" not in sql
     assert f"census_{year}_prepared" not in (DBT / "models" / "sources.yml").read_text()
 

@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: stg_census__2010
+  - name: census_2010
     description: Typed 2010 census records at every source geographic level.
     config:
       schema: staging
@@ -20,7 +20,7 @@ models:
       {'name': 'census_level', 'data_type': 'text'}
     ] }}"
 
-  - name: stg_census__2020
+  - name: census_2020
     description: Typed 2020 census records at every source geographic level.
     config:
       schema: staging
