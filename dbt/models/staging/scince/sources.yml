@@ -3,7 +3,7 @@ sources:
 - name: scince_ingest
   schema: ingest
   tables:
-  - name: scince_2010_des
+  - name: scince_2010_ent
     config:
       meta:
         dagster:
@@ -11,9 +11,9 @@ sources:
           - ingest
           - '2010'
           - scince
-          - des
+          - ent
           group: ingest/2010/scince
-  - name: scince_2010_disc
+  - name: scince_2010_mun
     config:
       meta:
         dagster:
@@ -21,9 +21,9 @@ sources:
           - ingest
           - '2010'
           - scince
-          - disc
+          - mun
           group: ingest/2010/scince
-  - name: scince_2010_eco
+  - name: scince_2010_loc
     config:
       meta:
         dagster:
@@ -31,9 +31,9 @@ sources:
           - ingest
           - '2010'
           - scince
-          - eco
+          - loc
           group: ingest/2010/scince
-  - name: scince_2010_edu
+  - name: scince_2010_ageb
     config:
       meta:
         dagster:
@@ -41,9 +41,9 @@ sources:
           - ingest
           - '2010'
           - scince
-          - edu
+          - ageb
           group: ingest/2010/scince
-  - name: scince_2010_fec
+  - name: scince_2010_mza
     config:
       meta:
         dagster:
@@ -51,99 +51,9 @@ sources:
           - ingest
           - '2010'
           - scince
-          - fec
+          - mza
           group: ingest/2010/scince
-  - name: scince_2010_hogar
-    config:
-      meta:
-        dagster:
-          asset_key:
-          - ingest
-          - '2010'
-          - scince
-          - hogar
-          group: ingest/2010/scince
-  - name: scince_2010_indi
-    config:
-      meta:
-        dagster:
-          asset_key:
-          - ingest
-          - '2010'
-          - scince
-          - indi
-          group: ingest/2010/scince
-  - name: scince_2010_mig
-    config:
-      meta:
-        dagster:
-          asset_key:
-          - ingest
-          - '2010'
-          - scince
-          - mig
-          group: ingest/2010/scince
-  - name: scince_2010_mor
-    config:
-      meta:
-        dagster:
-          asset_key:
-          - ingest
-          - '2010'
-          - scince
-          - mor
-          group: ingest/2010/scince
-  - name: scince_2010_pob
-    config:
-      meta:
-        dagster:
-          asset_key:
-          - ingest
-          - '2010'
-          - scince
-          - pob
-          group: ingest/2010/scince
-  - name: scince_2010_relig
-    config:
-      meta:
-        dagster:
-          asset_key:
-          - ingest
-          - '2010'
-          - scince
-          - relig
-          group: ingest/2010/scince
-  - name: scince_2010_salud
-    config:
-      meta:
-        dagster:
-          asset_key:
-          - ingest
-          - '2010'
-          - scince
-          - salud
-          group: ingest/2010/scince
-  - name: scince_2010_scony
-    config:
-      meta:
-        dagster:
-          asset_key:
-          - ingest
-          - '2010'
-          - scince
-          - scony
-          group: ingest/2010/scince
-  - name: scince_2010_viv
-    config:
-      meta:
-        dagster:
-          asset_key:
-          - ingest
-          - '2010'
-          - scince
-          - viv
-          group: ingest/2010/scince
-  - name: scince_2020_disc
+  - name: scince_2020_ent
     config:
       meta:
         dagster:
@@ -151,9 +61,9 @@ sources:
           - ingest
           - '2020'
           - scince
-          - disc
+          - ent
           group: ingest/2020/scince
-  - name: scince_2020_eco
+  - name: scince_2020_mun
     config:
       meta:
         dagster:
@@ -161,9 +71,9 @@ sources:
           - ingest
           - '2020'
           - scince
-          - eco
+          - mun
           group: ingest/2020/scince
-  - name: scince_2020_edu
+  - name: scince_2020_loc
     config:
       meta:
         dagster:
@@ -171,9 +81,9 @@ sources:
           - ingest
           - '2020'
           - scince
-          - edu
+          - loc
           group: ingest/2020/scince
-  - name: scince_2020_fec
+  - name: scince_2020_ageb
     config:
       meta:
         dagster:
@@ -181,9 +91,9 @@ sources:
           - ingest
           - '2020'
           - scince
-          - fec
+          - ageb
           group: ingest/2020/scince
-  - name: scince_2020_hogar
+  - name: scince_2020_mza
     config:
       meta:
         dagster:
@@ -191,85 +101,5 @@ sources:
           - ingest
           - '2020'
           - scince
-          - hogar
-          group: ingest/2020/scince
-  - name: scince_2020_indi
-    config:
-      meta:
-        dagster:
-          asset_key:
-          - ingest
-          - '2020'
-          - scince
-          - indi
-          group: ingest/2020/scince
-  - name: scince_2020_mig
-    config:
-      meta:
-        dagster:
-          asset_key:
-          - ingest
-          - '2020'
-          - scince
-          - mig
-          group: ingest/2020/scince
-  - name: scince_2020_mor
-    config:
-      meta:
-        dagster:
-          asset_key:
-          - ingest
-          - '2020'
-          - scince
-          - mor
-          group: ingest/2020/scince
-  - name: scince_2020_pob
-    config:
-      meta:
-        dagster:
-          asset_key:
-          - ingest
-          - '2020'
-          - scince
-          - pob
-          group: ingest/2020/scince
-  - name: scince_2020_relig
-    config:
-      meta:
-        dagster:
-          asset_key:
-          - ingest
-          - '2020'
-          - scince
-          - relig
-          group: ingest/2020/scince
-  - name: scince_2020_salud
-    config:
-      meta:
-        dagster:
-          asset_key:
-          - ingest
-          - '2020'
-          - scince
-          - salud
-          group: ingest/2020/scince
-  - name: scince_2020_scony
-    config:
-      meta:
-        dagster:
-          asset_key:
-          - ingest
-          - '2020'
-          - scince
-          - scony
-          group: ingest/2020/scince
-  - name: scince_2020_viv
-    config:
-      meta:
-        dagster:
-          asset_key:
-          - ingest
-          - '2020'
-          - scince
-          - viv
+          - mza
           group: ingest/2020/scince

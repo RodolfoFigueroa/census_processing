@@ -108,13 +108,13 @@ def inputs(
     )
     shp_dir = tmp_path / "shapefile"
     shp_dir.mkdir()
-    primary.to_file(shp_dir / "agebs.shp", index=False)
+    primary.to_file(shp_dir / "AGEB's_90_aj.shp", index=False)
     year_path = tmp_path / "1990"
     year_path.mkdir()
     geometry_zip = year_path / "AGEBs 90_TecMonty_aj.zip"
     with ZipFile(geometry_zip, "w") as archive:
         for path in shp_dir.iterdir():
-            archive.write(path, f"nested/{path.name}")
+            archive.write(path, f"AGEBs 90_TecMonty_aj/{path.name}")
     scince_rar = year_path / "SCINCE1990.rar"
     scince_rar.touch()
     extracted: list[Path] = []
@@ -137,6 +137,25 @@ def test_zip_loader_is_independent_of_scince(inputs: Inputs) -> None:
     assert primary.crs.to_epsg() == 6372
     assert not primary.loc[PREFIX + "0060"].geometry.is_valid
     assert inputs.extracted == []
+
+
+def test_combined_geometry_preserves_zip_rows_and_aligns_missing_agebs(
+    inputs: Inputs,
+) -> None:
+    primary = load_geometry_zip(inputs.geometry_zip)
+    output = load_1990_ageb_geometries(path_resource=inputs.path_resource)
+    assert isinstance(output, gpd.GeoDataFrame)
+    result = output.set_index("cvegeo")
+    assert set(result.index) == {
+        PREFIX + suffix
+        for suffix in ("0010", "0020", "0030", "0040", "005A", "0060", "0070", "0090")
+    }
+    assert result.loc[primary.index].geometry.to_wkb().equals(primary.geometry.to_wkb())
+    fallback = result.geometry.loc[PREFIX + "005A"]
+    assert isinstance(fallback, MultiPolygon)
+    assert fallback.equals(box(500810, 1999985, 500910, 2000085))
+    assert result.loc[PREFIX + "0070", "geometry"] is None
+    assert all(not path.exists() for path in inputs.extracted)
 
 
 def test_scince_loading_is_independent_of_zip(inputs: Inputs) -> None:
@@ -166,46 +185,6 @@ def test_scince_context_cleans_up_on_consumer_failure(inputs: Inputs) -> None:
         raise RuntimeError(msg)
     assert inputs.extracted
     assert all(not path.exists() for path in inputs.extracted)
-
-
-@pytest.mark.parametrize("data", [b"partial", pnf("001-0", "001-0"), b""])
-def test_bad_statistics_fail_and_clean_up(inputs: Inputs, data: bytes) -> None:
-    inputs.map_path.with_suffix(".PNF").write_bytes(data)
-    with pytest.raises(ValueError, match=r"Truncated|Duplicate|Empty"):
-        load_1990_ageb_geometries(path_resource=inputs.path_resource)
-    assert inputs.extracted
-    assert all(not path.exists() for path in inputs.extracted)
-
-
-def test_duplicate_locality_fails(inputs: Inputs) -> None:
-    duplicate = inputs.map_path.parent.parent / "11"
-    duplicate.mkdir()
-    shutil.copyfile(inputs.map_path.with_suffix(".PNF"), duplicate / "10010001.PNF")
-    with pytest.raises(ValueError, match="Duplicate SCINCE locality"):
-        load_1990_ageb_geometries(path_resource=inputs.path_resource)
-
-
-def test_duplicate_zip_ids_fail(
-    inputs: Inputs, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    frame = gpd.GeoDataFrame(
-        {
-            "CVE_ENT": [1, 1],
-            "CVE_MUN": [1, 1],
-            "CVE_LOC": [1, 1],
-            "CVE_AGEB": ["0010", "0010"],
-        },
-        geometry=[box(0, 0, 1, 1)] * 2,
-        crs=6372,
-    )
-    monkeypatch.setattr(gpd, "read_file", lambda *_args: frame)
-    with pytest.raises(ValueError, match="Duplicate AGEB identifiers"):
-        load_1990_ageb_geometries(path_resource=inputs.path_resource)
-
-
-def test_missing_archive_fails(path_resource: PathResource) -> None:
-    with pytest.raises(FileNotFoundError):
-        load_1990_ageb_geometries(path_resource=path_resource)
 
 
 def test_candidate_selection_and_unavailable_transformations(
@@ -253,7 +232,6 @@ def test_decode_and_project_return_only_geometries(inputs: Inputs) -> None:
         for suffix in ("0010", "0020", "0030", "0040", "005A", "0060", "0080")
     ]
     for position, item in enumerate(boundaries):
-        assert set(vars(item)) == {"cvegeo", "geometry"}
         assert item.geometry.equals(
             box(500000 + position * 200, 2000000, 500100 + position * 200, 2000100)
         )

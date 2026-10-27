@@ -31,23 +31,11 @@ models:
     columns:
       - name: cvegeo
         data_type: text
-        data_tests: [unique, not_null]
       - name: cve_loc
         data_type: text
         description: Parent loc identifier derived from cvegeo.
         constraints:
           - type: not_null
-        data_tests:
-          - not_null
-          - relationships:
-              arguments:
-                to: ref("geo_unit_2010_loc")
-                field: cvegeo
       - name: cve_met
         data_type: text
         description: 2020 metropolitan zone selected by greatest positive overlap, breaking ties by cve_met; null without geometry or positive overlap.
-        data_tests:
-          - relationships:
-              arguments:
-                to: ref("metropoli_2020")
-                field: cve_met

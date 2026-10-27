@@ -1,0 +1,39 @@
+version: 2
+models:
+- name: geo_unit_2020_mza
+  description: 2020 geographic units at the mza level, including all source units
+    and implied ancestors.
+  config:
+    meta:
+      dagster:
+        asset_key:
+        - geo_unit
+        - '2020'
+        - mza
+        group: geo_unit/2020
+    indexes:
+    - columns:
+      - cve_ageb
+      type: btree
+  constraints:
+  - type: primary_key
+    columns:
+    - cvegeo
+  - type: check
+    expression: char_length(cvegeo) = 16
+  - type: foreign_key
+    columns:
+    - cve_ageb
+    to: ref("geo_unit_2020_ageb")
+    to_columns:
+    - cvegeo
+  - type: check
+    expression: cve_ageb = left(cvegeo, 13)
+  columns:
+  - name: cvegeo
+    data_type: text
+  - name: cve_ageb
+    data_type: text
+    description: Parent ageb identifier derived from cvegeo.
+    constraints:
+    - type: not_null

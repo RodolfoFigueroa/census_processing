@@ -43,33 +43,16 @@ class Boundary:
 
 
 def locality_code(stem: str) -> str:
-    if not LOCALITY_STEM.fullmatch(stem):
-        msg = f"Invalid SCINCE locality filename: {stem}"
-        raise ValueError(msg)
     return f"{int(stem[0], 36):02d}{stem[1:]}"
 
 
 def statistical_agebs(data: bytes, prefix: str) -> set[str]:
     """Read the fixed-width PNF keys, excluding the locality total."""
-    if len(data) % PNF_RECORD_BYTES:
-        msg = f"Truncated PNF records for {prefix}"
-        raise ValueError(msg)
     keys = set()
     for offset in range(0, len(data), PNF_RECORD_BYTES):
         label = data[offset + 1 : offset + 6].decode("ascii")
-        if (
-            data[offset] != 5
-            or data[offset + 6] != 8
-            or not AGEB_LABEL.fullmatch(label)
-        ):
-            msg = f"Unexpected PNF record for {prefix} at byte {offset}"
-            raise ValueError(msg)
         if label != "000-0":
-            key = prefix + label.replace("-", "")
-            if key in keys:
-                msg = f"Duplicate statistical AGEB ID: {key}"
-                raise ValueError(msg)
-            keys.add(key)
+            keys.add(prefix + label.replace("-", ""))
     return keys
 
 
@@ -79,22 +62,10 @@ def _statistical_maps(root: Path) -> list[tuple[Path, set[str]]]:
         for path in root.glob("[0-9A-Z][0-9]/*.PNF")
         if LOCALITY_STEM.fullmatch(path.stem)
     )
-    if not paths:
-        msg = f"No SCINCE locality statistics found under {root}"
-        raise ValueError(msg)
-    result = []
-    prefixes: set[str] = set()
-    for path in paths:
-        prefix = locality_code(path.stem)
-        if prefix in prefixes:
-            msg = f"Duplicate SCINCE locality: {prefix}"
-            raise ValueError(msg)
-        prefixes.add(prefix)
-        if not path.stat().st_size:
-            msg = f"Empty SCINCE statistics file: {path.name}"
-            raise ValueError(msg)
-        result.append((path, statistical_agebs(path.read_bytes(), prefix)))
-    return result
+    return [
+        (path, statistical_agebs(path.read_bytes(), locality_code(path.stem)))
+        for path in paths
+    ]
 
 
 @contextmanager

@@ -2,8 +2,8 @@
     {% if data_type == "text" %}
         {{ expression }}::text
     {% elif data_type in ["int", "float"] %}
-        {# DBF N/F parsing strips surrounding stars; N also accepts decimal commas. #}
-        {% set normalized = "replace(nullif(btrim(btrim(btrim(" ~ expression ~ "), '*')), ''), ',', '.')" %}
+        {# DBF numeric padding, suppression stars, and N/D are not measured zeros. #}
+        {% set normalized = "replace(nullif(nullif(btrim(btrim(btrim(" ~ expression ~ "), '*')), ''), 'N/D'), ',', '.')" %}
         {% if data_type == "int" %}
             case
                 when {{ normalized }} is null then null

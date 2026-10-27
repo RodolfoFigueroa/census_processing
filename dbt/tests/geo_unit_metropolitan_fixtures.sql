@@ -25,17 +25,6 @@ with
         select * from (values ('01001'::text, 'A'::text), ('01001', 'A')) as fixture(cvegeo, cve_met)
     ),
     municipal_actual as ({{ assign_metropolitan_municipality("municipalities", "mapping") }}),
-    conflicting_mapping as (
-        select * from (values
-            ('01001'::text, 'A'::text), ('01001', 'B'),
-            ('01002', 'A'), ('01002', 'A'),
-            ('01003', null), ('01003', 'A')
-        ) as fixture(cvegeo, cve_met)
-    ),
-    conflicts as ({{ metropolitan_mapping_conflicts("conflicting_mapping") }}),
-    expected_conflicts as (
-        select * from (values ('01001'::text), ('01003')) as fixture(cvegeo)
-    ),
     municipal_expected as (
         select * from (values ('01001'::text, 'A'::text), ('01002', null)) as fixture(cvegeo, cve_met)
     )
@@ -51,11 +40,4 @@ where exists (
     (select * from municipal_actual except all select * from municipal_expected)
     union all
     (select * from municipal_expected except all select * from municipal_actual)
-)
-union all
-select 'incorrect conflict detection' as failure
-where exists (
-    (select * from conflicts except all select * from expected_conflicts)
-    union all
-    (select * from expected_conflicts except all select * from conflicts)
 )

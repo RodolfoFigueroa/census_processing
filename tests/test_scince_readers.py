@@ -2,7 +2,6 @@ import struct
 import subprocess
 from collections.abc import Sequence
 from pathlib import Path
-from types import SimpleNamespace
 from unittest.mock import Mock
 from zipfile import ZipFile
 
@@ -53,22 +52,16 @@ def dbf_bytes(
 def read_fixture(tmp_path: Path, data: bytes) -> pd.DataFrame:
     path = tmp_path / "attributes.dbf"
     path.write_bytes(data)
-    return scince.read_scince_dbf(
-        path, source_file="state.zip", source_member="01/attributes.dbf"
-    )
+    return scince.read_scince_dbf(path)
 
 
-@pytest.mark.parametrize(
-    "value", ["", "*", "****", "N/D", "12,5", "* 12.50 *", "9007199254740993"]
-)
+@pytest.mark.parametrize("value", ["", "0", "*", "****", "N/D", "12,5", "* 12.50 *"])
 def test_raw_values_remain_text(tmp_path: Path, value: str) -> None:
     frame = read_fixture(tmp_path, dbf_bytes(rows=[(IDENTIFIER, value, "12.34000000")]))
     assert frame.iloc[0].tolist() == [
         IDENTIFIER,
         value,
         "12.34000000",
-        "state.zip",
-        "01/attributes.dbf",
     ]
     assert all(isinstance(dtype, pd.StringDtype) for dtype in frame.dtypes)
 
@@ -81,7 +74,6 @@ def test_character_fields_and_optional_oid(tmp_path: Path) -> None:
     assert frame.columns.tolist() == [
         "cvegeo",
         "grado_marg",
-        *scince.PROVENANCE_COLUMNS,
     ]
     assert frame.loc[0, "grado_marg"] == "  Muy bajo á"
 
@@ -93,71 +85,59 @@ def test_empty_table_preserves_headers_and_types(tmp_path: Path) -> None:
         "cvegeo",
         "pob1",
         "pob1_r",
-        *scince.PROVENANCE_COLUMNS,
     ]
     assert all(isinstance(dtype, pd.StringDtype) for dtype in frame.dtypes)
 
 
-@pytest.mark.parametrize(
-    "identifier",
-    ["", "10010001001A", "010010001001AA", "01001000100-A", "ABCDEFGHIJKLM"],
-)
-def test_invalid_identifiers_fail(tmp_path: Path, identifier: str) -> None:
-    with pytest.raises(ValueError, match="Invalid cvegeo"):
-        read_fixture(tmp_path, dbf_bytes((("CVEGEO", "C", 20),), [(identifier,)]))
+IDS = {
+    "ent": ("01", "01"),
+    "mun": ("01001", "01002"),
+    "loc": ("010010001", "010010002"),
+    "ageb": ("010010001001A", "010010001002B"),
+    "mza": ("010010001001A001", "010010001002B002"),
+}
 
 
-@pytest.mark.parametrize(
-    ("fields", "message"),
-    [
-        ((("CVEGEO", "C", 13), ("cvegeo", "C", 13)), "Duplicate normalized"),
-        ((("POB1", "N", 10),), "Missing cvegeo"),
-        ((("CVEGEO", "C", 13), ("DATE", "D", 8)), "Unsupported DBF type D"),
-    ],
-)
-def test_bad_headers_fail(
-    tmp_path: Path, fields: Sequence[tuple[str, str, int]], message: str
-) -> None:
-    with pytest.raises(ValueError, match=message):
-        read_fixture(tmp_path, dbf_bytes(fields, []))
+def source_fixture(level: str, theme: str, member: str) -> bytes:
+    fields = [("CVEGEO", "C", 24)]
+    if theme == "pob":
+        fields.extend([("POB1", "N", 24), ("POB1_R", "N", 24)])
+        if level == "loc":
+            metadata = "CVE_AGEB" if "loc_rur" in member else "CABECERA"
+            fields.append((metadata, "C", 24))
+    elif theme == "des":
+        fields.append(("GRADO_MARG", "C", 24))
+    else:
+        name = "MOR1_R" if theme == "mor" else f"{theme.upper()}1"
+        fields.append((name, "N", 24))
+    first, second = IDS[level]
+    key = second if theme == "mor" else first
+    if "loc_rur" in member:
+        key = "010010003"
+    rows = [] if theme == "des" else [[key, *["42"] * (len(fields) - 1)]]
+    return dbf_bytes(fields, rows)
 
 
-def test_reserved_provenance_names_fail(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    table = SimpleNamespace(
-        fields=[SimpleNamespace(name=n) for n in ("CVEGEO", "_source_file")]
-    )
-    monkeypatch.setattr(scince, "DBF", Mock(return_value=table))
-    with pytest.raises(ValueError, match="reserved provenance"):
-        read_fixture(tmp_path, b"")
-
-
-def theme_fixture(theme: str) -> bytes:
-    if theme == "mor":
-        return dbf_bytes(
-            (("CVEGEO", "C", 13), ("MOR1_R", "N", 12)), [(IDENTIFIER, "5.2500")]
-        )
-    if theme == "des":
-        return dbf_bytes((("CVEGEO", "C", 13), ("GRADO_MARG", "C", 8)), [])
-    return dbf_bytes()
-
-
-def write_archive(directory: Path, year: int) -> None:
+def write_archive(directory: Path, year: int, level: str) -> None:
     name = "01_SCINCE_zip.zip" if year == 2010 else "SCINCE2020_DATOS_01.zip"
     with ZipFile(directory / name, "w") as archive:
         if year == 2010:
-            for theme, relative in scince.SCINCE_TABLES[year].items():
-                archive.writestr("01/" + relative.upper(), theme_fixture(theme))
+            for theme, members in scince.scince_members(year, level).items():
+                for member in members:
+                    archive.writestr(
+                        "01/" + member.upper(),
+                        source_fixture(level, theme, member),
+                    )
         else:
-            archive.writestr("nested/SCINCE.EXE", b"installer fixture")
+            archive.writestr("SCINCE2020_DATOS_01.exe", b"installer fixture")
 
 
 @pytest.mark.parametrize("year", [2010, 2020])
-def test_archive_layouts_and_theme_provenance(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, year: int
+@pytest.mark.parametrize("level", list(IDS))
+def test_archive_combines_all_published_rows_with_provenance(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, year: int, level: str
 ) -> None:
-    write_archive(tmp_path, year)
+    write_archive(tmp_path, year, level)
     extraction_roots = []
 
     def extract(args: list[str], *, check: bool, stdout: int) -> None:
@@ -168,94 +148,119 @@ def test_archive_layouts_and_theme_provenance(
         assert stdout == subprocess.DEVNULL
         root = Path(args[3])
         extraction_roots.append(root)
-        for theme, relative in scince.SCINCE_TABLES[2020].items():
-            path = root / "app/01_Aguascalientes" / relative.upper()
-            path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_bytes(theme_fixture(theme))
+        for theme, members in scince.scince_members(year, level).items():
+            for member in members:
+                path = root / "app/01_Aguascalientes" / member.upper()
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(source_fixture(level, theme, member))
 
     extractor = Mock(side_effect=extract)
     monkeypatch.setattr(scince.subprocess, "run", extractor)
-    frames = scince.read_scince_archive(tmp_path, year, "01")
-    assert set(frames) == set(scince.SCINCE_TABLES[year])
-    assert len(frames) == (14 if year == 2010 else 13)
-    assert frames["mor"]["mor1_r"].tolist() == ["5.2500"]
-    assert "pob1_r" in frames["pob"]
-    if year == 2010:
-        assert frames["des"].empty
-    for frame in frames.values():
-        assert (
-            not frame["_source_member"].str.contains(str(tmp_path), regex=False).any()
-        )
-        assert not frame["_source_member"].str.startswith("/").any()
+    frame = scince.read_scince_archive(tmp_path, year, "01", level).set_index("cvegeo")
+    expected = set(IDS[level]) | ({"010010003"} if level == "loc" else set())
+    assert set(frame.index) == expected
+    assert frame.loc[IDS[level][0], "pob1"] == "42"
+    assert frame.loc[IDS[level][0], "pob1_r"] == "42"
+    if level == "loc":
+        assert frame.loc[IDS[level][0], "cabecera"] == "42"
+        assert pd.isna(frame.loc[IDS[level][0], "cve_ageb"])
+        assert frame.loc["010010003", "cve_ageb"] == "42"
+        assert pd.isna(frame.loc["010010003", "cabecera"])
+    assert frame.loc[IDS[level][1], "mor1_r"] == "42"
+    if level != "ent":
+        assert pd.isna(frame.loc[IDS[level][1], "pob1"])
+        assert pd.isna(frame.loc[IDS[level][1], "_source_member_pob"])
+        assert pd.isna(frame.loc[IDS[level][0], "mor1_r"])
+    if year == 2010 and level != "mza":
+        assert frame["grado_marg"].isna().all()
+        assert frame["_source_member_des"].isna().all()
+    else:
+        assert "grado_marg" not in frame
+        assert "_source_member_des" not in frame
     prefix = "01/" if year == 2010 else "app/01_Aguascalientes/"
-    assert frames["mor"]["_source_member"].tolist() == [
-        prefix + scince.SCINCE_TABLES[year]["mor"].upper()
-    ]
+    member = scince.scince_members(year, level)["pob"][0]
+    assert frame.loc[IDS[level][0], "_source_member_pob"] == prefix + member.upper()
+    assert frame["_source_file"].eq(frame["_source_file"].iloc[0]).all()
+    assert all(
+        isinstance(dtype, pd.StringDtype) and dtype.storage == "pyarrow"
+        for dtype in frame.dtypes
+    )
     assert extractor.call_count == (year == 2020)
     assert all(not root.exists() for root in extraction_roots)
 
 
-@pytest.mark.parametrize(
-    ("year", "state"), [(2000, "01"), (2010, "00"), (2020, "33"), (2020, "1")]
-)
-def test_invalid_archive_arguments(tmp_path: Path, year: int, state: str) -> None:
-    with pytest.raises(ValueError, match=r"Unsupported SCINCE year|Invalid state code"):
-        scince.read_scince_archive(tmp_path, year, state)
+def test_outer_join_preserves_missing_suppressed_and_zero_values() -> None:
+    population = pd.DataFrame(
+        {
+            "cvegeo": ["01", "02"],
+            "pob1": ["0", "*"],
+            "_source_member_pob": ["pob.dbf"] * 2,
+        },
+        dtype=scince.STRING_DTYPE,
+    )
+    mortality = pd.DataFrame(
+        {
+            "cvegeo": ["02", "03"],
+            "mor1_r": ["12.3400", ""],
+            "_source_member_mor": ["mor.dbf"] * 2,
+        },
+        dtype=scince.STRING_DTYPE,
+    )
+    result = scince.combine_scince_themes(iter([population, mortality])).set_index(
+        "cvegeo"
+    )
+    assert set(result.index) == {"01", "02", "03"}
+    assert result.loc["01", "pob1"] == "0"
+    assert result.loc["02", "pob1"] == "*"
+    assert result.loc["02", "mor1_r"] == "12.3400"
+    assert result.loc["03", "mor1_r"] == ""
+    assert pd.isna(result.loc["03", "pob1"])
+    assert pd.isna(result.loc["01", "_source_member_mor"])
+
+
+def test_join_rejects_column_collisions_and_row_multiplication() -> None:
+    frame = pd.DataFrame({"cvegeo": ["01"], "pob1": ["1"]}, dtype=scince.STRING_DTYPE)
+    with pytest.raises(ValueError, match="columns overlap"):
+        scince.combine_scince_themes([frame, frame])
+    other = frame.rename(columns={"pob1": "mor1_r"})
+    with pytest.raises(pd.errors.MergeError, match="not unique"):
+        scince.combine_scince_themes([pd.concat([frame, frame]), other])
+
+
+def test_empty_themes_preserve_schema() -> None:
+    frame = pd.DataFrame(columns=["cvegeo", "pob1"], dtype=scince.STRING_DTYPE)
+    other = pd.DataFrame(columns=["cvegeo", "mor1_r"], dtype=scince.STRING_DTYPE)
+    result = scince.combine_scince_themes([frame, other])
+    assert result.empty
+    assert set(result.columns) == {"cvegeo", "pob1", "mor1_r"}
 
 
 def test_installer_failure_propagates(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    write_archive(tmp_path, 2020)
+    write_archive(tmp_path, 2020, "ageb")
     monkeypatch.setattr(
         scince.subprocess,
         "run",
         Mock(side_effect=subprocess.CalledProcessError(1, "innoextract")),
     )
     with pytest.raises(subprocess.CalledProcessError):
-        scince.read_scince_archive(tmp_path, 2020, "01")
+        scince.read_scince_archive(tmp_path, 2020, "01", "ageb")
 
 
-@pytest.mark.parametrize("installers", [[], ["one.exe", "two.EXE"]])
-def test_missing_or_ambiguous_installer(tmp_path: Path, installers: list[str]) -> None:
-    with ZipFile(tmp_path / "SCINCE2020_DATOS_01.zip", "w") as archive:
-        for name in installers:
-            archive.writestr(name, b"")
-    with pytest.raises(ValueError, match="exactly one SCINCE installer"):
-        scince.read_scince_archive(tmp_path, 2020, "01")
+def test_load_combines_states_without_changing_values(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    calls = []
 
-
-@pytest.mark.parametrize("members", [[], ["ageb_urb.dbf", "AGEB_URB.DBF"]])
-def test_missing_or_ambiguous_dbf(tmp_path: Path, members: list[str]) -> None:
-    with ZipFile(tmp_path / "01_SCINCE_zip.zip", "w") as archive:
-        archive.writestr("01/", b"")
-        for name in members:
-            archive.writestr("01/" + name, dbf_bytes())
-    with pytest.raises(ValueError, match=r"exactly one member ageb_urb\.dbf"):
-        scince.read_scince_archive(tmp_path, 2010, "01")
-
-
-def test_concatenation_aligns_columns_and_preserves_rows(tmp_path: Path) -> None:
-    frame = read_fixture(tmp_path, dbf_bytes())
-    maps = [
-        {"pob": frame, "des": frame.iloc[:0]},
-        {"pob": frame[frame.columns[::-1]], "des": frame},
-    ]
-    result = scince.concatenate_scince_theme(maps, "pob")
-    assert result.columns.tolist() == frame.columns.tolist()
-    assert result["cvegeo"].tolist() == [IDENTIFIER, IDENTIFIER]
-    assert result.index.tolist() == [0, 1]
-    assert len(scince.concatenate_scince_theme(maps, "des")) == 1
-
-
-def test_schema_mismatch_identifies_state_and_theme(tmp_path: Path) -> None:
-    frame = read_fixture(tmp_path, dbf_bytes())
-    with pytest.raises(ValueError, match="state 02, theme pob"):
-        scince.concatenate_scince_theme(
-            [{"pob": frame}, {"pob": frame.drop(columns="pob1_r")}], "pob"
+    def read(directory: Path, year: int, state: str, level: str) -> pd.DataFrame:
+        calls.append((directory, year, state, level))
+        return pd.DataFrame(
+            {"cvegeo": [state], "pob1": ["0042"]}, dtype=scince.STRING_DTYPE
         )
 
-
-def test_empty_state_collection_fails() -> None:
-    with pytest.raises(ValueError, match="No state frames"):
-        scince.concatenate_scince_theme([], "pob")
+    monkeypatch.setattr(scince, "read_scince_archive", read)
+    result = scince.load_scince(tmp_path, 2020, "ent")
+    assert result["cvegeo"].tolist() == [f"{i:02d}" for i in range(1, 33)]
+    assert result["pob1"].tolist() == ["0042"] * 32
+    assert calls == [(tmp_path, 2020, f"{i:02d}", "ent") for i in range(1, 33)]

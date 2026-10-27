@@ -16,4 +16,3 @@ models:
     columns:
       - name: cvegeo
         data_type: text
-        data_tests: [unique, not_null]

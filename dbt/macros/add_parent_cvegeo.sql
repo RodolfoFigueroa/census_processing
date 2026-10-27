@@ -1,6 +1,7 @@
 {# Input relations must contain text cvegeo and omit the derived parent column. #}
 {% macro add_parent_cvegeo(relation, level) %}
     {% set parents = {
+        "mza": ("cve_ageb", 13),
         "ageb": ("cve_loc", 9),
         "loc": ("cve_mun", 5),
         "mun": ("cve_ent", 2),
@@ -8,7 +9,7 @@
     {% if level not in parents and level != "ent" %}
         {{ exceptions.raise_compiler_error(
             "add_parent_cvegeo: unsupported level '" ~ level
-            ~ "'. Expected ageb, loc, mun, or ent."
+            ~ "'. Expected mza, ageb, loc, mun, or ent."
         ) }}
     {% endif %}
 
