@@ -73,24 +73,27 @@ def render_sql(
 
 @pytest.mark.parametrize(("year", "count"), [(2010, 191), (2020, 223)])
 @pytest.mark.parametrize(
-    ("level", "width"), [("ent", 2), ("mun", 5), ("loc", 9), ("ageb", 13)]
+    ("level", "width"),
+    [("ent", 2), ("mun", 5), ("loc", 9), ("ageb", 13), ("mza", 16)],
 )
 def test_public_projection_matches_its_existing_contract(
     year: int, count: int, level: str, width: int
 ) -> None:
-    directory = DBT / "models" / "census" / str(year) / level
-    models = yaml.safe_load((directory.parent / f"census_{year}.yml").read_text())[
-        "models"
-    ]
+    directory = DBT / "models" / "census" / str(year)
+    models = yaml.safe_load((directory / f"census_{year}.yml").read_text())["models"]
     properties = next(
         model for model in models if model["name"] == f"census_{year}_{level}"
     )
     columns = properties["columns"]
     expected = [column["name"] for column in columns]
-    assert len(expected) == count + (level != "ageb")
+    assert len(expected) == count + (level in {"ent", "mun", "loc"})
     sql = render_sql((directory / f"census_{year}_{level}.sql").read_text())
     projection, relation = sql.split(" from ")
-    assert projection.startswith(f"select left(cvegeo, {width}) as cvegeo")
+    if level == "mza":
+        assert projection.startswith("select cvegeo,")
+        assert "left(" not in projection
+    else:
+        assert projection.startswith(f"select left(cvegeo, {width}) as cvegeo")
     assert ["cvegeo", *re.findall(r'"([^"]+)"', projection)] == expected
     assert relation == f"\"census_{year}\" where census_level = '{level}'"
     assert "*" not in projection
@@ -105,6 +108,27 @@ def test_public_projection_matches_its_existing_contract(
     assert all(
         staging_types[column["name"]] == column["data_type"] for column in columns
     )
+
+
+@pytest.mark.parametrize("year", [2010, 2020])
+def test_block_contract_and_asset_identity(year: int) -> None:
+    directory = DBT / "models" / "census" / str(year)
+    models = {
+        model["name"]: model
+        for model in yaml.safe_load((directory / f"census_{year}.yml").read_text())[
+            "models"
+        ]
+    }
+    block = models[f"census_{year}_mza"]
+    assert block["columns"] == models[f"census_{year}_ageb"]["columns"]
+    assert block["config"]["meta"]["dagster"] == {
+        "asset_key": ["census", str(year), "mza"],
+        "group": f"census/{year}",
+    }
+    assert block["constraints"] == [
+        {"type": "primary_key", "columns": ["cvegeo"]},
+        {"type": "check", "expression": "char_length(cvegeo) = 16"},
+    ]
 
 
 @pytest.mark.parametrize("year", [2010, 2020])
