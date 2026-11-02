@@ -4,6 +4,8 @@ services:
     platform: linux/amd64
     container_name: postgis
     restart: unless-stopped
+    volumes:
+      - ./init.sh:/docker-entrypoint-initdb.d/init.sh:ro
     environment:
       - TZ=America/Mexico_City
     ports:
