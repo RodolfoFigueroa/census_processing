@@ -1,0 +1,8 @@
+type: cfc_dagster_utils.components.dvc.DvcInputComponent
+attributes:
+  key: input/1990/geometry/mun
+  dvc_file: data/input/1990/muni_1990gw.zip.dvc
+post_processing:
+  assets:
+    - attributes:
+        group_name: "input/1990"

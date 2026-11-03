@@ -16,15 +16,21 @@ def add_dummy_geometry(df: pd.DataFrame) -> gpd.GeoDataFrame:
     ).pipe(lambda df: gpd.GeoDataFrame(df, geometry="geometry", crs="EPSG:6372"))
 
 
-@dg.op
-def get_loc_geometry_from_agebs(ageb_geometries: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+def dissolve_geometry_prefix(
+    geometries: gpd.GeoDataFrame, length: int
+) -> gpd.GeoDataFrame:
+    """Combine geometry coverage by an identifier prefix, preserving the CRS."""
     return (
-        ageb_geometries.assign(cvegeo=lambda df: df["cvegeo"].str[:9])
-        .dissolve(
-            by="cvegeo",
-        )[["geometry"]]
+        geometries[["cvegeo", "geometry"]]
+        .assign(cvegeo=lambda df: df["cvegeo"].str[:length])
+        .dissolve(by="cvegeo")[["geometry"]]
         .reset_index()
     )
+
+
+@dg.op
+def get_loc_geometry_from_agebs(ageb_geometries: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    return dissolve_geometry_prefix(ageb_geometries, 9)
 
 
 @dg.op(

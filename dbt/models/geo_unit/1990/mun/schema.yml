@@ -1,0 +1,32 @@
+version: 2
+
+models:
+  - name: geo_unit_1990_mun
+    description: 1990 geographic units at the mun level, including all source units and implied ancestors.
+    config:
+      meta:
+        dagster:
+          asset_key: ["geo_unit", "1990", "mun"]
+          group: geo_unit/1990
+      indexes:
+        - columns: [cve_ent]
+          type: btree
+    constraints:
+      - type: primary_key
+        columns: [cvegeo]
+      - type: check
+        expression: "char_length(cvegeo) = 5"
+      - type: foreign_key
+        columns: [cve_ent]
+        to: ref("geo_unit_1990_ent")
+        to_columns: [cvegeo]
+      - type: check
+        expression: "cve_ent = left(cvegeo, 2)"
+    columns:
+      - name: cvegeo
+        data_type: text
+      - name: cve_ent
+        data_type: text
+        description: Parent ent identifier derived from cvegeo.
+        constraints:
+          - type: not_null

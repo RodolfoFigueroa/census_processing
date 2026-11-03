@@ -42,16 +42,35 @@
 {% endmacro %}
 
 {% macro geo_unit_ids(year, level) %}
-    {% set geometries = {} %}
-    {% for source_level in ["ent", "mun", "loc", "ageb"] %}
-        {% do geometries.update({source_level: source("census_staging", "geometry_" ~ year ~ "_" ~ source_level ~ "_prepared")}) %}
-    {% endfor %}
-    {% set scince = {} %}
-    {% for source_level in ["ent", "mun", "loc", "ageb", "mza"] %}
-        {% do scince.update({source_level: ref("scince_" ~ year ~ "_" ~ source_level ~ "_staging")}) %}
-    {% endfor %}
-    {{ geo_unit_ids_from_sources(
-        level, geometries, ref("census_" ~ year),
-        scince, source("census_staging", "metropoli_2020_prepared") if year == 2020 else none
-    ) }}
+    {% if year == 1990 %}
+        {% if level not in ["ent", "mun"] %}
+            {{ exceptions.raise_compiler_error("1990 identifier discovery supports ent and mun only") }}
+        {% endif %}
+        {% set width = 2 if level == "ent" else 5 %}
+        {# SCINCE totals use zero-padded 13-character keys; retain their ancestors. #}
+        with scince_identifiers as (
+            select distinct left(cvegeo, {{ width }}) as cvegeo
+            from {{ source("census_staging", "scince_1990_prepared") }}
+        )
+        {{ geo_unit_ids_from_sources(
+            level,
+            {"mun": source("census_staging", "geometry_1990_mun_prepared"),
+             "ageb": source("census_staging", "geometry_1990_ageb_prepared")},
+            source("census_staging", "census_1990"),
+            {level: "scince_identifiers"}
+        ) }}
+    {% else %}
+        {% set geometries = {} %}
+        {% for source_level in ["ent", "mun", "loc", "ageb"] %}
+            {% do geometries.update({source_level: source("census_staging", "geometry_" ~ year ~ "_" ~ source_level ~ "_prepared")}) %}
+        {% endfor %}
+        {% set scince = {} %}
+        {% for source_level in ["ent", "mun", "loc", "ageb", "mza"] %}
+            {% do scince.update({source_level: ref("scince_" ~ year ~ "_" ~ source_level ~ "_staging")}) %}
+        {% endfor %}
+        {{ geo_unit_ids_from_sources(
+            level, geometries, ref("census_" ~ year),
+            scince, source("census_staging", "metropoli_2020_prepared") if year == 2020 else none
+        ) }}
+    {% endif %}
 {% endmacro %}
