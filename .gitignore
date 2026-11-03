@@ -221,6 +221,7 @@ dagster/*
 .DS_Store
 cache/
 .vscode
+data/output
 
 # dbt
 dbt/logs/
