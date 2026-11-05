@@ -1,0 +1,33 @@
+version: 2
+
+models:
+  - name: conapo_mun
+    description: CONAPO mid-year municipality populations for 1990–2040, linked to 2020 geographic units.
+    config:
+      meta:
+        dagster:
+          asset_key: ["conapo", "mun"]
+          group: conapo
+    constraints:
+      - type: primary_key
+        columns: [cvegeo, year]
+      - type: check
+        expression: "cvegeo ~ '^[0-9]{5}$'"
+      - type: foreign_key
+        columns: [cvegeo]
+        to: ref("geo_unit_2020_mun")
+        to_columns: [cvegeo]
+      - type: check
+        expression: "pob_mit_mun >= 0"
+    columns:
+      - name: cvegeo
+        data_type: text
+        description: Municipality identifier, padded to five digits from CLAVE.
+      - name: year
+        data_type: integer
+        description: Population reference year from AÑO.
+      - name: pob_mit_mun
+        data_type: integer
+        description: Mid-year municipality population from POB_MIT_MUN.
+        constraints:
+          - type: not_null

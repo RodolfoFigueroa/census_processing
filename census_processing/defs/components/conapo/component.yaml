@@ -1,0 +1,8 @@
+type: cfc_dagster_utils.components.dvc.DvcInputComponent
+attributes:
+  key: input/conapo
+  dvc_file: data/input/00_Republica_mexicana.zip.dvc
+post_processing:
+  assets:
+    - attributes:
+        group_name: "input/conapo"

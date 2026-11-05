@@ -16,7 +16,7 @@
 
 {# Only staging relations participate: final parents must not depend on children. #}
 {% macro geo_unit_ids_from_sources(level, geometry_relations, census_relation,
-                                  scince_relations, metropolitan_relation=none) %}
+                                  scince_relations, municipality_relations=[]) %}
     {% set lengths = {"ent": 2, "mun": 5, "loc": 9, "ageb": 13, "mza": 16} %}
     {% set length = lengths[level] %}
     {% set projected = "left(cvegeo, " ~ length ~ ")" %}
@@ -34,10 +34,12 @@
             {% endif %}
         {% endfor %}
     {% endfor %}
-    {% if metropolitan_relation is not none and length <= 5 %}
-        union
-        select {{ projected }} as cvegeo from {{ metropolitan_relation }}
-        where {{ valid_geo_unit("cvegeo", "mun") }}
+    {% if length <= 5 %}
+        {% for relation in municipality_relations %}
+            union
+            select {{ projected }} as cvegeo from {{ relation }}
+            where {{ valid_geo_unit("cvegeo", "mun") }}
+        {% endfor %}
     {% endif %}
 {% endmacro %}
 
@@ -78,9 +80,16 @@
         {% for source_level in ["ent", "mun", "loc", "ageb", "mza"] %}
             {% do scince.update({source_level: ref("scince_" ~ year ~ "_" ~ source_level ~ "_staging")}) %}
         {% endfor %}
+        {% set municipalities = [] %}
+        {% if year == 2020 and level in ["ent", "mun"] %}
+            {% do municipalities.extend([
+                source("census_staging", "metropoli_2020_prepared"),
+                source("census_staging", "conapo_mun_prepared")
+            ]) %}
+        {% endif %}
         {{ geo_unit_ids_from_sources(
             level, geometries, ref("census_" ~ year),
-            scince, source("census_staging", "metropoli_2020_prepared") if year == 2020 else none
+            scince, municipalities
         ) }}
     {% endif %}
 {% endmacro %}

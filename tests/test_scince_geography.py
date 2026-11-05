@@ -6,10 +6,20 @@ from tests.sql_helpers import render_sql, sqlite_database, sqlite_sql
 @pytest.mark.parametrize(
     ("level", "expected"),
     [
-        ("ent", {"01", "02", "03", "04", "05", "06", "07", "08", "09"}),
+        ("ent", {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10"}),
         (
             "mun",
-            {"01001", "02002", "03003", "04004", "05005", "06006", "07007", "09009"},
+            {
+                "01001",
+                "02002",
+                "03003",
+                "04004",
+                "05005",
+                "06006",
+                "07007",
+                "09009",
+                "10010",
+            },
         ),
         (
             "loc",
@@ -33,7 +43,7 @@ def test_identifier_union_preserves_source_only_units_and_ancestors(
         "{{ geo_unit_ids_from_sources('" + level + "', "
         "{'loc': 'geometry'}, 'census', "
         "{'mza': 'blocks', 'ageb': 'agebs', 'loc': 'rural', "
-        "'mun': 'municipal', 'ent': 'state'}, 'metro') }}"
+        "'mun': 'municipal', 'ent': 'state'}, ['metro', 'conapo']) }}"
     )
     sources = {
         "census": [
@@ -49,6 +59,8 @@ def test_identifier_union_preserves_source_only_units_and_ancestors(
         "municipal": ["07007"],
         "state": ["08"],
         "metro": ["09009"],
+        # Annual duplicates, overlap with other sources, and invalid municipality IDs.
+        "conapo": ["10010", "10010", "09009", "11000", "00001", "123456", None],
     }
     with sqlite_database() as conn:
         conn.execute("create table fixtures (source text, cvegeo text)")
@@ -64,7 +76,8 @@ def test_identifier_union_preserves_source_only_units_and_ancestors(
             geometry as (select cvegeo from fixtures where source = 'geometry'),
             municipal as (select cvegeo from fixtures where source = 'municipal'),
             state as (select cvegeo from fixtures where source = 'state'),
-            metro as (select cvegeo from fixtures where source = 'metro')
+            metro as (select cvegeo from fixtures where source = 'metro'),
+            conapo as (select cvegeo from fixtures where source = 'conapo')
         """
         actual = [r[0] for r in conn.execute(ctes + sqlite_sql(sql))]
     assert len(actual) == len(set(actual))
