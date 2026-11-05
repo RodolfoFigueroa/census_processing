@@ -1,0 +1,32 @@
+version: 2
+
+models:
+  - name: geo_unit_2000_loc
+    description: 2000 geographic units at the loc level, including all source units and implied ancestors.
+    config:
+      meta:
+        dagster:
+          asset_key: ["geo_unit", "2000", "loc"]
+          group: geo_unit/2000
+      indexes:
+        - columns: [cve_mun]
+          type: btree
+    constraints:
+      - type: primary_key
+        columns: [cvegeo]
+      - type: check
+        expression: "char_length(cvegeo) = 9"
+      - type: foreign_key
+        columns: [cve_mun]
+        to: ref("geo_unit_2000_mun")
+        to_columns: [cvegeo]
+      - type: check
+        expression: "cve_mun = left(cvegeo, 5)"
+    columns:
+      - name: cvegeo
+        data_type: text
+      - name: cve_mun
+        data_type: text
+        description: Parent mun identifier derived from cvegeo.
+        constraints:
+          - type: not_null

@@ -141,7 +141,7 @@ def test_archive_combines_all_published_rows_with_provenance(
     extraction_roots = []
 
     def extract(args: list[str], *, check: bool, stdout: int) -> None:
-        assert args[0] == "/usr/bin/innoextract"
+        assert args[0] == "innoextract"
         assert Path(args[1]).read_bytes() == b"installer fixture"
         assert args[2] == "-d"
         assert check

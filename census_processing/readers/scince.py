@@ -112,7 +112,7 @@ def extracted_scince_archive(
             installer = extraction_root / f"SCINCE2020_DATOS_{state_code}.exe"
             extraction_root = Path(temporary) / "installer"
             subprocess.run(  # noqa: S603 -- fixed executable; paths are separate arguments.
-                ["/usr/bin/innoextract", str(installer), "-d", str(extraction_root)],
+                ["innoextract", str(installer), "-d", str(extraction_root)],  # noqa: S607
                 check=True,
                 stdout=subprocess.DEVNULL,
             )

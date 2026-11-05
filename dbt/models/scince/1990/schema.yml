@@ -4,7 +4,7 @@ anchors:
   - &scince_columns
     - name: cvegeo
       data_type: text
-      description: Unique identifier for the AGEB.
+      description: Geographic unit identifier.
       config:
         meta:
           description_es: null
@@ -436,6 +436,48 @@ anchors:
           description_es: Viviendas Particulares Rentadas
 
 models:
+  - name: scince_1990_ent
+    description: Published 1990 SCINCE indicators at the state level.
+
+    config:
+      meta:
+        dagster:
+          asset_key: ["scince", "1990", "ent"]
+          group: scince/1990
+
+    constraints:
+      - type: primary_key
+        columns: [cvegeo]
+      - type: check
+        expression: "char_length(cvegeo) = 2"
+      - type: foreign_key
+        columns: [cvegeo]
+        to: ref("geo_unit_1990_ent")
+        to_columns: [cvegeo]
+
+    columns: *scince_columns
+
+  - name: scince_1990_mun
+    description: Published 1990 SCINCE indicators at the municipality level.
+
+    config:
+      meta:
+        dagster:
+          asset_key: ["scince", "1990", "mun"]
+          group: scince/1990
+
+    constraints:
+      - type: primary_key
+        columns: [cvegeo]
+      - type: check
+        expression: "char_length(cvegeo) = 5"
+      - type: foreign_key
+        columns: [cvegeo]
+        to: ref("geo_unit_1990_mun")
+        to_columns: [cvegeo]
+
+    columns: *scince_columns
+
   - name: scince_1990_ageb
     description: 1990 census statistics obtained from the SCINCE dataset, aggregated by AGEB (Área Geoestadística Básica).
 

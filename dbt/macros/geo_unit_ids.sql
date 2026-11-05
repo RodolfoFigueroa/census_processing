@@ -42,7 +42,17 @@
 {% endmacro %}
 
 {% macro geo_unit_ids(year, level) %}
-    {% if year == 1990 %}
+    {% if year == 2000 %}
+        {% set width = {"ent": 2, "mun": 5, "loc": 9}[level] %}
+        {% set prefix = "left(cvegeo, " ~ width ~ ")" %}
+        select distinct {{ prefix }} as cvegeo
+        from {{ source("census_staging", "scince_2000_prepared") }}
+        where {{ valid_geo_unit(prefix, level) }}
+        union
+        select distinct {{ prefix }} as cvegeo
+        from {{ source("census_staging", "geometry_2000_ageb_prepared") }}
+        where {{ valid_geo_unit(prefix, level) }}
+    {% elif year == 1990 %}
         {% if level not in ["ent", "mun"] %}
             {{ exceptions.raise_compiler_error("1990 identifier discovery supports ent and mun only") }}
         {% endif %}

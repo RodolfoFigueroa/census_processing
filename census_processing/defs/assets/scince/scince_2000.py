@@ -155,6 +155,44 @@ def chunk_to_dataframe(rows: list[str]) -> pd.DataFrame:
     )
 
 
+def extract_state_records(buffer: bytes, state: str) -> pd.DataFrame:
+    """Read the two published fixed-width state DBP layouts."""
+    count = int.from_bytes(buffer[4:8], "little")
+    header = int.from_bytes(buffer[8:10], "little")
+    width = int.from_bytes(buffer[10:12], "little")
+    if (header, width) not in {(8277, 1718), (5505, 1706)}:
+        msg = "Unsupported state DBP layout"
+        raise ValueError(msg)
+    if len(buffer) < header + count * width:
+        msg = "Truncated state DBP records"
+        raise ValueError(msg)
+    key_width = width - 1701
+    rows = []
+    keys = []
+    for offset in range(header, header + count * width, width):
+        record = buffer[offset : offset + width]
+        if record[:1] != b" ":
+            msg = "Unexpected state DBP record marker"
+            raise ValueError(msg)
+        key = record[1 : 1 + key_width].decode("latin1").strip()
+        if key == "000":
+            key = state
+        elif not (
+            len(key) == 5
+            and key.isdigit()
+            and key.startswith(state)
+            and key[2:] != "000"
+        ):
+            msg = "Invalid state DBP geographic identifier"
+            raise ValueError(msg)
+        keys.append(key.ljust(13, "0"))
+        payload = record[1 + key_width :]
+        rows.append(
+            [payload[i : i + 10].decode("latin1").strip() for i in range(0, 1700, 10)]
+        )
+    return pd.DataFrame(rows, index=keys, columns=range(1, 171))
+
+
 def extract_from_archive(arc: cabarchive.CabArchive) -> pd.DataFrame:
     """
     Extract and process census data from a CAB archive.
@@ -168,22 +206,33 @@ def extract_from_archive(arc: cabarchive.CabArchive) -> pd.DataFrame:
 
     wanted_keys = []
     for elem in arc:
-        if elem.endswith(".DBP"):
-            suffix = elem.split("_")[-1].replace(".DBP", "")
-            if len(suffix) > 2:
+        if elem.upper().endswith(".DBP"):
+            suffix = elem.rsplit("_", 1)[-1][:-4]
+            if suffix.isdigit() and len(suffix) in (2, 9):
                 wanted_keys.append(elem)
 
     df_census = []
     for key in wanted_keys:
-        loc_code = key.split("_")[-1].replace(".DBP", "")
+        loc_code = key.rsplit("_", 1)[-1][:-4]
         buf = arc[key].buf
+        if len(loc_code) == 2:
+            try:
+                df_census.append(extract_state_records(buf, loc_code))
+            except ValueError as exc:
+                msg = f"Invalid SCINCE member {key}: {exc}"
+                raise ValueError(msg) from exc
+            continue
         decoded = decode_chunk(buf)
         processed = process_chunk(decoded)
         df_chunk = chunk_to_dataframe(processed)
         df_chunk.index = loc_code + df_chunk.index.astype(str)
         df_census.append(df_chunk)
 
-    return pd.concat(df_census)
+    result = pd.concat(df_census)
+    if result.index.has_duplicates:
+        msg = "Duplicate SCINCE geographic identifiers"
+        raise ValueError(msg)
+    return result
 
 
 @dg.op(ins={"scince_file_dep": dg.In(dagster_type=dg.Nothing)})
@@ -211,6 +260,9 @@ def load_scince_2000(path_resource: PathResource) -> list[pd.DataFrame]:
 
             df_census_list.append(extract_from_archive(arc))
 
+    if pd.concat(df_census_list).index.has_duplicates:
+        msg = "Duplicate SCINCE geographic identifiers across archives"
+        raise ValueError(msg)
     return df_census_list
 
 
